@@ -221,11 +221,8 @@ print(tempC)'.
 
 { #category : 'tests - literals' }
 PythonConversionTest >> testFloatNode [
-	"Ensure a variable can be converted to Zag properly."
-	| expected source |
-	source := '2.0'.
-	expected := ASLiteral literal: 2.0.
-	self assertExpression: source convertsTo: expected.
+	"Ensure a float literal can be converted to Zag properly."
+	self assertExpression: '2.0' convertsTo: (ASLiteral literal: 2.0).
 ]
 
 { #category : 'tests - control flow' }
@@ -325,11 +322,8 @@ PythonConversionTest >> testInputCall [
 
 { #category : 'tests - literals' }
 PythonConversionTest >> testIntegerNode [
-	"Ensure a variable can be converted to Zag properly."
-	| expected source |
-	source := '2'.
-	expected := ASLiteral literal: 2.
-	self assertExpression: source convertsTo: expected.
+	"Ensure an integer literal can be converted to Zag properly."
+	self assertExpression: '2' convertsTo: (ASLiteral literal: 2).
 ]
 
 { #category : 'tests - comparison & membership operators' }
@@ -464,11 +458,8 @@ PythonConversionTest >> testPrintCall [
 
 { #category : 'tests - literals' }
 PythonConversionTest >> testStringNode [
-	"Ensure a variable can be converted to Zag properly."
-	| expected source |
-	source := '"a"'.
-	expected := ASLiteral literal: 'a'.
-	self assertExpression: source convertsTo: expected.
+	"Ensure a string literal can be converted to Zag properly."
+	self assertExpression: '"a"' convertsTo: (ASLiteral literal: 'a').
 ]
 
 { #category : 'tests' }
