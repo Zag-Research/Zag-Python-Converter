@@ -99,7 +99,7 @@ ZagTSNode >> asZagASTNode [
 	^converter value: self.
 ]
 
-{ #category : 'converting - by node type' }
+{ #category : 'converting - operators' }
 ZagTSNode >> assignToZagAST [
 	^(self >> 1) tsNodeType = #subscript
 		ifTrue: [ ASSend
@@ -111,7 +111,7 @@ ZagTSNode >> assignToZagAST [
 		].
 ]
 
-{ #category : 'converting - by node type' }
+{ #category : 'converting - operators' }
 ZagTSNode >> augmentedAssignToZagAST [
 	| op nonAugmentedOp |
 	op := self getBinaryOperator.
@@ -132,7 +132,7 @@ ZagTSNode >> augmentedAssignToZagAST [
 		].
 ]
 
-{ #category : 'converting - by node type' }
+{ #category : 'converting - operators' }
 ZagTSNode >> binaryToZagAST [
 	"Converts a binary operator to a Zag AST."
 	| op |
@@ -140,7 +140,7 @@ ZagTSNode >> binaryToZagAST [
 	^self binaryToZagASTOperator: op.
 ]
 
-{ #category : 'converting - by node type' }
+{ #category : 'converting - operators' }
 ZagTSNode >> binaryToZagASTOperator: op [
 	"Creates a binary zag AST from this node's children using the provided Python operator."
 	(#(#+ #- #* #/ #// #% #& #| #< #<= #> #>=) includes: op) ifTrue: [ ^self binaryToZagASTSelector: op ].
@@ -158,13 +158,13 @@ ZagTSNode >> binaryToZagASTOperator: op [
 	op = #'not in' ifTrue: [ ^ASSend target: (ASSend target: (self >> 2) asZagASTNode selector: #includes: args: {(self >> 1) asZagASTNode}) selector: #not args: #() ].
 ]
 
-{ #category : 'converting - by node type' }
+{ #category : 'converting - operators' }
 ZagTSNode >> binaryToZagASTSelector: selector [
 	"Creates a binary zag AST from this node's children using the provided selector."
 	^ASSend target: (self >> 1) asZagASTNode selector: selector args: {(self >> 2) asZagASTNode}.
 ]
 
-{ #category : 'converting - by node type' }
+{ #category : 'converting - control flow' }
 ZagTSNode >> blockToZagAST [
 	"Converts a block to a Zag AST."
 	^ASBlockNode arguments: #() locals: #() body: (
@@ -172,7 +172,7 @@ ZagTSNode >> blockToZagAST [
 	).
 ]
 
-{ #category : 'converting - by node type' }
+{ #category : 'converting - operators' }
 ZagTSNode >> booleanToZagAST [
 	"convert and/or to Zag AST"
  	| op |
@@ -185,7 +185,7 @@ ZagTSNode >> booleanToZagAST [
 			args: {ASBlockNode arguments: #() locals: #() body: {(self >> 2) asZagASTNode}} ].
 ]
 
-{ #category : 'converting - by node type' }
+{ #category : 'converting - functions' }
 ZagTSNode >> builtinToZagAST [
 	"Converts a builtin method to a Zag AST."
 	| name |
@@ -195,7 +195,7 @@ ZagTSNode >> builtinToZagAST [
 	name = #float ifTrue: [ ^self floatToZagAST ].
 ]
 
-{ #category : 'converting - by node type' }
+{ #category : 'converting - functions' }
 ZagTSNode >> callToZagAST [
 	"Converts a function call to a Zag AST."
 	(self class supportedBuiltins includes: (self >> 1) sourcePart asSymbol)
@@ -226,19 +226,19 @@ ZagTSNode >> childrenDo: aBlock [
 	1 to: self childrenCount do: [ :i | aBlock value: (self >> i) ].
 ]
 
-{ #category : 'converting - by node type' }
+{ #category : 'converting - literals' }
 ZagTSNode >> falseToZagAST [
 	^ASLiteral literal: false.
 ]
 
-{ #category : 'converting - by node type' }
+{ #category : 'converting - functions' }
 ZagTSNode >> floatToZagAST [
 	^ASSend
 		target: (self >> 2 >> 1) asZagASTNode
 		selector: #asFloat.
 ]
 
-{ #category : 'converting - by node type' }
+{ #category : 'converting - control flow' }
 ZagTSNode >> forToZagAST [
 	"Converts for loop nodes to Zag AST."
 	^ASSend target: (self >> 2) asZagASTNode selector: #do: args: {
@@ -270,7 +270,7 @@ ZagTSNode >> identifierToZagAST [
 	^ASRef variable: self sourcePart asSymbol.
 ]
 
-{ #category : 'converting - by node type' }
+{ #category : 'converting - control flow' }
 ZagTSNode >> ifElifToZagAST [
 	"Converts an if-elif statement to a Zag switch statement."
 	"ASArray does not appear to work, so temporarily, this code returns an array object instead of an ASArray for the switch target."
@@ -284,7 +284,7 @@ ZagTSNode >> ifElifToZagAST [
 	^ASSend target: conditions selector: #switch.
 ]
 
-{ #category : 'converting - by node type' }
+{ #category : 'converting - control flow' }
 ZagTSNode >> ifToZagAST [
 	"Converts an if statement to a Zag AST."
 	"If the statement is just if or if/else, uses ifTrue: or ifTrue:ifFalse:.  Otherwise, uses a switch statement from ifElifToZagAST."
@@ -297,7 +297,7 @@ ZagTSNode >> ifToZagAST [
 	^self ifElifToZagAST.
 ]
 
-{ #category : 'converting - by node type' }
+{ #category : 'converting - functions' }
 ZagTSNode >> inputToZagAST [
 	^ASSend
 		target: (ASSend target: UIManager selector: #default args: #())
@@ -305,7 +305,7 @@ ZagTSNode >> inputToZagAST [
 		args: { (self >> 2 >> 1) asZagASTNode }.
 ]
 
-{ #category : 'converting - by node type' }
+{ #category : 'converting - functions' }
 ZagTSNode >> lambdaToZagAST [
 	"Converts me to a Zag AST, assuming I am a lambda."
 	| hasArguments arguments bodyStart children locals |
@@ -328,20 +328,20 @@ ZagTSNode >> moduleToZagAST [
 	^ASMethodNode selector: self class mainMethodSelector locals: locals body: children.
 ]
 
-{ #category : 'converting - by node type' }
+{ #category : 'converting - operators' }
 ZagTSNode >> notToZagAST [
 	"comment stating purpose of instance-side method"
 	"scope: class-variables  &  instance-variables"
 	^ASSend target: (self >> 1) asZagASTNode selector: #pythonNot.
 ]
 
-{ #category : 'converting - by node type' }
+{ #category : 'converting - literals' }
 ZagTSNode >> numberToZagAST [
 	"Converts a number to a Zag AST."
 	^ASLiteral literal: self sourcePart asNumber.
 ]
 
-{ #category : 'converting - by node type' }
+{ #category : 'converting - functions' }
 ZagTSNode >> printToZagAST [
 	| calls |
 	calls := (self >> 2) children collect: [ :each |
@@ -368,7 +368,7 @@ ZagTSNode >> sourcePart [
 	^node textFromSourceText: source.
 ]
 
-{ #category : 'converting - by node type' }
+{ #category : 'converting - literals' }
 ZagTSNode >> stringToZagAST [
 	"Converts a string to a Zag AST."
 	^ASLiteral literal: (self >> 2) sourcePart.
@@ -382,7 +382,7 @@ ZagTSNode >> subscriptToZagAST [
 		args: { (self >> 2) asZagASTNode }.
 ]
 
-{ #category : 'converting - by node type' }
+{ #category : 'converting - literals' }
 ZagTSNode >> trueToZagAST [
 	^ASLiteral literal: true.
 ]
@@ -393,7 +393,7 @@ ZagTSNode >> tsNodeType [
 	^node type asSymbol.
 ]
 
-{ #category : 'converting - by node type' }
+{ #category : 'converting - operators' }
 ZagTSNode >> unaryToZagAST [
 	"Converts a unary operator to a Zag AST."
 	| op |
@@ -402,13 +402,13 @@ ZagTSNode >> unaryToZagAST [
 	op = #~ ifTrue: [ ^self unaryToZagAST: #bitInvert ].
 ]
 
-{ #category : 'converting - by node type' }
+{ #category : 'converting - operators' }
 ZagTSNode >> unaryToZagAST: selector [
 	"Creates a unary zag AST from this node's child using the provided selector."
 	^ASSend target: (self >> 1) asZagASTNode selector: selector args: {}.
 ]
 
-{ #category : 'converting - by node type' }
+{ #category : 'converting - control flow' }
 ZagTSNode >> whileToZagAST [
 	"Converts a while statement to a Zag AST."
 	^ASSend target: (
