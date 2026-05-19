@@ -162,6 +162,13 @@ PythonConversionTest >> testBitShiftRight [
 	self assertExpression: source convertsTo: expected.
 ]
 
+{ #category : 'tests - literals' }
+PythonConversionTest >> testBooleanNodes [
+	"Test that the true and false literals convert properly."
+	self assertExpression: 'True' convertsTo: (ASLiteral literal: true).
+	self assertExpression: 'False' convertsTo: (ASLiteral literal: false).
+]
+
 { #category : 'tests - comparison & membership operators' }
 PythonConversionTest >> testComparison [
 	"Ensure a comparison expression can be converted to Zag properly."

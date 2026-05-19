@@ -227,6 +227,11 @@ ZagTSNode >> childrenDo: aBlock [
 ]
 
 { #category : 'converting - by node type' }
+ZagTSNode >> falseToZagAST [
+	^ASLiteral literal: false.
+]
+
+{ #category : 'converting - by node type' }
 ZagTSNode >> floatToZagAST [
 	^ASSend
 		target: (self >> 2 >> 1) asZagASTNode
@@ -375,6 +380,11 @@ ZagTSNode >> subscriptToZagAST [
 		target: (self >> 1) asZagASTNode
 		selector: #zwAt:
 		args: { (self >> 2) asZagASTNode }.
+]
+
+{ #category : 'converting - by node type' }
+ZagTSNode >> trueToZagAST [
+	^ASLiteral literal: true.
 ]
 
 { #category : 'accessing' }
