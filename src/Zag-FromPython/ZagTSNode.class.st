@@ -34,6 +34,7 @@ ZagTSNode class >> converter: type [
 	type = #'named_expression' ifTrue: [ ^#assignToZagAST ]. ":= - temp - should have different semantics later"
 	type = #'if_statement' ifTrue: [ ^#ifToZagAST ].
 	type = #'for_statement' ifTrue: [ ^#forToZagAST ].
+	type = #'while_statement' ifTrue: [ ^#whileToZagAST ].
 	^(type asString,'ToZagAST') asSymbol
 ]
 
@@ -395,4 +396,12 @@ ZagTSNode >> unaryToZagAST [
 ZagTSNode >> unaryToZagAST: selector [
 	"Creates a unary zag AST from this node's child using the provided selector."
 	^ASSend target: (self >> 1) asZagASTNode selector: selector args: {}.
+]
+
+{ #category : 'converting - by node type' }
+ZagTSNode >> whileToZagAST [
+	"Converts a while statement to a Zag AST."
+	^ASSend target: (
+		ASBlockNode arguments: #() locals: #() body: { (self >> 1) asZagASTNode }
+	) selector: #whileTrue: args: { (self >> 2) asZagASTNode }.
 ]
