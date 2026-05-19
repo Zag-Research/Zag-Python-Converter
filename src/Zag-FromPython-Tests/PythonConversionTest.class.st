@@ -483,3 +483,17 @@ PythonConversionTest >> testWalrus [
 		expression: (ASRef variable: #b).
 	self assertExpression: source convertsTo: expected withLocals: #(#a).
 ]
+
+{ #category : 'tests - control flow' }
+PythonConversionTest >> testWhile [
+	"Tests converting a simple while loop."
+	| source expected |
+	source := 'while x > 0:
+	x -= 3'.
+	expected := ASSend target: (ASBlockNode arguments: #() locals: #() body: {
+		ASSend target: (ASRef variable: #x) selector: #> args: { ASLiteral literal: 0 }
+	}) selector: #whileTrue: args: { ASBlockNode arguments: #() locals: #() body: {
+		ASAssign variable: (ASRef variable: #x) expression: (
+			ASSend target: (ASRef variable: #x) selector: #- args: { ASLiteral literal: 3 })}}.
+	self assertExpression: source convertsTo: expected.
+]
