@@ -4,6 +4,15 @@ This is a project that converts Python code to and from [Zag Smalltalk](https://
 
 This project is currently in the early stages of development; don't expect every Python feature to work at the moment.
 
+## Installation
+
+```
+Metacello new
+	githubUser: 'Zag-Research' project: 'Zag-Python-Converter' commitish: 'main' path: 'src';
+	baseline: 'ZagPythonConverter';
+	load
+```
+
 ## Use Instructions
 
 To convert Python code to a Zag AST:
