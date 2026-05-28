@@ -72,7 +72,7 @@ ZagTSNode class >> pythonToZagAST: source [
 
 { #category : 'constants' }
 ZagTSNode class >> supportedBuiltins [
-	^#(#print #input #float).
+	^#(#print #input #float #int) asSet.
 ]
 
 { #category : 'accessing' }
@@ -193,6 +193,7 @@ ZagTSNode >> builtinToZagAST [
 	name = #print ifTrue: [ ^self printToZagAST ].
 	name = #input ifTrue: [ ^self inputToZagAST ].
 	name = #float ifTrue: [ ^self floatToZagAST ].
+	name = #int ifTrue: [ ^self intToZagAST ].
 ]
 
 { #category : 'converting - functions' }
@@ -303,6 +304,13 @@ ZagTSNode >> inputToZagAST [
 		target: (ASSend target: (ASRef variable: #UIManager) selector: #default args: #())
 		selector: #request:
 		args: { (self >> 2 >> 1) asZagASTNode }.
+]
+
+{ #category : 'converting - functions' }
+ZagTSNode >> intToZagAST [
+	^ASSend
+		target: (self >> 2 >> 1) asZagASTNode
+		selector: #asInteger.
 ]
 
 { #category : 'converting - functions' }
