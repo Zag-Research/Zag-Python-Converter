@@ -235,7 +235,7 @@ ZagTSNode >> falseToZagAST [
 ZagTSNode >> floatToZagAST [
 	^ASSend
 		target: (self >> 2 >> 1) asZagASTNode
-		selector: #asFloat.
+		selector: #asNumber.
 ]
 
 { #category : 'converting - control flow' }
@@ -300,7 +300,7 @@ ZagTSNode >> ifToZagAST [
 { #category : 'converting - functions' }
 ZagTSNode >> inputToZagAST [
 	^ASSend
-		target: (ASSend target: UIManager selector: #default args: #())
+		target: (ASSend target: (ASRef variable: #UIManager) selector: #default args: #())
 		selector: #request:
 		args: { (self >> 2 >> 1) asZagASTNode }.
 ]
@@ -346,7 +346,7 @@ ZagTSNode >> printToZagAST [
 	| calls |
 	calls := (self >> 2) children collect: [ :each |
 		ASSend selector: #show: args: { each asZagASTNode } ].
-	^ASCascade target: Transcript sends: (calls copyWith: (
+	^ASCascade target: (ASRef variable: #Transcript) sends: (calls copyWith: (
 		ASSend selector: #cr args: #())).
 ]
 

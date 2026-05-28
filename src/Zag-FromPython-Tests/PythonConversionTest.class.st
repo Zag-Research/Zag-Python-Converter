@@ -204,13 +204,13 @@ print(tempC)'.
 			locals: {(ASRef variable: #tempF) . (ASRef variable: #tempC)} body: {
 		ASAssign variable: (ASRef variable: #tempF) expression: (
 			ASSend target: (
-				ASSend target: (ASSend target: UIManager selector: #default args: #())
-					selector: #request: args: { ASLiteral literal: 'Input temp in F: ' }) selector: #asFloat).
+				ASSend target: (ASSend target: (ASRef variable: #UIManager) selector: #default args: #())
+					selector: #request: args: { ASLiteral literal: 'Input temp in F: ' }) selector: #asNumber).
 		ASAssign variable: (ASRef variable: #tempC) expression: (
 			ASSend target: (
 				ASSend target: (ASRef variable: #tempF) selector: #- args: { ASLiteral literal: 32 }
 			) selector: #/ args: { ASLiteral literal: 1.8 }).
-		ASCascade target: Transcript sends: { 
+		ASCascade target: (ASRef variable: #Transcript) sends: { 
 			ASSend selector: #show: args: { ASRef variable: #tempC }.
 			ASSend selector: #cr args: #()
 		}
@@ -314,7 +314,7 @@ PythonConversionTest >> testInputCall [
 	| source expected |
 	source := 'input(a)'.
 	expected := ASSend
-		target: (ASSend target: UIManager selector: #default args: #())
+		target: (ASSend target: (ASRef variable: #UIManager) selector: #default args: #())
 		selector: #request:
 		args: { ASRef variable: #a }.
 	self assertExpression: source convertsTo: expected.
@@ -449,7 +449,7 @@ PythonConversionTest >> testPowers [
 PythonConversionTest >> testPrintCall [
 	| source expected |
 	source := 'print(a)'.
-	expected := ASCascade target: Transcript sends: {
+	expected := ASCascade target: (ASRef variable: #Transcript) sends: {
 		ASSend selector: #show: args: { ASRef variable: #a } .
 		ASSend selector: #cr args: #().
 	}.
