@@ -10,6 +10,11 @@ Class {
 }
 
 { #category : 'visiting' }
+ZagPythonVisitor >> visit: anAST [
+	anAST accept: self
+]
+
+{ #category : 'visiting' }
 ZagPythonVisitor >> visitAssignmentNode: aNode [
 	self subclassResponsibility
 ]

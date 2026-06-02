@@ -14,3 +14,8 @@ ZagPythonAST >> accept: aVisitor [
 	"Sends aVisitor the visit___ message, based on which subclass I am."
 	self subclassResponsibility
 ]
+
+{ #category : 'printing' }
+ZagPythonAST >> printOn: aStream [
+	ZagPythonPrinter new stream: aStream; visit: self.
+]
