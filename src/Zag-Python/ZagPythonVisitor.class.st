@@ -8,3 +8,18 @@ Class {
 	#package : 'Zag-Python',
 	#tag : 'AST'
 }
+
+{ #category : 'visiting' }
+ZagPythonVisitor >> visitAssignmentNode: aNode [
+	self subclassResponsibility
+]
+
+{ #category : 'visiting' }
+ZagPythonVisitor >> visitLiteral: aLiteral [
+	self subclassResponsibility.
+]
+
+{ #category : 'visiting' }
+ZagPythonVisitor >> visitRef: aRef [
+	self subclassResponsibility
+]
