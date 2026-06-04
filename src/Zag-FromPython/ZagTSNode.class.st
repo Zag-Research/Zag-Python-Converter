@@ -57,11 +57,14 @@ ZagTSNode class >> newRoot: source [
 { #category : 'instance creation' }
 ZagTSNode class >> parsePythonTS: source [
 	"Parses Python code with TreeSitter."
-	| parser pythonLanguage |
+	| parser pythonLanguage tree |
 	parser := TSParser new.
 	pythonLanguage := TSLanguage python.
 	parser language: pythonLanguage.
-	^parser parseString: source.
+	tree := parser parseString: source.
+	tree rootNode hasErrorDescendant
+		ifTrue: [ self error: 'Tree-Sitter had an error parsing the provided source code.' ]
+		ifFalse: [ ^tree ].
 ]
 
 { #category : 'converting' }

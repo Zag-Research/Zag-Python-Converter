@@ -363,6 +363,14 @@ PythonConversionTest >> testIntegerNode [
 	self assertExpression: '2' convertsTo: (ASLiteral literal: 2).
 ]
 
+{ #category : 'tests - full programs' }
+PythonConversionTest >> testInvalidProgram [
+	"Test that parsing an invalid program raises an error."
+	| invalidSource |
+	invalidSource := 'a b'.
+	self should: [ ZagTSNode pythonToZagAST: invalidSource ] raise: Error.
+]
+
 { #category : 'tests - comparison & membership operators' }
 PythonConversionTest >> testIs [
 	"Ensure an 'is' expression can be converted to Zag properly."
