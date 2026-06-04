@@ -19,7 +19,7 @@ BaselineOfZagPythonConverter >> baseline: spec [
 			"Dependencies"
 			spec 
     			baseline: 'ZagSmalltalk' 
-    			with: [ spec repository: 'github://Zag-Research/Zag-Smalltalk:remove-benchmarks/src' ].
+    			with: [ spec repository: 'github://Zag-Research/Zag-Smalltalk:main/src' ].
 			spec 
     			baseline: 'TreeSitter' 
     			with: [ spec repository: 'github://Evref-BL/Pharo-Tree-Sitter:1a3095b/src' ].
