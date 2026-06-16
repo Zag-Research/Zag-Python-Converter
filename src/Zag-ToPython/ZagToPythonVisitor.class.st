@@ -65,3 +65,10 @@ ZagToPythonVisitor >> visitRef: aRef [
 	"Visits an ASRef, adding its associated Python source to my stream."
 	resultStream nextPutAll: aRef variable asString
 ]
+
+{ #category : 'visiting' }
+ZagToPythonVisitor >> visitReturn: aReturn [
+	"Visits an ASReturn, adding its associated Python source to my stream."
+	resultStream nextPutAll: 'return '.
+	self visit: aReturn expression.
+]
