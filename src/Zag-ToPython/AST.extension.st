@@ -2,5 +2,5 @@ Extension { #name : 'AST' }
 
 { #category : '*Zag-ToPython' }
 AST >> asPythonSource [
-	self subclassResponsibility.
+	^ZagToPythonVisitor astToPythonSource: self
 ]

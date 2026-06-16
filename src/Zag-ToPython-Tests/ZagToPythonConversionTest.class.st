@@ -10,7 +10,7 @@ Class {
 ZagToPythonConversionTest >> assert: ast convertsTo: source [
 	"Assert the provided Zag AST converts to the provided Python source."
 	| actual |
-	actual := ast asPythonSource.
+	actual := ZagToPythonVisitor astToPythonSource: ast.
 	self assert: source equals: actual.
 ]
 
