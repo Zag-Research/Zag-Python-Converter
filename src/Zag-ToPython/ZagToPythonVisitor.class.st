@@ -44,6 +44,12 @@ ZagToPythonVisitor >> visitAssign: anAssign [
 ]
 
 { #category : 'visiting' }
+ZagToPythonVisitor >> visitCascade: aCascade [
+	"Visits an ASCascade, adding its associated Python source to my stream."
+	aCascade collect: [ :send | send target: aCascade target ] thenDo: [ :each | self visit: each ]
+]
+
+{ #category : 'visiting' }
 ZagToPythonVisitor >> visitLiteral: aLiteral [
 	"Visits an ASLiteral, adding its associated Python source to my stream."
 	aLiteral literal isString
