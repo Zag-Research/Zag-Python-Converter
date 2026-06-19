@@ -7,14 +7,37 @@ Class {
 	#instVars : [
 		'resultStream'
 	],
-	#category : 'Zag-ToPython',
-	#package : 'Zag-ToPython'
+	#category : 'Zag-ToPython-Converter',
+	#package : 'Zag-ToPython',
+	#tag : 'Converter'
 }
 
 { #category : 'converting' }
 ZagToPythonVisitor class >> astToPythonSource: anAST [
 	"Convert a Zag AST to Python source code."
 	^String streamContents: [ :stream | self new resultStream: stream; visit: anAST ]
+]
+
+{ #category : 'testing' }
+ZagToPythonVisitor class >> needsBrackets: anObject forChild: itsChild isTarget: isTarget [
+	"Determines whether I need to place brackets around an object's child."
+	| parentPrecedence childPrecedence |
+	(itsChild isKindOf: ASStatement) ifFalse: [ ^true ].
+	itsChild isASLiteral ifTrue: [ ^false ].
+	parentPrecedence := self pythonOperatorPrecedence at: anObject selector.
+	childPrecedence := self pythonOperatorPrecedence at: itsChild selector.
+	^isTarget
+		ifTrue: [ parentPrecedence > childPrecedence ]
+		ifFalse: [ parentPrecedence >= childPrecedence ].
+]
+
+{ #category : 'constants' }
+ZagToPythonVisitor class >> pythonOperatorPrecedence [
+	"A dictionary mapping Python operators to their precedence."
+	^{
+		#* -> 9. #/ -> 9.
+		#+ -> 8. #- -> 8.
+	} asDictionary.
 ]
 
 { #category : 'constants' }
@@ -47,6 +70,14 @@ ZagToPythonVisitor >> visit: anAST [
 ]
 
 { #category : 'visiting' }
+ZagToPythonVisitor >> visit: anObject withBrackets: enableBrackets [
+	"Prints an object, maybe with brackets around it."
+	enableBrackets ifTrue: [ resultStream nextPut: $( ].
+	anObject accept: self.
+	enableBrackets ifTrue: [ resultStream nextPut: $) ].
+]
+
+{ #category : 'visiting' }
 ZagToPythonVisitor >> visitAssign: anAssign [
 	"Visits an ASAssign, adding its associated Python source to my stream."
 	self visit: anAssign variable.
@@ -74,13 +105,13 @@ ZagToPythonVisitor >> visitLiteral: aLiteral [
 { #category : 'visiting - message sends' }
 ZagToPythonVisitor >> visitOperation: aSend [
 	"Like visitSend, but the selector is in smalltalkToPythonOperations."
-	resultStream nextPut: $(.
-	aSend target accept: self.
-	resultStream nextPutAll: ') '.
+	self visit: aSend target withBrackets: (
+		self class needsBrackets: aSend forChild: aSend target isTarget: true).
+	resultStream nextPut: Character space.
 	resultStream nextPutAll: (self class smalltalkToPythonOperations at: aSend selector).
-	resultStream nextPutAll: ' ('.
-	aSend args first accept: self.
-	resultStream nextPut: $).
+	resultStream nextPut: Character space.
+	self visit: aSend args first withBrackets: (
+		self class needsBrackets: aSend forChild: aSend args first isTarget: false).
 	
 ]
 

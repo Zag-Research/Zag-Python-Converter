@@ -19,7 +19,7 @@ ZagToPythonConversionTest >> testAddition [
 	"Tests converting a simple addition expression."
 	| ast expected |
 	ast := ASSend target: (ASLiteral literal: 2) selector: #+ args: { ASLiteral literal: 3 }.
-	expected := '(2) + (3)'. "TODO remove unnecessary parentheses"
+	expected := '2 + 3'.
 	self assert: ast convertsTo: expected.
 ]
 
@@ -30,7 +30,7 @@ ZagToPythonConversionTest >> testAdditionMultiplication [
 	ast := ASSend target: (ASLiteral literal: 2) selector: #+ args: {
 		ASSend target: (ASLiteral literal: 3) selector: #* args: { ASLiteral literal: 4 }
 	}.
-	expected := '(2) + ((3) * (4))'. "TODO remove unnecessary parentheses"
+	expected := '2 + 3 * 4'.
 	self assert: ast convertsTo: expected.
 ]
 
@@ -44,13 +44,37 @@ ZagToPythonConversionTest >> testAssign [
 ]
 
 { #category : 'tests - operations' }
+ZagToPythonConversionTest >> testAssociativeAddition1 [
+	"Tests converting a simple 3-argument addition expression."
+	"The brackets here aren't necessary, but would only arise if the user specifically put them there."
+	"Therefore, I am allowing them to be included or omitted."
+	| ast expected1 expected2 actual |
+	ast := ASSend target: (ASLiteral literal: 2) selector: #+ args: {
+		ASSend target: (ASLiteral literal: 3) selector: #+ args: { ASLiteral literal: 4 } }.
+	expected1 := '2 + (3 + 4)'.  expected2 := '2 + 3 + 4'.
+	actual := ZagToPythonVisitor astToPythonSource: ast.
+	self assert: ({ expected1. expected2 } includes: actual).
+]
+
+{ #category : 'tests - operations' }
+ZagToPythonConversionTest >> testAssociativeAddition2 [
+	"Tests converting a simple 3-argument addition expression."
+	| ast expected |
+	ast := ASSend target: (
+		ASSend target: (ASLiteral literal: 2) selector: #+ args: { ASLiteral literal: 3 })
+	selector: #+ args: { ASLiteral literal: 4 }.
+	expected := '2 + 3 + 4'.
+	self assert: ast convertsTo: expected.
+]
+
+{ #category : 'tests - operations' }
 ZagToPythonConversionTest >> testMultiplicationAddition [
 	"Tests converting a simple addition-multiplication expression, which requires brackets."
 	| ast expected |
 	ast := ASSend target: (ASLiteral literal: 2) selector: #* args: {
 		ASSend target: (ASLiteral literal: 3) selector: #+ args: { ASLiteral literal: 4 }
 	}.
-	expected := '(2) * ((3) + (4))'. "TODO remove unnecessary parentheses"
+	expected := '2 * (3 + 4)'.
 	self assert: ast convertsTo: expected.
 ]
 
@@ -60,5 +84,26 @@ ZagToPythonConversionTest >> testStringLiteral [
 	| ast expected |
 	ast := ASLiteral literal: 'Hello, world!'.
 	expected := '"Hello, world!"'.
+	self assert: ast convertsTo: expected.
+]
+
+{ #category : 'tests - operations' }
+ZagToPythonConversionTest >> testTripleSubtraction1 [
+	"Tests converting a simple 3-argument subtraction expression."
+	| ast expected |
+	ast := ASSend target: (ASLiteral literal: 2) selector: #- args: {
+		ASSend target: (ASLiteral literal: 3) selector: #- args: { ASLiteral literal: 4 } }.
+	expected := '2 - (3 - 4)'.
+	self assert: ast convertsTo: expected.
+]
+
+{ #category : 'tests - operations' }
+ZagToPythonConversionTest >> testTripleSubtraction2 [
+	"Tests converting a simple 3-argument subtraction expression."
+	| ast expected |
+	ast := ASSend target: (
+		ASSend target: (ASLiteral literal: 2) selector: #- args: { ASLiteral literal: 3 })
+	selector: #- args: { ASLiteral literal: 4 }.
+	expected := '2 - 3 - 4'.
 	self assert: ast convertsTo: expected.
 ]
