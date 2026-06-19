@@ -14,12 +14,43 @@ ZagToPythonConversionTest >> assert: ast convertsTo: source [
 	self assert: source equals: actual.
 ]
 
+{ #category : 'tests - operations' }
+ZagToPythonConversionTest >> testAddition [
+	"Tests converting a simple addition expression."
+	| ast expected |
+	ast := ASSend target: (ASLiteral literal: 2) selector: #+ args: { ASLiteral literal: 3 }.
+	expected := '(2) + (3)'. "TODO remove unnecessary parentheses"
+	self assert: ast convertsTo: expected.
+]
+
+{ #category : 'tests - operations' }
+ZagToPythonConversionTest >> testAdditionMultiplication [
+	"Tests converting a simple addition-multiplication expression, which does not require parentheses."
+	| ast expected |
+	ast := ASSend target: (ASLiteral literal: 2) selector: #+ args: {
+		ASSend target: (ASLiteral literal: 3) selector: #* args: { ASLiteral literal: 4 }
+	}.
+	expected := '(2) + ((3) * (4))'. "TODO remove unnecessary parentheses"
+	self assert: ast convertsTo: expected.
+]
+
 { #category : 'tests - basic expressions' }
 ZagToPythonConversionTest >> testAssign [
 	"Test that an ASAssign converts correctly."
 	| ast expected |
 	ast := ASAssign variable: (ASRef variable: #x) expression: (ASLiteral literal: 1).
 	expected := 'x = 1'.
+	self assert: ast convertsTo: expected.
+]
+
+{ #category : 'tests - operations' }
+ZagToPythonConversionTest >> testMultiplicationAddition [
+	"Tests converting a simple addition-multiplication expression, which requires brackets."
+	| ast expected |
+	ast := ASSend target: (ASLiteral literal: 2) selector: #* args: {
+		ASSend target: (ASLiteral literal: 3) selector: #+ args: { ASLiteral literal: 4 }
+	}.
+	expected := '(2) * ((3) + (4))'. "TODO remove unnecessary parentheses"
 	self assert: ast convertsTo: expected.
 ]
 

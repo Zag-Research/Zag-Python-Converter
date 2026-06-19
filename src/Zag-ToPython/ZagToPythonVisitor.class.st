@@ -17,6 +17,17 @@ ZagToPythonVisitor class >> astToPythonSource: anAST [
 	^String streamContents: [ :stream | self new resultStream: stream; visit: anAST ]
 ]
 
+{ #category : 'constants' }
+ZagToPythonVisitor class >> smalltalkToPythonOperations [
+	"Returns a dictionary mapping Smalltalk operands to Python."
+	^{ 
+		#+ -> #+.
+		#- -> #-.
+		#* -> #*.
+		#/ -> #/.
+	} asDictionary.
+]
+
 { #category : 'accessing' }
 ZagToPythonVisitor >> resultStream [
 	"Gets my result stream."
@@ -60,6 +71,19 @@ ZagToPythonVisitor >> visitLiteral: aLiteral [
 		] ifFalse: [ resultStream nextPutAll: aLiteral literal asString ]
 ]
 
+{ #category : 'visiting - message sends' }
+ZagToPythonVisitor >> visitOperation: aSend [
+	"Like visitSend, but the selector is in smalltalkToPythonOperations."
+	resultStream nextPut: $(.
+	aSend target accept: self.
+	resultStream nextPutAll: ') '.
+	resultStream nextPutAll: (self class smalltalkToPythonOperations at: aSend selector).
+	resultStream nextPutAll: ' ('.
+	aSend args first accept: self.
+	resultStream nextPut: $).
+	
+]
+
 { #category : 'visiting' }
 ZagToPythonVisitor >> visitRef: aRef [
 	"Visits an ASRef, adding its associated Python source to my stream."
@@ -71,4 +95,12 @@ ZagToPythonVisitor >> visitReturn: aReturn [
 	"Visits an ASReturn, adding its associated Python source to my stream."
 	resultStream nextPutAll: 'return '.
 	self visit: aReturn expression.
+]
+
+{ #category : 'visiting - message sends' }
+ZagToPythonVisitor >> visitSend: aSend [
+	"Prints a send operation to my stream."
+	{
+		[ self class smalltalkToPythonOperations includesKey: aSend selector ] -> [ self visitOperation: aSend ].
+	} switch.
 ]
