@@ -33,10 +33,20 @@ ZagToPythonVisitor class >> needsBrackets: anObject forChild: itsChild isTarget:
 
 { #category : 'constants' }
 ZagToPythonVisitor class >> pythonOperatorPrecedence [
-	"A dictionary mapping Python operators to their precedence."
+	"A dictionary mapping binary Python operators to their precedence."
+	"source: https://www.w3schools.com/python/python_operators_precedence.asp"
 	^{
-		#* -> 9. #/ -> 9.
+		#** -> 11.
+		#* -> 9. #/ -> 9. #// -> 9. #% -> 9.
 		#+ -> 8. #- -> 8.
+		#<< -> 7. #>> -> 7.
+		#& -> 6.
+		#'^' -> 5.
+		#| -> 4.
+		#== -> 3. #!= -> 3. #> -> 3. #>= -> 3. #< -> 3. #<= -> 3.
+		#is -> 3. #'is not' -> 3. #in -> 3. #'not in' -> 3.
+		#and -> 1.
+		#or -> 0.
 	} asDictionary.
 ]
 
@@ -48,6 +58,21 @@ ZagToPythonVisitor class >> smalltalkToPythonOperations [
 		#- -> #-.
 		#* -> #*.
 		#/ -> #/.
+		#// -> #//.
+		#% -> #%.
+		#& -> #&.
+		#| -> #|.
+		#< -> #<.
+		#<= -> #<=.
+		#> -> #>.
+		#>= -> #>-.
+		#raisedTo: -> #**.
+		#bitXor: -> #'^'.
+		#bitShift: -> #<<.
+		#= -> #==.
+		#~= -> #!=.
+		#== -> #is.
+		#~~ -> #'is not'
 	} asDictionary.
 ]
 
