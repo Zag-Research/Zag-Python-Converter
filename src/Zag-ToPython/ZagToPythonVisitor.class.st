@@ -102,6 +102,24 @@ ZagToPythonVisitor >> visit: anObject withBrackets: enableBrackets [
 	enableBrackets ifTrue: [ resultStream nextPut: $) ].
 ]
 
+{ #category : 'visiting - message sends' }
+ZagToPythonVisitor >> visitArrayAccess: arrayTree index: index isZeroIndexed: isZeroIndexed [
+	"Translates an array access operation to a subscript."
+	arrayTree accept: self.
+	resultStream nextPut: $[.
+	index accept: self.
+	isZeroIndexed ifFalse: [ resultStream nextPutAll: ' - 1' ].
+	resultStream nextPut: $].
+]
+
+{ #category : 'visiting - message sends' }
+ZagToPythonVisitor >> visitArraySet: arrayTree index: index value: value isZeroIndexed: isZeroIndexed [
+	"Translates an array access operation to a subscript."
+	self visitArrayAccess: arrayTree index: index isZeroIndexed: isZeroIndexed.
+	resultStream nextPutAll: ' = '.
+	value accept: self.
+]
+
 { #category : 'visiting' }
 ZagToPythonVisitor >> visitAssign: anAssign [
 	"Visits an ASAssign, adding its associated Python source to my stream."
@@ -158,5 +176,9 @@ ZagToPythonVisitor >> visitSend: aSend [
 	"Prints a send operation to my stream."
 	{
 		[ self class smalltalkToPythonOperations includesKey: aSend selector ] -> [ self visitOperation: aSend ].
+		[ aSend selector = #at: ] -> [ self visitArrayAccess: aSend target index: aSend args first isZeroIndexed: false ].
+		[ aSend selector = #zwAt: ] -> [ self visitArrayAccess: aSend target index: aSend args first isZeroIndexed: true ].
+		[ aSend selector = #at:put: ] -> [ self visitArraySet: aSend target index: aSend args first value: aSend args last isZeroIndexed: false ].
+		[ aSend selector = #zwAt:put: ] -> [ self visitArraySet: aSend target index: aSend args first value: aSend args last isZeroIndexed: true ].
 	} switch.
 ]

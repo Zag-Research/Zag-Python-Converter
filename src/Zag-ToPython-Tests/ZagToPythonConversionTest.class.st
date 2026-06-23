@@ -34,6 +34,24 @@ ZagToPythonConversionTest >> testAdditionMultiplication [
 	self assert: ast convertsTo: expected.
 ]
 
+{ #category : 'tests - arrays' }
+ZagToPythonConversionTest >> testArrayAccess [
+	"Test converting accessing an array element using at:."
+	| ast expected |
+	ast := ASSend target: (ASRef variable: #a) selector: #at: args: { ASRef variable: #i }.
+	expected := 'a[i - 1]'.
+	self assert: ast convertsTo: expected.
+]
+
+{ #category : 'tests - arrays' }
+ZagToPythonConversionTest >> testArrayPut [
+	"Test converting setting an array element using at:put:."
+	| ast expected |
+	ast := ASSend target: (ASRef variable: #a) selector: #at:put: args: { ASRef variable: #i . ASRef variable: #v }.
+	expected := 'a[i - 1] = v'.
+	self assert: ast convertsTo: expected.
+]
+
 { #category : 'tests - basic expressions' }
 ZagToPythonConversionTest >> testAssign [
 	"Test that an ASAssign converts correctly."
@@ -105,5 +123,23 @@ ZagToPythonConversionTest >> testTripleSubtraction2 [
 		ASSend target: (ASLiteral literal: 2) selector: #- args: { ASLiteral literal: 3 })
 	selector: #- args: { ASLiteral literal: 4 }.
 	expected := '2 - 3 - 4'.
+	self assert: ast convertsTo: expected.
+]
+
+{ #category : 'tests - arrays' }
+ZagToPythonConversionTest >> testZWArrayAccess [
+	"Test converting accessing an array element using zwAt:."
+	| ast expected |
+	ast := ASSend target: (ASRef variable: #a) selector: #zwAt: args: { ASRef variable: #i }.
+	expected := 'a[i]'.
+	self assert: ast convertsTo: expected.
+]
+
+{ #category : 'tests - arrays' }
+ZagToPythonConversionTest >> testZWArrayPut [
+	"Test converting setting an array element using zwAt:put:."
+	| ast expected |
+	ast := ASSend target: (ASRef variable: #a) selector: #zwAt:put: args: { ASRef variable: #i . ASRef variable: #v }.
+	expected := 'a[i] = v'.
 	self assert: ast convertsTo: expected.
 ]
