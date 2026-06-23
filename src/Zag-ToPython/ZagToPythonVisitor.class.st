@@ -23,7 +23,7 @@ ZagToPythonVisitor class >> isInput: aSend [
 	"Tests if a send should be translated to an input() statement."
 	| targetValid |
 	aSend isASSend ifFalse: [ ^false ].
-	targetValid := aSend target isASSend and: [ aSend target target = UIManager and:
+	targetValid := aSend target isASSend and: [ aSend target target = (ASRef variable: #UIManager) and:
 			[ aSend target selector = #default ] ].
 	^targetValid and: [ aSend selector = #request: ].
 ]
@@ -32,7 +32,7 @@ ZagToPythonVisitor class >> isInput: aSend [
 ZagToPythonVisitor class >> isPrint: aCascade [
 	"Tests if an ASCascade should be translated to a print statement."
 	| targetMatches twoSends firstMatches secondMatches |
-	targetMatches := aCascade target = Transcript.
+	targetMatches := aCascade target = (ASRef variable: #Transcript).
 	twoSends := aCascade sends size = 2.
 	firstMatches := aCascade sends first selector = #show:.
 	secondMatches := aCascade sends last selector = #cr.
@@ -45,6 +45,7 @@ ZagToPythonVisitor class >> needsBrackets: anObject forChild: itsChild isTarget:
 	| parentPrecedence childPrecedence |
 	(itsChild isKindOf: ASStatement) ifFalse: [ ^true ].
 	itsChild isASLiteral ifTrue: [ ^false ].
+	itsChild isASRef ifTrue: [ ^false ].
 	parentPrecedence := self pythonOperatorPrecedence at: anObject selector.
 	childPrecedence := self pythonOperatorPrecedence at: itsChild selector.
 	^isTarget
@@ -106,6 +107,15 @@ ZagToPythonVisitor class >> smalltalkToPythonOperations [
 		#== -> #is.
 		#~~ -> #'is not'
 	} asDictionary.
+]
+
+{ #category : 'visiting' }
+ZagToPythonVisitor >> outputBlockBody: statements [
+	"Outputs a bunch of statements."
+	statements do: [ :statement |
+		statement accept: self.
+		resultStream nextPut: Character cr.
+	]
 ]
 
 { #category : 'visiting - message sends' }
@@ -196,6 +206,14 @@ ZagToPythonVisitor >> visitLiteral: aLiteral [
 			resultStream nextPutAll: aLiteral literal.
 			resultStream nextPut: $".
 		] ifFalse: [ resultStream nextPutAll: aLiteral literal asString ]
+]
+
+{ #category : 'visiting' }
+ZagToPythonVisitor >> visitMethod: aMethod [
+	"Outputs a method to the result."
+	aMethod selector = ZagTSNode mainMethodSelector ifTrue: [ ^self outputBlockBody: aMethod body ].
+	self shouldBeImplemented.
+	
 ]
 
 { #category : 'visiting - message sends' }

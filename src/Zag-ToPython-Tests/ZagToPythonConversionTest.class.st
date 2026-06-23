@@ -94,6 +94,32 @@ ZagToPythonConversionTest >> testDatatypeConversion [
 	self assert: ast convertsTo: expected.
 ]
 
+{ #category : 'tests - full programs' }
+ZagToPythonConversionTest >> testFToC [
+	"Tests converting a Fahrenheit-to-Celsius converter to Python."
+	| ast expected |
+	ast := ASMethodNode selector: #main
+			locals: {(ASRef variable: #tempF) . (ASRef variable: #tempC)} body: {
+		ASAssign variable: (ASRef variable: #tempF) expression: (
+			ASSend target: (
+				ASSend target: (ASSend target: (ASRef variable: #UIManager) selector: #default args: #())
+					selector: #request: args: { ASLiteral literal: 'Input temp in F: ' }) selector: #asNumber).
+		ASAssign variable: (ASRef variable: #tempC) expression: (
+			ASSend target: (
+				ASSend target: (ASRef variable: #tempF) selector: #- args: { ASLiteral literal: 32 }
+			) selector: #/ args: { ASLiteral literal: 1.8 }).
+		ASCascade target: (ASRef variable: #Transcript) sends: { 
+			ASSend selector: #show: args: { ASRef variable: #tempC }.
+			ASSend selector: #cr args: #()
+		}
+	}.
+	expected := 'tempF = float(input("Input temp in F: "))
+tempC = (tempF - 32) / 1.8
+print(tempC)
+'.
+	self assert: ast convertsTo: expected.
+]
+
 { #category : 'tests - basic expressions' }
 ZagToPythonConversionTest >> testInput [
 	"Ensures the input statement can be converted to."
