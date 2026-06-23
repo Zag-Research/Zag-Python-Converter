@@ -51,6 +51,17 @@ ZagToPythonVisitor class >> pythonOperatorPrecedence [
 ]
 
 { #category : 'constants' }
+ZagToPythonVisitor class >> smalltalkToPythonDatatypeConversions [
+	"A dictionary mapping datatype conversions."
+	"Always maps 'a m1' to 'm2(a)', where m1 -> m2 is an element here"
+	^{
+		#asInteger -> #int.
+		#asNumber -> #float.
+		#asString -> #str.
+	} asDictionary
+]
+
+{ #category : 'constants' }
 ZagToPythonVisitor class >> smalltalkToPythonOperations [
 	"Returns a dictionary mapping Smalltalk operands to Python."
 	^{ 
@@ -134,6 +145,16 @@ ZagToPythonVisitor >> visitCascade: aCascade [
 	aCascade collect: [ :send | send target: aCascade target ] thenDo: [ :each | self visit: each ]
 ]
 
+{ #category : 'visiting - message sends' }
+ZagToPythonVisitor >> visitDatatypeConversion: aSend [
+	"Prints a datatype conversion to my stream."
+	| pythonSelector |
+	pythonSelector := self class smalltalkToPythonDatatypeConversions at: aSend selector.
+	resultStream nextPutAll: pythonSelector asString; nextPut: $(.
+	aSend target accept: self.
+	resultStream nextPut: $).
+]
+
 { #category : 'visiting' }
 ZagToPythonVisitor >> visitLiteral: aLiteral [
 	"Visits an ASLiteral, adding its associated Python source to my stream."
@@ -176,6 +197,8 @@ ZagToPythonVisitor >> visitSend: aSend [
 	"Prints a send operation to my stream."
 	(self class smalltalkToPythonOperations includesKey: aSend selector) ifTrue:
 		[ ^self visitOperation: aSend ].
+	(self class smalltalkToPythonDatatypeConversions includesKey: aSend selector) ifTrue:
+		[ ^self visitDatatypeConversion: aSend ].
 	(aSend selector = #at:) ifTrue:
 		[ ^self visitArrayAccess: aSend target index: aSend args first isZeroIndexed: false ].
 	(aSend selector = #zwAt:) ifTrue:

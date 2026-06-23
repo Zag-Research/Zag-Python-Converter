@@ -85,6 +85,15 @@ ZagToPythonConversionTest >> testAssociativeAddition2 [
 	self assert: ast convertsTo: expected.
 ]
 
+{ #category : 'tests - basic expressions' }
+ZagToPythonConversionTest >> testDatatypeConversion [
+	"Ensures datatype conversions can be converted."
+	| ast expected |
+	ast := ASSend target: (ASLiteral literal: 1) selector: #asString.
+	expected := 'str(1)'.
+	self assert: ast convertsTo: expected.
+]
+
 { #category : 'tests - operations' }
 ZagToPythonConversionTest >> testMultiplicationAddition [
 	"Tests converting a simple addition-multiplication expression, which requires brackets."
