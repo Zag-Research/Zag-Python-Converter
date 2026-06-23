@@ -125,7 +125,7 @@ ZagToPythonConversionTest >> testInput [
 	"Ensures the input statement can be converted to."
 	| ast expected |
 	ast := ASAssign variable: (ASRef variable: #in) expression: (
-		ASSend target: (ASSend target: UIManager selector: #default) selector: #request: args: { 
+		ASSend target: (ASSend target: (ASRef variable: #UIManager) selector: #default) selector: #request: args: { 
 			ASLiteral literal: '[input prompt]'
 		}
 	).
@@ -148,7 +148,7 @@ ZagToPythonConversionTest >> testMultiplicationAddition [
 ZagToPythonConversionTest >> testPrint [
 	"Ensures the print statement can be converted to."
 	| ast expected |
-	ast := ASCascade target: Transcript sends: { 
+	ast := ASCascade target: (ASRef variable: #Transcript) sends: { 
 		ASSend selector: #show: args: { ASRef variable: #out }.
 		ASSend selector: #cr args: nil.
 	}.
