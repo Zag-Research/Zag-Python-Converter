@@ -39,6 +39,12 @@ ZagToPythonVisitor class >> isPrint: aCascade [
 	^targetMatches & twoSends & firstMatches & secondMatches.
 ]
 
+{ #category : 'constants' }
+ZagToPythonVisitor class >> mainMethodSelector [
+	"The selector used for the main method, where non-method code is put in."
+	^#main.
+]
+
 { #category : 'testing' }
 ZagToPythonVisitor class >> needsBrackets: anObject forChild: itsChild isTarget: isTarget [
 	"Determines whether I need to place brackets around an object's child."
@@ -211,7 +217,7 @@ ZagToPythonVisitor >> visitLiteral: aLiteral [
 { #category : 'visiting' }
 ZagToPythonVisitor >> visitMethod: aMethod [
 	"Outputs a method to the result."
-	aMethod selector = ZagTSNode mainMethodSelector ifTrue: [ ^self outputBlockBody: aMethod body ].
+	aMethod selector = self class mainMethodSelector ifTrue: [ ^self outputBlockBody: aMethod body ].
 	self shouldBeImplemented.
 	
 ]
