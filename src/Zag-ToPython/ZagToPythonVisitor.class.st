@@ -174,11 +174,15 @@ ZagToPythonVisitor >> visitReturn: aReturn [
 { #category : 'visiting - message sends' }
 ZagToPythonVisitor >> visitSend: aSend [
 	"Prints a send operation to my stream."
-	{
-		[ self class smalltalkToPythonOperations includesKey: aSend selector ] -> [ self visitOperation: aSend ].
-		[ aSend selector = #at: ] -> [ self visitArrayAccess: aSend target index: aSend args first isZeroIndexed: false ].
-		[ aSend selector = #zwAt: ] -> [ self visitArrayAccess: aSend target index: aSend args first isZeroIndexed: true ].
-		[ aSend selector = #at:put: ] -> [ self visitArraySet: aSend target index: aSend args first value: aSend args last isZeroIndexed: false ].
-		[ aSend selector = #zwAt:put: ] -> [ self visitArraySet: aSend target index: aSend args first value: aSend args last isZeroIndexed: true ].
-	} switch.
+	(self class smalltalkToPythonOperations includesKey: aSend selector) ifTrue:
+		[ ^self visitOperation: aSend ].
+	(aSend selector = #at:) ifTrue:
+		[ ^self visitArrayAccess: aSend target index: aSend args first isZeroIndexed: false ].
+	(aSend selector = #zwAt:) ifTrue:
+		[ ^self visitArrayAccess: aSend target index: aSend args first isZeroIndexed: true ].
+	(aSend selector = #at:put:) ifTrue:
+		[ ^self visitArraySet: aSend target index: aSend args first value: aSend args last isZeroIndexed: false ].
+	(aSend selector = #zwAt:put:) ifTrue:
+		[ ^self visitArraySet: aSend target index: aSend args first value: aSend args last isZeroIndexed: true ].
+	self error: 'Unrecognized selector'
 ]
