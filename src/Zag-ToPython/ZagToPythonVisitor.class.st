@@ -19,6 +19,16 @@ ZagToPythonVisitor class >> astToPythonSource: anAST [
 ]
 
 { #category : 'testing' }
+ZagToPythonVisitor class >> isInput: aSend [
+	"Tests if a send should be translated to an input() statement."
+	| targetValid |
+	aSend isASSend ifFalse: [ ^false ].
+	targetValid := aSend target isASSend and: [ aSend target target = UIManager and:
+			[ aSend target selector = #default ] ].
+	^targetValid and: [ aSend selector = #request: ].
+]
+
+{ #category : 'testing' }
 ZagToPythonVisitor class >> needsBrackets: anObject forChild: itsChild isTarget: isTarget [
 	"Determines whether I need to place brackets around an object's child."
 	| parentPrecedence childPrecedence |
@@ -87,6 +97,18 @@ ZagToPythonVisitor class >> smalltalkToPythonOperations [
 	} asDictionary.
 ]
 
+{ #category : 'visiting - message sends' }
+ZagToPythonVisitor >> outputCall: selector args: args [
+	"Prints a function call to my stream."
+	resultStream nextPutAll: selector asString; nextPut: $(.
+	args first accept: self.
+	args allButFirstDo: [ :arg |
+		resultStream nextPutAll: ', '.
+		arg accept: self.
+	].
+	resultStream nextPut: $).
+]
+
 { #category : 'accessing' }
 ZagToPythonVisitor >> resultStream [
 	"Gets my result stream."
@@ -142,7 +164,7 @@ ZagToPythonVisitor >> visitAssign: anAssign [
 { #category : 'visiting' }
 ZagToPythonVisitor >> visitCascade: aCascade [
 	"Visits an ASCascade, adding its associated Python source to my stream."
-	aCascade collect: [ :send | send target: aCascade target ] thenDo: [ :each | self visit: each ]
+	aCascade sends collect: [ :send | send target: aCascade target ] thenDo: [ :each | self visit: each ]
 ]
 
 { #category : 'visiting - message sends' }
@@ -150,9 +172,7 @@ ZagToPythonVisitor >> visitDatatypeConversion: aSend [
 	"Prints a datatype conversion to my stream."
 	| pythonSelector |
 	pythonSelector := self class smalltalkToPythonDatatypeConversions at: aSend selector.
-	resultStream nextPutAll: pythonSelector asString; nextPut: $(.
-	aSend target accept: self.
-	resultStream nextPut: $).
+	self outputCall: pythonSelector args: { aSend target }.
 ]
 
 { #category : 'visiting' }
@@ -199,6 +219,7 @@ ZagToPythonVisitor >> visitSend: aSend [
 		[ ^self visitOperation: aSend ].
 	(self class smalltalkToPythonDatatypeConversions includesKey: aSend selector) ifTrue:
 		[ ^self visitDatatypeConversion: aSend ].
+	(self class isInput: aSend) ifTrue: [ ^self outputCall: #input args: { aSend args first } ].
 	(aSend selector = #at:) ifTrue:
 		[ ^self visitArrayAccess: aSend target index: aSend args first isZeroIndexed: false ].
 	(aSend selector = #zwAt:) ifTrue:

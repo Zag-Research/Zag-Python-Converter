@@ -94,6 +94,19 @@ ZagToPythonConversionTest >> testDatatypeConversion [
 	self assert: ast convertsTo: expected.
 ]
 
+{ #category : 'tests - basic expressions' }
+ZagToPythonConversionTest >> testInput [
+	"Ensures the input statement can be converted to."
+	| ast expected |
+	ast := ASAssign variable: (ASRef variable: #in) expression: (
+		ASSend target: (ASSend target: UIManager selector: #default) selector: #request: args: { 
+			ASLiteral literal: '[input prompt]'
+		}
+	).
+	expected := 'in = input("[input prompt]")'.
+	self assert: ast convertsTo: expected.
+]
+
 { #category : 'tests - operations' }
 ZagToPythonConversionTest >> testMultiplicationAddition [
 	"Tests converting a simple addition-multiplication expression, which requires brackets."
