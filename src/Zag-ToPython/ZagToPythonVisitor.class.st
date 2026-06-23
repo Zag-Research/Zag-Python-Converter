@@ -29,6 +29,17 @@ ZagToPythonVisitor class >> isInput: aSend [
 ]
 
 { #category : 'testing' }
+ZagToPythonVisitor class >> isPrint: aCascade [
+	"Tests if an ASCascade should be translated to a print statement."
+	| targetMatches twoSends firstMatches secondMatches |
+	targetMatches := aCascade target = Transcript.
+	twoSends := aCascade sends size = 2.
+	firstMatches := aCascade sends first selector = #show:.
+	secondMatches := aCascade sends last selector = #cr.
+	^targetMatches & twoSends & firstMatches & secondMatches.
+]
+
+{ #category : 'testing' }
 ZagToPythonVisitor class >> needsBrackets: anObject forChild: itsChild isTarget: isTarget [
 	"Determines whether I need to place brackets around an object's child."
 	| parentPrecedence childPrecedence |
@@ -161,9 +172,10 @@ ZagToPythonVisitor >> visitAssign: anAssign [
 	self visit: anAssign expression.
 ]
 
-{ #category : 'visiting' }
+{ #category : 'visiting - message sends' }
 ZagToPythonVisitor >> visitCascade: aCascade [
 	"Visits an ASCascade, adding its associated Python source to my stream."
+	(self class isPrint: aCascade) ifTrue: [ ^self outputCall: #print args: { aCascade sends first args first } ].
 	aCascade sends collect: [ :send | send target: aCascade target ] thenDo: [ :each | self visit: each ]
 ]
 

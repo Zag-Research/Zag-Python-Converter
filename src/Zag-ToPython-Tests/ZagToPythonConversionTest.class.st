@@ -119,6 +119,18 @@ ZagToPythonConversionTest >> testMultiplicationAddition [
 ]
 
 { #category : 'tests - basic expressions' }
+ZagToPythonConversionTest >> testPrint [
+	"Ensures the print statement can be converted to."
+	| ast expected |
+	ast := ASCascade target: Transcript sends: { 
+		ASSend selector: #show: args: { ASRef variable: #out }.
+		ASSend selector: #cr args: nil.
+	}.
+	expected := 'print(out)'.
+	self assert: ast convertsTo: expected.
+]
+
+{ #category : 'tests - basic expressions' }
 ZagToPythonConversionTest >> testStringLiteral [
 	"Test that string literals convert properly."
 	| ast expected |
