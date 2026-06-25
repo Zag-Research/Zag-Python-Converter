@@ -136,18 +136,6 @@ ZagToPythonVisitor >> indentLevel: anInteger [
 	indentLevel := anInteger.
 ]
 
-{ #category : 'visiting' }
-ZagToPythonVisitor >> outputBlockBody: statements [
-	"Outputs a bunch of statements."
-	statements do: [ :statement |
-		self indentLevel timesRepeat: [
-			resultStream nextPut: Character tab.
-		].
-		statement accept: self.
-		resultStream nextPut: Character cr.
-	]
-]
-
 { #category : 'visiting - message sends' }
 ZagToPythonVisitor >> outputCall: selector args: args [
 	"Prints a function call to my stream."
@@ -241,7 +229,9 @@ ZagToPythonVisitor >> visitLiteral: aLiteral [
 { #category : 'visiting' }
 ZagToPythonVisitor >> visitMethod: aMethod [
 	"Outputs a method to the result."
-	aMethod selector = self class mainMethodSelector ifTrue: [ ^self outputBlockBody: aMethod body ].
+	aMethod selector = self class mainMethodSelector ifTrue: [
+		^aMethod body do: [ :statement | self visitStatement: statement ]
+	].
 	self shouldBeImplemented.
 	
 ]
@@ -289,4 +279,14 @@ ZagToPythonVisitor >> visitSend: aSend [
 	(aSend selector = #zwAt:put:) ifTrue:
 		[ ^self visitArraySet: aSend target index: aSend args first value: aSend args last isZeroIndexed: true ].
 	self error: 'Unrecognized selector'
+]
+
+{ #category : 'visiting' }
+ZagToPythonVisitor >> visitStatement: aStatement [
+	"Outputs a statement, calling its accept: method.  Also indents & adds newlines."
+	self indentLevel timesRepeat: [
+			resultStream nextPut: Character tab.
+	].
+	aStatement accept: self.
+	resultStream nextPut: Character cr.
 ]
