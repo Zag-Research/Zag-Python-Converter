@@ -5,7 +5,8 @@ Class {
 	#name : 'ZagToPythonVisitor',
 	#superclass : 'Object',
 	#instVars : [
-		'resultStream'
+		'resultStream',
+		'indentLevel'
 	],
 	#category : 'Zag-ToPython-Converter',
 	#package : 'Zag-ToPython',
@@ -115,10 +116,33 @@ ZagToPythonVisitor class >> smalltalkToPythonOperations [
 	} asDictionary.
 ]
 
+{ #category : 'setting' }
+ZagToPythonVisitor >> addIndent: anInteger [
+	"Changes my indent level by the amount provided."
+	"The argument can be a negative integer to reduce indent."
+	indentLevel := indentLevel + anInteger.
+]
+
+{ #category : 'accessing' }
+ZagToPythonVisitor >> indentLevel [
+	"The current indent level for my outputted Python code."
+	"A non-negative integer referring to the number of tab characters I will output before each line."
+	^indentLevel
+]
+
+{ #category : 'setting' }
+ZagToPythonVisitor >> indentLevel: anInteger [
+	"Sets my current indent level."
+	indentLevel := anInteger.
+]
+
 { #category : 'visiting' }
 ZagToPythonVisitor >> outputBlockBody: statements [
 	"Outputs a bunch of statements."
 	statements do: [ :statement |
+		self indentLevel timesRepeat: [
+			resultStream nextPut: Character tab.
+		].
 		statement accept: self.
 		resultStream nextPut: Character cr.
 	]

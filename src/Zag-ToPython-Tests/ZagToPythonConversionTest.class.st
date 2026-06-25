@@ -120,6 +120,17 @@ print(tempC)
 	self assert: ast convertsTo: expected.
 ]
 
+{ #category : 'tests' }
+ZagToPythonConversionTest >> testIndent [
+	"Tests that indents can be set."
+	| ast expected actual |
+	ast := ASMethodNode selector: #main locals: { ASRef variable: #x } body: { ASRef variable: #x }.
+	actual := String streamContents: [ :stream | ZagToPythonVisitor new resultStream: stream; indentLevel: 1; visit: ast ].
+	expected := '	x
+'.
+	self assert: actual equals: expected.
+]
+
 { #category : 'tests - basic expressions' }
 ZagToPythonConversionTest >> testInput [
 	"Ensures the input statement can be converted to."
