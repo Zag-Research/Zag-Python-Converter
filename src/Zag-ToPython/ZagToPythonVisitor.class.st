@@ -148,6 +148,30 @@ ZagToPythonVisitor >> outputCall: selector args: args [
 	resultStream nextPut: $).
 ]
 
+{ #category : 'visiting - message sends' }
+ZagToPythonVisitor >> outputIfElse: switchASTMap [
+	"Outputs an if/else statement based on the provided AST."
+	"It should be a collection made of associations, as in Zag-FromPython's switch statement."
+	"Use the literal true (not an ASLiteral) as the key to specify the else statement."
+	| isFirst |
+	isFirst := true.
+	switchASTMap do: [ :part |
+		part key == true "== true used because part key is usually not a boolean"
+			ifTrue: [ self resultStream nextPutAll: 'else:
+' ]
+			ifFalse: [
+				self resultStream nextPutAll: (isFirst ifTrue: ['if '] ifFalse: ['elif ']).
+				part key accept: self.
+				self resultStream nextPutAll: ':
+'
+			].
+		self addIndent: 1.
+		part value body do: [ :statement | self visitStatement: statement ].
+		self addIndent: -1.
+		isFirst := false.
+	].
+]
+
 { #category : 'accessing' }
 ZagToPythonVisitor >> resultStream [
 	"Gets my result stream."

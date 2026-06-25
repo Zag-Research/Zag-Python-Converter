@@ -15,3 +15,10 @@ ManifestZagToPython class >> ruleBadMessageRule2V1FalsePositive [
 	<ignoreForCoverage>
 	^ #(#(#(#RGMetaclassDefinition #(#'ZagToPythonVisitor class' #ZagToPythonVisitor)) #'2026-06-19T15:11:37.535-05:00') )
 ]
+
+{ #category : 'code-critics' }
+ManifestZagToPython class >> ruleEqualsTrueRuleV1FalsePositive [
+
+	<ignoreForCoverage>
+	^ #(#(#(#RGMethodDefinition #(#ZagToPythonVisitor #outputIfElse: #false)) #'2026-06-25T17:39:20.865-05:00') )
+]
