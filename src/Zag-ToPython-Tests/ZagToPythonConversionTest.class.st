@@ -11,7 +11,7 @@ ZagToPythonConversionTest >> assert: ast convertsTo: source [
 	"Assert the provided Zag AST converts to the provided Python source."
 	| actual |
 	actual := ZagToPythonVisitor astToPythonSource: ast.
-	self assert: source equals: actual.
+	self assert: actual equals: source.
 ]
 
 { #category : 'tests - operations' }
@@ -241,6 +241,16 @@ ZagToPythonConversionTest >> testMultiplicationAddition [
 	self assert: ast convertsTo: expected.
 ]
 
+{ #category : 'tests - operations' }
+ZagToPythonConversionTest >> testNegatedAddition [
+	"Tests converting a simple addition expression, with a negated argument."
+	| ast expected |
+	ast := ASSend target: (ASRef variable: #x) selector: #+ args: {
+		ASSend target: (ASRef variable: #y) selector: #negated args: #() }.
+	expected := 'x + -y'.
+	self assert: ast convertsTo: expected.
+]
+
 { #category : 'tests - basic expressions' }
 ZagToPythonConversionTest >> testPrint [
 	"Ensures the print statement can be converted to."
@@ -333,7 +343,6 @@ ZagToPythonConversionTest >> testTripleSubtraction2 [
 ZagToPythonConversionTest >> testWhileFalse [
 	"Test converting a while loop."
 	| ast expected |
-	^nil.
 	ast := ASSend target: (
 		ASBlockNode locals: #() body: {
 			ASSend target: (ASRef variable: #x) selector: #< args: { ASLiteral literal: 0 }
