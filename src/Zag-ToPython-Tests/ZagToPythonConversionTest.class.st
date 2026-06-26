@@ -329,6 +329,27 @@ ZagToPythonConversionTest >> testTripleSubtraction2 [
 	self assert: ast convertsTo: expected.
 ]
 
+{ #category : 'tests - control flow' }
+ZagToPythonConversionTest >> testWhile [
+	"Test converting a while loop."
+	| ast expected |
+	ast := ASSend target: (
+		ASBlockNode locals: #() body: {
+			ASSend target: (ASRef variable: #x) selector: #> args: { ASLiteral literal: 0 }
+		}
+	) selector: #whileTrue: args: {
+		ASBlockNode locals: #() body: {
+			ASAssign variable: (ASRef variable: #x) expression: (
+				ASSend target: (ASRef variable: #x) selector: #- args: { ASLiteral literal: 1 }
+			)
+		}
+	}.
+	expected := 'while x > 0:
+	x = x - 1
+'. "TODO update this once I add augmented assigns"
+	self assert: ast convertsTo: expected.
+]
+
 { #category : 'tests - arrays' }
 ZagToPythonConversionTest >> testZWArrayAccess [
 	"Test converting accessing an array element using zwAt:."

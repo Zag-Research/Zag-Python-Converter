@@ -343,6 +343,7 @@ ZagToPythonVisitor >> visitSend: aSend [
 	(#(#ifTrue: #ifFalse: #ifFalse:ifTrue: #ifTrue:ifFalse: #switch) includes: aSend selector) ifTrue:
 		[ ^self visitIfElse: aSend ].
 	(aSend selector = #do:) ifTrue: [ ^self visitForEach: aSend ].
+	(aSend selector = #whileTrue:) ifTrue: [ ^self visitWhile: aSend ].
 	self error: 'Unrecognized selector'
 ]
 
@@ -360,6 +361,19 @@ ZagToPythonVisitor >> visitStatements: aCollectionOrNil [
 			statements do: [ :each |
 				self withIndentAndNewline: [ each accept: self ]
 		] ].
+]
+
+{ #category : 'visiting - message sends' }
+ZagToPythonVisitor >> visitWhile: aSend [
+	"Translate a while loop to Python."
+	aSend target isASBlock ifFalse: [ self error: 'While condition must be a block.' ].
+	aSend target body size = 1 ifFalse: [ self notYetImplemented ].
+	self resultStream nextPutAll: 'while '.
+	aSend target body first accept: self.
+	self resultStream nextPut: $:; nextPut: Character cr.
+	self addIndent: 1.
+	self visitStatements: aSend args first.
+	self addIndent: -1.
 ]
 
 { #category : 'visiting' }
