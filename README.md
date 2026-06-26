@@ -20,9 +20,15 @@ To convert Python code to a Zag AST:
 ZagTSNode pythonToZagAST: '[PYTHON CODE]'
 ```
 
+To convert a Zag AST to Python:
+```
+myZagAST asPythonSource
+```
+
 ## Dependencies
 
-- [Tree Sitter](https://tree-sitter.github.io/tree-sitter/), Pharo Smalltalk version
+- [Tree Sitter](https://tree-sitter.github.io/tree-sitter/), Pharo Smalltalk version, for Python→Zag parsing
+- [Zag Smalltalk](https://github.com/Zag-Research/Zag-Smalltalk)
 
 ## Extension Messages
 
