@@ -127,7 +127,11 @@ ZagToPythonVisitor class >> smalltalkToPythonBinaryOperations [
 		#= -> #==.
 		#~= -> #!=.
 		#== -> #is.
-		#~~ -> #'is not'
+		#~~ -> #'is not'.
+		#and: -> #and.
+		#pythonAnd: -> #and.
+		#or: -> #or.
+		#pythonOr: -> #or.
 	} asDictionary.
 ]
 
@@ -147,6 +151,7 @@ ZagToPythonVisitor class >> smalltalkToPythonUnaryOperations [
 	"Returns a dictionary mapping unary Smalltalk operands to Python."
 	^{ 
 		#not -> #not.
+		#pythonNot -> #not.
 		#negated -> #-.
 		#bitInvert -> #~.
 	} asDictionary.
