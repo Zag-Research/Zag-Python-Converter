@@ -29,3 +29,10 @@ ManifestZagToPython class >> ruleLongMethodsRuleV1FalsePositive [
 	<ignoreForCoverage>
 	^ #(#(#(#RGMethodDefinition #(#ZagToPythonVisitor #visitSend: #false)) #'2026-06-26T10:22:02.716-05:00') )
 ]
+
+{ #category : 'code-critics' }
+ManifestZagToPython class >> ruleReCyclomaticComplexityRuleV1FalsePositive [
+
+	<ignoreForCoverage>
+	^ #(#(#(#RGMethodDefinition #(#ZagToPythonVisitor #visitSend: #false)) #'2026-06-26T10:45:51.904-05:00') )
+]

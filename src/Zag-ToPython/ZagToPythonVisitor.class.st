@@ -53,8 +53,8 @@ ZagToPythonVisitor class >> needsBrackets: anObject forChild: itsChild isTarget:
 	(itsChild isKindOf: ASStatement) ifFalse: [ ^true ].
 	itsChild isASLiteral ifTrue: [ ^false ].
 	itsChild isASRef ifTrue: [ ^false ].
-	parentPrecedence := self pythonOperatorPrecedence at: anObject selector.
-	childPrecedence := self pythonOperatorPrecedence at: itsChild selector.
+	parentPrecedence := self pythonBinaryOperatorPrecedence at: anObject selector.
+	childPrecedence := self pythonBinaryOperatorPrecedence at: itsChild selector.
 	^isTarget
 		ifTrue: [ parentPrecedence > childPrecedence ]
 		ifFalse: [ parentPrecedence >= childPrecedence ].
@@ -66,7 +66,7 @@ ZagToPythonVisitor class >> new [
 ]
 
 { #category : 'constants' }
-ZagToPythonVisitor class >> pythonOperatorPrecedence [
+ZagToPythonVisitor class >> pythonBinaryOperatorPrecedence [
 	"A dictionary mapping binary Python operators to their precedence."
 	"source: https://www.w3schools.com/python/python_operators_precedence.asp"
 	^{
@@ -230,6 +230,19 @@ ZagToPythonVisitor >> visitAssign: anAssign [
 ]
 
 { #category : 'visiting - message sends' }
+ZagToPythonVisitor >> visitBinaryOperation: aSend [
+	"Like visitSend, but the selector is in smalltalkToPythonOperations."
+	self visit: aSend target withBrackets: (
+		self class needsBrackets: aSend forChild: aSend target isTarget: true).
+	resultStream nextPut: Character space.
+	resultStream nextPutAll: (self class smalltalkToPythonOperations at: aSend selector).
+	resultStream nextPut: Character space.
+	self visit: aSend args first withBrackets: (
+		self class needsBrackets: aSend forChild: aSend args first isTarget: false).
+	
+]
+
+{ #category : 'visiting - message sends' }
 ZagToPythonVisitor >> visitCascade: aCascade [
 	"Visits an ASCascade, adding its associated Python source to my stream."
 	(self class isPrint: aCascade) ifTrue: [ ^self outputCall: #print args: { aCascade sends first args first } ].
@@ -298,19 +311,6 @@ ZagToPythonVisitor >> visitMethod: aMethod [
 	
 ]
 
-{ #category : 'visiting - message sends' }
-ZagToPythonVisitor >> visitOperation: aSend [
-	"Like visitSend, but the selector is in smalltalkToPythonOperations."
-	self visit: aSend target withBrackets: (
-		self class needsBrackets: aSend forChild: aSend target isTarget: true).
-	resultStream nextPut: Character space.
-	resultStream nextPutAll: (self class smalltalkToPythonOperations at: aSend selector).
-	resultStream nextPut: Character space.
-	self visit: aSend args first withBrackets: (
-		self class needsBrackets: aSend forChild: aSend args first isTarget: false).
-	
-]
-
 { #category : 'visiting' }
 ZagToPythonVisitor >> visitRef: aRef [
 	"Visits an ASRef, adding its associated Python source to my stream."
@@ -328,7 +328,7 @@ ZagToPythonVisitor >> visitReturn: aReturn [
 ZagToPythonVisitor >> visitSend: aSend [
 	"Prints a send operation to my stream."
 	(self class smalltalkToPythonOperations includesKey: aSend selector) ifTrue:
-		[ ^self visitOperation: aSend ].
+		[ ^self visitBinaryOperation: aSend ].
 	(self class smalltalkToPythonDatatypeConversions includesKey: aSend selector) ifTrue:
 		[ ^self visitDatatypeConversion: aSend ].
 	(self class isInput: aSend) ifTrue: [ ^self outputCall: #input args: { aSend args first } ].
@@ -344,6 +344,8 @@ ZagToPythonVisitor >> visitSend: aSend [
 		[ ^self visitIfElse: aSend ].
 	(aSend selector = #do:) ifTrue: [ ^self visitForEach: aSend ].
 	(aSend selector = #whileTrue:) ifTrue: [ ^self visitWhile: aSend ].
+	(aSend selector = #whileFalse:) ifTrue: [ ^self visitWhile: (
+		ASSend target: aSend target negateLastStatement selector: aSend selector args: aSend args) ].
 	self error: 'Unrecognized selector'
 ]
 
