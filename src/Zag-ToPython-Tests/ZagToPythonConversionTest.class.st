@@ -138,6 +138,24 @@ print(tempC)
 ]
 
 { #category : 'tests - control flow' }
+ZagToPythonConversionTest >> testForEach [
+	"Tests converting a basic for-each loop."
+	| ast expected |
+	ast := ASSend target: (ASRef variable: #c) selector: #do: args: {
+		ASBlockNode arguments: { ASRef variable: #each } locals: #() body: {
+			ASCascade target: (ASRef variable: #Transcript) sends: {
+				ASSend selector: #show: args: { ASRef variable: #each }.
+				ASSend selector: #cr args: #(). 
+			}
+		}
+	}.
+	expected := 'for each in c:
+	print(each)
+'.
+	self assert: ast convertsTo: expected.
+]
+
+{ #category : 'tests - control flow' }
 ZagToPythonConversionTest >> testIf [
 	"Tests that an ifTrue: statement can be converted to if/else."
 	| ast expected |

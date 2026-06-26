@@ -245,6 +245,19 @@ ZagToPythonVisitor >> visitDatatypeConversion: aSend [
 ]
 
 { #category : 'visiting - message sends' }
+ZagToPythonVisitor >> visitForEach: aSend [
+	"Visits and outputs a do: send as a for-in loop."
+	self resultStream nextPutAll: 'for '.
+	self visitRef: aSend args first arguments first.
+	self resultStream nextPutAll: ' in '.
+	aSend target accept: self.
+	self resultStream nextPut: $:; nextPut: Character cr.
+	self addIndent: 1.
+	self visitStatements: aSend args first.
+	self addIndent: -1.
+]
+
+{ #category : 'visiting - message sends' }
 ZagToPythonVisitor >> visitIfElse: aSend [
 	"Prepares aSend for outputFormattedIfElse: and outputs it."
 	aSend selector = #ifTrue: ifTrue: [ ^self outputFormattedIfElse: { aSend target -> aSend args first } ].
@@ -329,6 +342,7 @@ ZagToPythonVisitor >> visitSend: aSend [
 		[ ^self visitArraySet: aSend target index: aSend args first value: aSend args last isZeroIndexed: true ].
 	(#(#ifTrue: #ifFalse: #ifFalse:ifTrue: #ifTrue:ifFalse: #switch) includes: aSend selector) ifTrue:
 		[ ^self visitIfElse: aSend ].
+	(aSend selector = #do:) ifTrue: [ ^self visitForEach: aSend ].
 	self error: 'Unrecognized selector'
 ]
 
