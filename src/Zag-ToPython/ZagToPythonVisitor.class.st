@@ -268,13 +268,17 @@ ZagToPythonVisitor >> visitAssign: anAssign [
 { #category : 'visiting - message sends' }
 ZagToPythonVisitor >> visitBinaryOperation: aSend [
 	"Like visitSend, but the selector is in smalltalkToPythonBinaryOperations."
+	| arg |
 	self visit: aSend target withBrackets: (
 		self class needsBrackets: aSend forChild: aSend target isTarget: true).
 	resultStream nextPut: Character space.
 	resultStream nextPutAll: (self class smalltalkToPythonBinaryOperations at: aSend selector).
 	resultStream nextPut: Character space.
-	self visit: aSend args first withBrackets: (
-		self class needsBrackets: aSend forChild: aSend args first isTarget: false).
+	arg := aSend args first isASBlock
+		ifTrue: [ aSend args first body last ]
+		ifFalse: [ aSend args first ].
+	self visit: arg withBrackets: (
+		self class needsBrackets: aSend forChild: arg isTarget: false).
 	
 ]
 

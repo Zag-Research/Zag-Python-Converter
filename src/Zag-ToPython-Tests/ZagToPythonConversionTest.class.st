@@ -155,6 +155,44 @@ ZagToPythonConversionTest >> testForEach [
 	self assert: ast convertsTo: expected.
 ]
 
+{ #category : 'tests - full programs' }
+ZagToPythonConversionTest >> testGuessingGame [
+	"Tests converting a simple guessing game program."
+	"This is only partially implemented so far."
+	| ast expected |
+	ast := ASMethodNode selector: #main arguments: #() locals: {
+		ASRef variable: #secret. ASRef variable: #guess. ASRef variable: #guesses
+	} body: {
+		ASAssign variable: (ASRef variable: #secret) expression: (ASLiteral literal: 42).
+		ASAssign variable: (ASRef variable: #guess) expression: (ASSend target: (ASLiteral literal: 1) selector: #negated args: #()).
+		ASAssign variable: (ASRef variable: #guesses) expression: (ASLiteral literal: 7).
+		ASSend target: ( ASBlockNode arguments: #() locals: #() body: {
+			ASSend target: (
+				ASSend target: (ASRef variable: #guess) selector: #~= args: { ASRef variable: #secret }
+			) selector: #pythonAnd: args: { ASBlockNode arguments: #() locals: #() body: {
+				ASSend target: (ASRef variable: #guesses) selector: #> args: { ASLiteral literal: 0 }
+			}}
+		}) selector: #whileTrue: args: { ASBlockNode arguments: #() locals: #() body: {
+			ASAssign variable: (ASRef variable: #guess) expression: (
+				ASSend target: (
+					ASSend target: (ASSend target: (ASRef variable: #UIManager) selector: #default args: #())
+						selector: #request: args: { ASLiteral literal: 'Enter guess: ' }) selector: #asInteger).
+			ASAssign variable: (ASRef variable: #guesses) expression: (
+				ASSend target: (ASRef variable: #guesses) selector: #- args: { ASLiteral literal: 1 }
+			)
+		}}
+	}.
+	expected := 'secret = 42
+guess = -1
+guesses = 7
+while guess != secret and guesses > 0:
+	guess = int(input("Enter guess: "))
+	guesses = guesses - 1
+
+'.
+	self assert: ast convertsTo: expected.
+]
+
 { #category : 'tests - control flow' }
 ZagToPythonConversionTest >> testIf [
 	"Tests that an ifTrue: statement can be converted to if/else."
