@@ -24,7 +24,7 @@ ZagToPythonVisitor class >> isInput: aSend [
 	"Tests if a send should be translated to an input() statement."
 	| targetValid |
 	aSend isASSend ifFalse: [ ^false ].
-	targetValid := aSend target isASSend and: [ aSend target target = (ASRef variable: #UIManager) and:
+	targetValid := (aSend target isKindOf: ASSend) and: [ aSend target target = (ASRef variable: #UIManager) and:
 			[ aSend target selector = #default ] ].
 	^targetValid and: [ aSend selector = #request: ].
 ]
@@ -154,14 +154,14 @@ ZagToPythonVisitor >> outputCall: selector args: args [
 ]
 
 { #category : 'visiting - message sends' }
-ZagToPythonVisitor >> outputIfElse: switchASTMap [
+ZagToPythonVisitor >> outputFormattedIfElse: switchASTMap [
 	"Outputs an if/else statement based on the provided AST."
 	"It should be a collection made of associations, as in Zag-FromPython's switch statement."
 	"Use the literal true (not an ASLiteral) as the key to specify the else statement."
 	| isFirst |
 	isFirst := true.
 	switchASTMap do: [ :part |
-		part key == true "== true used because part key is usually not a boolean"
+		(part key == true or: [ part key = (ASLiteral literal: true)]) "== true used because part key is usually not a boolean"
 			ifTrue: [ self resultStream nextPutAll: 'else:
 ' ]
 			ifFalse: [
@@ -171,7 +171,7 @@ ZagToPythonVisitor >> outputIfElse: switchASTMap [
 '
 			].
 		self addIndent: 1.
-		self visitStatements: part value body.
+		self visitStatements: part value.
 		self addIndent: -1.
 		isFirst := false.
 	].
@@ -244,6 +244,26 @@ ZagToPythonVisitor >> visitDatatypeConversion: aSend [
 	self outputCall: pythonSelector args: { aSend target }.
 ]
 
+{ #category : 'visiting - message sends' }
+ZagToPythonVisitor >> visitIfElse: aSend [
+	"Prepares aSend for outputFormattedIfElse: and outputs it."
+	aSend selector = #ifTrue: ifTrue: [ ^self outputFormattedIfElse: { aSend target -> aSend args first } ].
+	aSend selector = #ifFalse: ifTrue: [ ^self outputFormattedIfElse: {
+		aSend target -> nil. true -> aSend args first.
+	} ].
+	aSend selector = #ifFalse:ifTrue: ifTrue: [ ^self outputFormattedIfElse: { 
+		aSend target -> aSend args last. true -> aSend args first.
+	} ].
+	aSend selector = #ifTrue:ifFalse: ifTrue: [ ^self outputFormattedIfElse: { 
+		aSend target -> aSend args first. true -> aSend args last.
+	} ].
+	aSend selector = #switch ifTrue: [ ^self outputFormattedIfElse: (
+		aSend target statements collect: [ :each | each selector = #->
+			ifTrue: [ each target -> each args first ]
+			ifFalse: [ self error: 'Invalid selector for switch statement part.' ] ]
+	) ].
+]
+
 { #category : 'visiting' }
 ZagToPythonVisitor >> visitLiteral: aLiteral [
 	"Visits an ASLiteral, adding its associated Python source to my stream."
@@ -259,7 +279,7 @@ ZagToPythonVisitor >> visitLiteral: aLiteral [
 ZagToPythonVisitor >> visitMethod: aMethod [
 	"Outputs a method to the result."
 	aMethod selector = self class mainMethodSelector ifTrue: [
-		^self visitStatements: aMethod body
+		^self visitStatements: aMethod
 	].
 	self shouldBeImplemented.
 	
@@ -307,6 +327,8 @@ ZagToPythonVisitor >> visitSend: aSend [
 		[ ^self visitArraySet: aSend target index: aSend args first value: aSend args last isZeroIndexed: false ].
 	(aSend selector = #zwAt:put:) ifTrue:
 		[ ^self visitArraySet: aSend target index: aSend args first value: aSend args last isZeroIndexed: true ].
+	(#(#ifTrue: #ifFalse: #ifFalse:ifTrue: #ifTrue:ifFalse: #switch) includes: aSend selector) ifTrue:
+		[ ^self visitIfElse: aSend ].
 	self error: 'Unrecognized selector'
 ]
 
@@ -314,9 +336,14 @@ ZagToPythonVisitor >> visitSend: aSend [
 ZagToPythonVisitor >> visitStatements: aCollectionOrNil [
 	"Outputs the statements in aCollection, calling their accept: method."
 	"The argument can be nil, in which case 'pass' will be outputted."
+	"The argument can also be a method/block node, in which its body will be visited."
 	aCollectionOrNil
 		ifNil: [ self withIndentAndNewline: [ self resultStream nextPutAll: 'pass' ] ]
-		ifNotNil: [ aCollectionOrNil do: [ :each |
+		ifNotNil: [ | statements |
+			statements := (aCollectionOrNil respondsTo: #body)
+				ifTrue: [ aCollectionOrNil body ]
+				ifFalse: [ aCollectionOrNil ].
+			statements do: [ :each |
 				self withIndentAndNewline: [ each accept: self ]
 		] ].
 ]

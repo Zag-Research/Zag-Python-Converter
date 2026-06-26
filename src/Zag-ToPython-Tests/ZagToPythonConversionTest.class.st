@@ -94,6 +94,23 @@ ZagToPythonConversionTest >> testDatatypeConversion [
 	self assert: ast convertsTo: expected.
 ]
 
+{ #category : 'tests - control flow' }
+ZagToPythonConversionTest >> testElse [
+	"Tests that an ifFalse: statement can be converted to if/else."
+	| ast expected |
+	ast := ASSend target: (
+		ASSend target: (ASRef variable: #x) selector: #> args: { ASRef variable: #y }
+	) selector: #ifFalse: args: {
+		ASBlockNode locals: #() body: { ASReturn expression: (ASLiteral literal: -1) } 
+	}.
+	expected := 'if x > y:
+	pass
+else:
+	return -1
+'.
+	self assert: ast convertsTo: expected.
+]
+
 { #category : 'tests - full programs' }
 ZagToPythonConversionTest >> testFToC [
 	"Tests converting a Fahrenheit-to-Celsius converter to Python."
@@ -116,6 +133,57 @@ ZagToPythonConversionTest >> testFToC [
 	expected := 'tempF = float(input("Input temp in F: "))
 tempC = (tempF - 32) / 1.8
 print(tempC)
+'.
+	self assert: ast convertsTo: expected.
+]
+
+{ #category : 'tests - control flow' }
+ZagToPythonConversionTest >> testIf [
+	"Tests that an ifTrue: statement can be converted to if/else."
+	| ast expected |
+	ast := ASSend target: (
+		ASSend target: (ASRef variable: #x) selector: #> args: { ASRef variable: #y }
+	) selector: #ifTrue: args: {
+		ASBlockNode locals: #() body: { ASReturn expression: (ASLiteral literal: 1) } 
+	}.
+	expected := 'if x > y:
+	return 1
+'.
+	self assert: ast convertsTo: expected.
+]
+
+{ #category : 'tests - control flow' }
+ZagToPythonConversionTest >> testIfElse [
+	"Tests that an ifTrue:ifFalse: statement can be converted to if/else."
+	| ast expected |
+	ast := ASSend target: (
+		ASSend target: (ASRef variable: #x) selector: #> args: { ASRef variable: #y }
+	) selector: #ifTrue:ifFalse: args: {
+		ASBlockNode locals: #() body: { ASReturn expression: (ASLiteral literal: 1) }.
+		ASBlockNode locals: #() body: { ASReturn expression: (ASLiteral literal: -1) } 
+	}.
+	expected := 'if x > y:
+	return 1
+else:
+	return -1
+'.
+	self assert: ast convertsTo: expected.
+]
+
+{ #category : 'tests - control flow' }
+ZagToPythonConversionTest >> testIfElseReversed [
+	"Tests that an ifFalse:ifTrue: statement can be converted to if/else."
+	| ast expected |
+	ast := ASSend target: (
+		ASSend target: (ASRef variable: #x) selector: #> args: { ASRef variable: #y }
+	) selector: #ifFalse:ifTrue: args: {
+		ASBlockNode locals: #() body: { ASReturn expression: (ASLiteral literal: -1) }.
+		ASBlockNode locals: #() body: { ASReturn expression: (ASLiteral literal: 1) } 
+	}.
+	expected := 'if x > y:
+	return 1
+else:
+	return -1
 '.
 	self assert: ast convertsTo: expected.
 ]
@@ -177,6 +245,30 @@ ZagToPythonConversionTest >> testStringLiteral [
 ]
 
 { #category : 'tests - control flow' }
+ZagToPythonConversionTest >> testSwitch [
+	"Tests converting a swich statement."
+	| ast expected |
+	ast := ASSend target: (ASArray statements: {
+		ASSend target: (ASLiteral literal: 0) selector: #-> args: {
+			ASBlockNode arguments: #() locals: #() body: {ASReturn expression: (ASLiteral literal: 1)}}.
+		ASSend target: (ASSend target: (ASRef variable: #x) selector: #>= args: { ASLiteral literal: 0 })
+			selector: #-> args: {
+				ASBlockNode arguments: #() locals: #() body: {ASReturn expression: (ASLiteral literal: 2)}}.
+		ASSend target: (ASLiteral literal: true) selector: #-> args: {
+			ASBlockNode arguments: #() locals: #() body: {ASReturn expression: (ASLiteral literal: 3)}}.
+	}) selector: #switch.
+
+	expected := 'if 0:
+	return 1
+elif x >= 0:
+	return 2
+else:
+	return 3
+'.
+	self assert: ast convertsTo: expected.
+]
+
+{ #category : 'tests - control flow' }
 ZagToPythonConversionTest >> testSwitchOutput [
 	"Tests the outputIfElse: message."
 	| switch actual expected |
@@ -187,7 +279,7 @@ ZagToPythonConversionTest >> testSwitchOutput [
 			-> (ASBlockNode arguments: #() locals: #() body: {ASReturn expression: (ASLiteral literal: 2)}).
 		true -> (ASBlockNode arguments: #() locals: #() body: {ASReturn expression: (ASLiteral literal: 3)}).
 	}.
-	actual := String streamContents: [ :stream | ZagToPythonVisitor new resultStream: stream; outputIfElse: switch ].
+	actual := String streamContents: [ :stream | ZagToPythonVisitor new resultStream: stream; outputFormattedIfElse: switch ].
 	expected := 'if 0:
 	return 1
 elif x >= 0:
