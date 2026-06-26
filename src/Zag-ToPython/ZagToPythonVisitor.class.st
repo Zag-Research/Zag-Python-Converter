@@ -60,6 +60,11 @@ ZagToPythonVisitor class >> needsBrackets: anObject forChild: itsChild isTarget:
 		ifFalse: [ parentPrecedence >= childPrecedence ].
 ]
 
+{ #category : 'instance creation' }
+ZagToPythonVisitor class >> new [
+	^self basicNew indentLevel: 0; yourself.
+]
+
 { #category : 'constants' }
 ZagToPythonVisitor class >> pythonOperatorPrecedence [
 	"A dictionary mapping binary Python operators to their precedence."
@@ -105,7 +110,7 @@ ZagToPythonVisitor class >> smalltalkToPythonOperations [
 		#< -> #<.
 		#<= -> #<=.
 		#> -> #>.
-		#>= -> #>-.
+		#>= -> #>=.
 		#raisedTo: -> #**.
 		#bitXor: -> #'^'.
 		#bitShift: -> #<<.
@@ -166,7 +171,7 @@ ZagToPythonVisitor >> outputIfElse: switchASTMap [
 '
 			].
 		self addIndent: 1.
-		part value body do: [ :statement | self visitStatement: statement ].
+		self visitStatements: part value body.
 		self addIndent: -1.
 		isFirst := false.
 	].
@@ -254,7 +259,7 @@ ZagToPythonVisitor >> visitLiteral: aLiteral [
 ZagToPythonVisitor >> visitMethod: aMethod [
 	"Outputs a method to the result."
 	aMethod selector = self class mainMethodSelector ifTrue: [
-		^aMethod body do: [ :statement | self visitStatement: statement ]
+		^self visitStatements: aMethod body
 	].
 	self shouldBeImplemented.
 	
@@ -306,11 +311,22 @@ ZagToPythonVisitor >> visitSend: aSend [
 ]
 
 { #category : 'visiting' }
-ZagToPythonVisitor >> visitStatement: aStatement [
-	"Outputs a statement, calling its accept: method.  Also indents & adds newlines."
+ZagToPythonVisitor >> visitStatements: aCollectionOrNil [
+	"Outputs the statements in aCollection, calling their accept: method."
+	"The argument can be nil, in which case 'pass' will be outputted."
+	aCollectionOrNil
+		ifNil: [ self withIndentAndNewline: [ self resultStream nextPutAll: 'pass' ] ]
+		ifNotNil: [ aCollectionOrNil do: [ :each |
+				self withIndentAndNewline: [ each accept: self ]
+		] ].
+]
+
+{ #category : 'visiting' }
+ZagToPythonVisitor >> withIndentAndNewline: aBlock [
+	"Indents, then runs aBlock, then outputs a newline."
 	self indentLevel timesRepeat: [
 			resultStream nextPut: Character tab.
 	].
-	aStatement accept: self.
+	aBlock value.
 	resultStream nextPut: Character cr.
 ]

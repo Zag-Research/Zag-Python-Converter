@@ -176,6 +176,28 @@ ZagToPythonConversionTest >> testStringLiteral [
 	self assert: ast convertsTo: expected.
 ]
 
+{ #category : 'tests - control flow' }
+ZagToPythonConversionTest >> testSwitchOutput [
+	"Tests the outputIfElse: message."
+	| switch actual expected |
+	switch := {
+		(ASLiteral literal: 0)
+			-> (ASBlockNode arguments: #() locals: #() body: {ASReturn expression: (ASLiteral literal: 1)}).
+		(ASSend target: (ASRef variable: #x) selector: #>= args: { ASLiteral literal: 0 })
+			-> (ASBlockNode arguments: #() locals: #() body: {ASReturn expression: (ASLiteral literal: 2)}).
+		true -> (ASBlockNode arguments: #() locals: #() body: {ASReturn expression: (ASLiteral literal: 3)}).
+	}.
+	actual := String streamContents: [ :stream | ZagToPythonVisitor new resultStream: stream; outputIfElse: switch ].
+	expected := 'if 0:
+	return 1
+elif x >= 0:
+	return 2
+else:
+	return 3
+'.
+	self assert: actual equals: expected.
+]
+
 { #category : 'tests - operations' }
 ZagToPythonConversionTest >> testTripleSubtraction1 [
 	"Tests converting a simple 3-argument subtraction expression."
