@@ -351,6 +351,17 @@ ZagToPythonVisitor >> visitMethod: aMethod [
 	
 ]
 
+{ #category : 'visiting - message sends' }
+ZagToPythonVisitor >> visitRange: aSend exclusive: aBoolean [
+	self resultStream nextPutAll: 'range('.
+	aSend target accept: self.
+	self resultStream nextPutAll: ', '.
+	aBoolean ifFalse: [ self resultStream nextPut: $) ].
+	aSend args first accept: self.
+	aBoolean ifFalse: [ self resultStream nextPutAll: ') + 1' ].
+	self resultStream nextPut: $).
+]
+
 { #category : 'visiting' }
 ZagToPythonVisitor >> visitRef: aRef [
 	"Visits an ASRef, adding its associated Python source to my stream."
@@ -384,6 +395,8 @@ ZagToPythonVisitor >> visitSend: aSend [
 		[ ^self visitArraySet: aSend target index: aSend args first value: aSend args last isZeroIndexed: true ].
 	(#(#ifTrue: #ifFalse: #ifFalse:ifTrue: #ifTrue:ifFalse: #switch) includes: aSend selector) ifTrue:
 		[ ^self visitIfElse: aSend ].
+	(#(#to: #to:by:) includes: aSend selector) ifTrue: [ ^self visitRange: aSend exclusive: false ].
+	(#(#toExclusive: #toExclusive:by:) includes: aSend selector) ifTrue: [ ^self visitRange: aSend exclusive: false ].
 	(aSend selector = #do:) ifTrue: [ ^self visitForEach: aSend ].
 	(aSend selector = #whileTrue:) ifTrue: [ ^self visitWhile: aSend ].
 	(aSend selector = #whileFalse:) ifTrue: [ ^self visitWhile: (

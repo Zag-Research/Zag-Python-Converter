@@ -75,7 +75,7 @@ ZagTSNode class >> pythonToZagAST: source [
 
 { #category : 'constants' }
 ZagTSNode class >> supportedBuiltins [
-	^#(#print #input #float #int) asSet.
+	^#(#print #input #float #int #range) asSet.
 ]
 
 { #category : 'accessing' }
@@ -197,6 +197,7 @@ ZagTSNode >> builtinToZagAST [
 	name = #input ifTrue: [ ^self inputToZagAST ].
 	name = #float ifTrue: [ ^self floatToZagAST ].
 	name = #int ifTrue: [ ^self intToZagAST ].
+	name = #range ifTrue: [ ^self rangeToZagAST ].
 ]
 
 { #category : 'converting - functions' }
@@ -359,6 +360,14 @@ ZagTSNode >> printToZagAST [
 		ASSend selector: #show: args: { each asZagASTNode } ].
 	^ASCascade target: (ASRef variable: #Transcript) sends: (calls copyWith: (
 		ASSend selector: #cr args: #())).
+]
+
+{ #category : 'converting - functions' }
+ZagTSNode >> rangeToZagAST [
+	^ASSend
+		target: (self >> 2 >> 1) asZagASTNode
+		selector: #toExclusive:
+		args: { (self >> 2 >> 2) asZagASTNode }
 ]
 
 { #category : 'initialization' }
