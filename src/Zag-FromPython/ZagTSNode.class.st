@@ -364,10 +364,15 @@ ZagTSNode >> printToZagAST [
 
 { #category : 'converting - functions' }
 ZagTSNode >> rangeToZagAST [
-	^ASSend
-		target: (self >> 2 >> 1) asZagASTNode
-		selector: #toExclusive:
-		args: { (self >> 2 >> 2) asZagASTNode }
+	^(self >> 2) children size = 2
+		ifTrue: [ ASSend
+			target: (self >> 2 >> 1) asZagASTNode
+			selector: #toExclusive:
+			args: { (self >> 2 >> 2) asZagASTNode } ]
+		ifFalse: [ ASSend
+			target: (self >> 2 >> 1) asZagASTNode
+			selector: #toExclusive:by: 
+			args: { (self >> 2 >> 2) asZagASTNode . (self >> 2 >> 3) asZagASTNode } ]
 ]
 
 { #category : 'initialization' }

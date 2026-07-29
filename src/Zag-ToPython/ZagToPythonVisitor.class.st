@@ -352,13 +352,19 @@ ZagToPythonVisitor >> visitMethod: aMethod [
 ]
 
 { #category : 'visiting - message sends' }
-ZagToPythonVisitor >> visitRange: aSend exclusive: aBoolean [
+ZagToPythonVisitor >> visitRange: aSend exclusive: exclusive [
+	| hasStep |
+	hasStep := aSend selector asString includesSubstring: 'by:'.
 	self resultStream nextPutAll: 'range('.
 	aSend target accept: self.
 	self resultStream nextPutAll: ', '.
-	aBoolean ifFalse: [ self resultStream nextPut: $) ].
+	exclusive ifTrue: [ self resultStream nextPut: $( ].
 	aSend args first accept: self.
-	aBoolean ifFalse: [ self resultStream nextPutAll: ') + 1' ].
+	exclusive ifTrue: [ self resultStream nextPutAll: ') + 1' ].
+	hasStep ifTrue: [
+		self resultStream nextPutAll: ', '.
+		aSend args last accept: self.
+	].
 	self resultStream nextPut: $).
 ]
 
@@ -396,7 +402,7 @@ ZagToPythonVisitor >> visitSend: aSend [
 	(#(#ifTrue: #ifFalse: #ifFalse:ifTrue: #ifTrue:ifFalse: #switch) includes: aSend selector) ifTrue:
 		[ ^self visitIfElse: aSend ].
 	(#(#to: #to:by:) includes: aSend selector) ifTrue: [ ^self visitRange: aSend exclusive: false ].
-	(#(#toExclusive: #toExclusive:by:) includes: aSend selector) ifTrue: [ ^self visitRange: aSend exclusive: false ].
+	(#(#toExclusive: #toExclusive:by:) includes: aSend selector) ifTrue: [ ^self visitRange: aSend exclusive: true ].
 	(aSend selector = #do:) ifTrue: [ ^self visitForEach: aSend ].
 	(aSend selector = #whileTrue:) ifTrue: [ ^self visitWhile: aSend ].
 	(aSend selector = #whileFalse:) ifTrue: [ ^self visitWhile: (
