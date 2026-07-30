@@ -501,6 +501,28 @@ PythonConversionTest >> testPrintCall [
 	self assertExpression: source convertsTo: expected.
 ]
 
+{ #category : 'tests - functions' }
+PythonConversionTest >> testRangeCall2Arg [
+	| source expected |
+	source := 'range(a, b)'.
+	expected := ASSend
+		target: (ASRef variable: #a)
+		selector: #toExclusive:
+		args: { ASRef variable: #b }.
+	self assertExpression: source convertsTo: expected.
+]
+
+{ #category : 'tests - functions' }
+PythonConversionTest >> testRangeCall3Arg [
+	| source expected |
+	source := 'range(a, b, c)'.
+	expected := ASSend
+		target: (ASRef variable: #a)
+		selector: #toExclusive:by:
+		args: { ASRef variable: #b . ASRef variable: #c }.
+	self assertExpression: source convertsTo: expected.
+]
+
 { #category : 'tests - literals' }
 PythonConversionTest >> testStringNode [
 	"Ensure a string literal can be converted to Zag properly."

@@ -358,9 +358,9 @@ ZagToPythonVisitor >> visitRange: aSend exclusive: exclusive [
 	self resultStream nextPutAll: 'range('.
 	aSend target accept: self.
 	self resultStream nextPutAll: ', '.
-	exclusive ifTrue: [ self resultStream nextPut: $( ].
+	exclusive ifFalse: [ self resultStream nextPut: $( ].
 	aSend args first accept: self.
-	exclusive ifTrue: [ self resultStream nextPutAll: ') + 1' ].
+	exclusive ifFalse: [ self resultStream nextPutAll: ') + 1' ].
 	hasStep ifTrue: [
 		self resultStream nextPutAll: ', '.
 		aSend args last accept: self.

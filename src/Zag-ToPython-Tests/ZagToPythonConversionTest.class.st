@@ -356,6 +356,54 @@ else:
 	self assert: actual equals: expected.
 ]
 
+{ #category : 'tests - basic expressions' }
+ZagToPythonConversionTest >> testToExclusive [
+	"Tests converting the #toExclusive: message to Python."
+	| ast expected |
+	ast := ASSend
+		target: (ASRef variable: #a)
+		selector: #toExclusive:
+		args: { ASRef variable: #b }.
+	expected := 'range(a, b)'.
+	self assert: ast convertsTo: expected.
+]
+
+{ #category : 'tests - basic expressions' }
+ZagToPythonConversionTest >> testToExclusiveBy [
+	"Tests converting the #toExclusive:by: message to Python."
+	| ast expected |
+	ast := ASSend
+		target: (ASRef variable: #a)
+		selector: #toExclusive:by:
+		args: { ASRef variable: #b . ASRef variable: #c }.
+	expected := 'range(a, b, c)'.
+	self assert: ast convertsTo: expected.
+]
+
+{ #category : 'tests - basic expressions' }
+ZagToPythonConversionTest >> testToInclusive [
+	"Tests converting the #to: message to Python."
+	| ast expected |
+	ast := ASSend
+		target: (ASRef variable: #a)
+		selector: #to:
+		args: { ASRef variable: #b }.
+	expected := 'range(a, (b) + 1)'.
+	self assert: ast convertsTo: expected.
+]
+
+{ #category : 'tests - basic expressions' }
+ZagToPythonConversionTest >> testToInclusiveBy [
+	"Tests converting the #to:by: message to Python."
+	| ast expected |
+	ast := ASSend
+		target: (ASRef variable: #a)
+		selector: #to:by:
+		args: { ASRef variable: #b . ASRef variable: #c }.
+	expected := 'range(a, (b) + 1, c)'.
+	self assert: ast convertsTo: expected.
+]
+
 { #category : 'tests - operations' }
 ZagToPythonConversionTest >> testTripleSubtraction1 [
 	"Tests converting a simple 3-argument subtraction expression."
