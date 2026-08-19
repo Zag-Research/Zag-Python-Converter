@@ -295,7 +295,7 @@ ZagTSNode >> ifElifToZagAST [
 	"Converts an if-elif statement to a Zag switch statement."
 	"ASArray does not appear to work, so temporarily, this code returns an array object instead of an ASArray for the switch target."
 	| conditions |
-	conditions := Array new: self childrenCount - 1.
+	conditions := ASArray new: self childrenCount - 1.
 	conditions at: 1 put: (ASSend
 		target: (ASSend target: (self >> 1) asZagASTNode selector: #asPythonBoolean)
 		selector: #-> args: {(self >> 2) asZagASTNode}).

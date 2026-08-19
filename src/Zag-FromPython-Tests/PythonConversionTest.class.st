@@ -199,8 +199,8 @@ PythonConversionTest >> testEquals [
 PythonConversionTest >> testFToC [
 	"Test converting a fahrenheit-to-celsius converter"
 	| source expected actual |
-	source := 'tempF = float(input("Input temp in F: "));
-tempC = (tempF - 32) / 1.8;
+	source := 'tempF = float(input("Input temp in F: "))
+tempC = (tempF - 32) / 1.8
 print(tempC)'.
 	expected := ASMethodNode selector: #main
 			locals: {(ASRef variable: #tempF) . (ASRef variable: #tempC)} body: {
@@ -245,11 +245,11 @@ PythonConversionTest >> testGuessingGame [
 	"Tests converting a simple guessing game program."
 	"This is only partially implemented so far."
 	| source expected actual |
-	source := 'secret = 42;
-guess = -1;
-guesses = 7;
+	source := 'secret = 42
+guess = -1
+guesses = 7
 while guess != secret and guesses > 0:
-	guess = int(input("Enter guess: "));
+	guess = int(input("Enter guess: "))
 	guesses -= 1'.
 	expected := ASMethodNode selector: #main arguments: #() locals: {
 		ASRef variable: #secret. ASRef variable: #guess. ASRef variable: #guesses
@@ -282,17 +282,17 @@ PythonConversionTest >> testIfElif [
 	"Tests converting an if statement with an elif block."
 	| source expected |
 	source := 'if condition1:
-	x = 0;
+	x = 0
 elif condition2 == condition3:
-	x = 1;'.
-	expected := ASSend target: {
+	x = 1'.
+	expected := ASSend target: (ASArray statements: {
 		ASSend target: (ASSend target: (ASRef variable: #condition1) selector: #asPythonBoolean) selector: #-> args: {
 			ASBlockNode arguments: #() locals: #() body: {
 				ASAssign variable: (ASRef variable: #x) expression: (ASLiteral literal: 0)}}.
 		ASSend target: (ASSend target: (ASSend target: (ASRef variable: #condition2) selector: #= args: {ASRef variable: #condition3}) selector: #asPythonBoolean) selector: #-> args: {
 			ASBlockNode arguments: #() locals: #() body: {
 				ASAssign variable: (ASRef variable: #x) expression: (ASLiteral literal: 1)}}
-	} selector: #switch.
+	}) selector: #switch.
 	self assertExpression: source convertsTo: expected "withLocals: #(#x)".
 ]
 
@@ -301,12 +301,12 @@ PythonConversionTest >> testIfElifElse [
 	"Tests converting an if statement with an elif and else block."
 	| source expected |
 	source := 'if condition1:
-	x = 0;
+	x = 0
 elif condition2 == condition3:
-	x = 1;
+	x = 1
 else:
-	x = 2;'.
-	expected := ASSend target: {
+	x = 2'.
+	expected := ASSend target: (ASArray statements: {
 		ASSend target: (ASSend target: (ASRef variable: #condition1) selector: #asPythonBoolean) selector: #-> args: {
 			ASBlockNode arguments: #() locals: #() body: {
 				ASAssign variable: (ASRef variable: #x) expression: (ASLiteral literal: 0)}}.
@@ -316,7 +316,7 @@ else:
 		ASSend target: (ASLiteral literal: true) selector: #-> args: {
 			ASBlockNode arguments: #() locals: #() body: {
 				ASAssign variable: (ASRef variable: #x) expression: (ASLiteral literal: 2)}}
-	} selector: #switch.
+	}) selector: #switch.
 	self assertExpression: source convertsTo: expected "withLocals: #(#x)".
 ]
 
@@ -325,9 +325,9 @@ PythonConversionTest >> testIfElse [
 	"Tests converting an if statement with an else block."
 	| source expected |
 	source := 'if condition:
-	x = 0;
+	x = 0
 else:
-	x = 1;'.
+	x = 1'.
 	expected := ASSend
 		target: (ASSend target: (ASRef variable: #condition) selector: #asPythonBoolean)
 		selector: #ifTrue:ifFalse: args: {
