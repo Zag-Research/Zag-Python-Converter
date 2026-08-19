@@ -129,7 +129,9 @@ PythonConversionTest >> testBasicIf [
 	| source expected |
 	source := 'if condition:
 	x = 0'.
-	expected := ASSend target: (ASRef variable: #condition) selector: #ifTrue: args: {
+	expected := ASSend
+		target: (ASSend target: (ASRef variable: #condition) selector: #asPythonBoolean)
+		selector: #ifTrue: args: {
 		ASBlockNode arguments: #() locals: #() body: {
 			ASAssign variable: (ASRef variable: #x) expression: (ASLiteral literal: 0)}}.
 	self assertExpression: source convertsTo: expected "withLocals: #(#x)".
@@ -284,10 +286,10 @@ PythonConversionTest >> testIfElif [
 elif condition2 == condition3:
 	x = 1;'.
 	expected := ASSend target: {
-		ASSend target: (ASRef variable: #condition1) selector: #-> args: {
+		ASSend target: (ASSend target: (ASRef variable: #condition1) selector: #asPythonBoolean) selector: #-> args: {
 			ASBlockNode arguments: #() locals: #() body: {
 				ASAssign variable: (ASRef variable: #x) expression: (ASLiteral literal: 0)}}.
-		ASSend target: (ASSend target: (ASRef variable: #condition2) selector: #= args: {ASRef variable: #condition3}) selector: #-> args: {
+		ASSend target: (ASSend target: (ASSend target: (ASRef variable: #condition2) selector: #= args: {ASRef variable: #condition3}) selector: #asPythonBoolean) selector: #-> args: {
 			ASBlockNode arguments: #() locals: #() body: {
 				ASAssign variable: (ASRef variable: #x) expression: (ASLiteral literal: 1)}}
 	} selector: #switch.
@@ -305,10 +307,10 @@ elif condition2 == condition3:
 else:
 	x = 2;'.
 	expected := ASSend target: {
-		ASSend target: (ASRef variable: #condition1) selector: #-> args: {
+		ASSend target: (ASSend target: (ASRef variable: #condition1) selector: #asPythonBoolean) selector: #-> args: {
 			ASBlockNode arguments: #() locals: #() body: {
 				ASAssign variable: (ASRef variable: #x) expression: (ASLiteral literal: 0)}}.
-		ASSend target: (ASSend target: (ASRef variable: #condition2) selector: #= args: {ASRef variable: #condition3}) selector: #-> args: {
+		ASSend target: (ASSend target: (ASSend target: (ASRef variable: #condition2) selector: #= args: {ASRef variable: #condition3}) selector: #asPythonBoolean) selector: #-> args: {
 			ASBlockNode arguments: #() locals: #() body: {
 				ASAssign variable: (ASRef variable: #x) expression: (ASLiteral literal: 1)}}.
 		ASSend target: (ASLiteral literal: true) selector: #-> args: {
@@ -326,7 +328,9 @@ PythonConversionTest >> testIfElse [
 	x = 0;
 else:
 	x = 1;'.
-	expected := ASSend target: (ASRef variable: #condition) selector: #ifTrue:ifFalse: args: {
+	expected := ASSend
+		target: (ASSend target: (ASRef variable: #condition) selector: #asPythonBoolean)
+		selector: #ifTrue:ifFalse: args: {
 		ASBlockNode arguments: #() locals: #() body: {
 			ASAssign variable: (ASRef variable: #x) expression: (ASLiteral literal: 0)}.
 		ASBlockNode arguments: #() locals: #() body: {
