@@ -38,6 +38,20 @@ ZagTSNode class >> converter: type [
 	^(type asString,'ToZagAST') asSymbol
 ]
 
+{ #category : 'formatting' }
+ZagTSNode class >> formatCode: code [
+	"Formats code for handling by tree-sitter."
+	^String streamContents: [ :stream |
+		code linesDo: [ :line |
+			stream nextPutAll: line.
+			(':;' includes: line last) ifFalse: [
+				stream nextPut: $;
+			].
+			stream nextPut: Character cr.
+		]
+	]
+]
+
 { #category : 'constants' }
 ZagTSNode class >> mainMethodSelector [
 	"The selector used for the main method, where non-method code is put in."
@@ -47,10 +61,11 @@ ZagTSNode class >> mainMethodSelector [
 { #category : 'instance creation' }
 ZagTSNode class >> newRoot: source [
 	"Creates a new root node from the provided Python source."
-	| tree root |
-	tree := self parsePythonTS: source.
+	| formattedSource tree root |
+	formattedSource := self formatCode: source.
+	tree := self parsePythonTS: formattedSource.
 	root := self new.
-	root setNode: tree rootNode source: source.
+	root setNode: tree rootNode source: formattedSource.
 	^root.
 ]
 
