@@ -109,6 +109,34 @@ ComplexNumberTest >> testLiterals [
 	self assert: c1 equals: c2.
 ]
 
+{ #category : 'tests - mathematical functions' }
+ComplexNumberTest >> testLn [
+	"x -> y means that ln(y) should = x tau i"
+	{
+		0 -> (1.0 + 0.0i).
+		1/12 -> (0.75 sqrt + 0.5i).
+		1/8 -> (0.5 sqrt + 0.5 sqrt i).
+		1/6 -> (0.5 + 0.75 sqrt i).
+		1/4 -> 1.0i.
+		1/3 -> (-0.5 + 0.75 sqrt i).
+		1/2 -> (-1.0 + 0.0i).
+		-1/4 -> -1.0i.
+	} do: [ :each | self assert: each value ln closeTo: each key * Float twoPi i].
+	
+	"x -> y means that exp(x) should = y"
+	{ 
+		0 + 0i -> (1 + 0i).
+		1 + 0i -> (1 exp + 0i).
+		-1 + 0i -> (-1 exp + 0i).
+		0 + (Float twoPi / 4)i -> (0 + 1i).
+		1 + (Float twoPi / 4)i -> (0 + 1 exp i).
+		-1 + (Float twoPi / 4)i -> (0 + -1 exp i).
+		0 - (Float twoPi / 4)i -> (0 - 1i).
+		1 - (Float twoPi / 4)i -> (0 - 1 exp i).
+		-1 - (Float twoPi / 4)i -> (0 - -1 exp i).
+	} do: [ :each | self assert: each value ln closeTo: each key ].
+]
+
 { #category : 'tests - arithmetic' }
 ComplexNumberTest >> testMinus [
 	self assert: (1 + 2i) - (2 + 1i) equals: (-1 + 1i).
@@ -178,6 +206,11 @@ ComplexNumberTest >> testPolarLiterals [
 	c1 := 2 * (0.35 * Float twoPi) i exp.
 	c2 := ComplexNumber magnitude: 2 argument: 0.35 * Float twoPi.
 	self assert: c1 equals: c2.
+]
+
+{ #category : 'tests' }
+ComplexNumberTest >> testRaisedTo [
+	self assert: (1i ** 1i) closeTo: 0.207879576351 + 0i
 ]
 
 { #category : 'tests - arithmetic' }

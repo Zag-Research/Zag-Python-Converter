@@ -43,6 +43,11 @@ ComplexNumber >> * arg [
 ]
 
 { #category : 'arithmetic' }
+ComplexNumber >> ** exponent [
+	^self raisedTo: exponent
+]
+
+{ #category : 'arithmetic' }
 ComplexNumber >> + arg [
 	^arg isComplexNumber
 		ifTrue: [ self class real: self realPart + arg realPart imag: self imaginaryPart + arg imaginaryPart ]
@@ -132,6 +137,18 @@ ComplexNumber >> isComplexNumber [
 	^true
 ]
 
+{ #category : 'mathematical functions' }
+ComplexNumber >> ln [
+	"Returns my principal natural logarithm"
+	^self abs ln + (self imaginaryPart arcTan: self realPart) i
+]
+
+{ #category : 'mathematical functions' }
+ComplexNumber >> log: base [
+	"Answers my logarithm base the provided number"
+	^self ln / base ln
+]
+
 { #category : 'arithmetic' }
 ComplexNumber >> negated [
 	^self class real: self realPart negated imag: self imaginaryPart negated
@@ -151,6 +168,11 @@ ComplexNumber >> printOn: aStream base: base [
 	aStream nextPutAll: 'i)'.
 ]
 
+{ #category : 'arithmetic' }
+ComplexNumber >> raisedTo: exponent [
+	^(exponent * self ln) exp
+]
+
 { #category : 'private - initialization' }
 ComplexNumber >> real: r imag: i [
 	real := r.
@@ -161,4 +183,9 @@ ComplexNumber >> real: r imag: i [
 ComplexNumber >> realPart [
 	"Returns my real part"
 	^real
+]
+
+{ #category : 'arithmetic' }
+ComplexNumber >> sqrt [
+	^self raisedTo: 0.5
 ]
