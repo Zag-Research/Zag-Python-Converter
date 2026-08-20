@@ -101,6 +101,20 @@ ComplexNumber >> negated [
 	^self class real: self realPart negated imag: self imaginaryPart negated
 ]
 
+{ #category : 'printing' }
+ComplexNumber >> printOn: aStream [
+	self printOn: aStream base: 10
+]
+
+{ #category : 'printing' }
+ComplexNumber >> printOn: aStream base: base [
+	aStream nextPut: $(.
+	self realPart printOn: aStream base: base.
+	aStream nextPutAll: ' + '.
+	self imaginaryPart printOn: aStream base: base.
+	aStream nextPutAll: 'i)'.
+]
+
 { #category : 'private - initialization' }
 ComplexNumber >> real: r imag: i [
 	real := r.
