@@ -24,6 +24,16 @@ ComplexNumber class >> real: r imag: i [
 	^self basicNew real: r imag: i
 ]
 
+{ #category : 'comparing' }
+ComplexNumber >> = aComplex [
+	^self realPart = aComplex realPart and: [ self imaginaryPart = aComplex imaginaryPart ]
+]
+
+{ #category : 'comparing' }
+ComplexNumber >> hash [
+	^(self realPart hashMultiply + self imaginaryPart) hashMultiply
+]
+
 { #category : 'accessing' }
 ComplexNumber >> imaginaryPart [
 	^imag
