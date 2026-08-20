@@ -24,9 +24,61 @@ ComplexNumber class >> real: r imag: i [
 	^self basicNew real: r imag: i
 ]
 
+{ #category : 'arithmetic' }
+ComplexNumber >> * arg [
+	| myReal myImag theirReal theirImag |
+	myReal := self realPart.
+	myImag := self imaginaryPart.
+	theirReal := arg isComplexNumber ifTrue: [ arg realPart ] ifFalse: [ arg ].
+	theirImag := arg isComplexNumber ifTrue: [ arg imaginaryPart ] ifFalse: [ 0 ].
+	^self class
+		real: (myReal * theirReal) - (myImag * theirImag)
+		imag: (myReal * theirImag) + (myImag * theirReal)
+]
+
+{ #category : 'arithmetic' }
+ComplexNumber >> + arg [
+	^arg isComplexNumber
+		ifTrue: [ self class real: self realPart + arg realPart imag: self imaginaryPart + arg imaginaryPart ]
+		ifFalse: [ self class real: self realPart + arg imag: self imaginaryPart ]
+]
+
+{ #category : 'arithmetic' }
+ComplexNumber >> - arg [
+	^arg isComplexNumber
+		ifTrue: [ self class real: self realPart - arg realPart imag: self imaginaryPart - arg imaginaryPart ]
+		ifFalse: [ self class real: self realPart - arg imag: self imaginaryPart ]
+]
+
+{ #category : 'arithmetic' }
+ComplexNumber >> / arg [
+	| myReal myImag theirReal theirImag theirSquareNorm |
+	myReal := self realPart.
+	myImag := self imaginaryPart.
+	theirReal := arg isComplexNumber ifTrue: [ arg realPart ] ifFalse: [ arg ].
+	theirImag := arg isComplexNumber ifTrue: [ arg imaginaryPart ] ifFalse: [ 0 ].
+	theirSquareNorm := theirReal squared + theirImag squared.
+	^self class
+		real: (myReal * theirReal) + (myImag * theirImag) / theirSquareNorm
+		imag: (myImag * theirReal) - (myReal * theirImag) / theirSquareNorm
+]
+
 { #category : 'comparing' }
 ComplexNumber >> = aComplex [
-	^self realPart = aComplex realPart and: [ self imaginaryPart = aComplex imaginaryPart ]
+	^aComplex isComplexNumber and: [ self realPart = aComplex realPart and: [ self imaginaryPart = aComplex imaginaryPart ] ]
+]
+
+{ #category : 'converting' }
+ComplexNumber >> adaptToNumber: rcvr andSend: selector [
+	"If I am involved in arithmetic with a number, convert it to a complex number."
+	| asComplex |
+	asComplex := self class real: rcvr imag: 0.
+	^asComplex perform: selector with: self.
+]
+
+{ #category : 'arithmetic' }
+ComplexNumber >> conjugate [
+	^self class real: self realPart imag: self imaginaryPart negated
 ]
 
 { #category : 'comparing' }
@@ -37,6 +89,16 @@ ComplexNumber >> hash [
 { #category : 'accessing' }
 ComplexNumber >> imaginaryPart [
 	^imag
+]
+
+{ #category : 'testing' }
+ComplexNumber >> isComplexNumber [
+	^true
+]
+
+{ #category : 'arithmetic' }
+ComplexNumber >> negated [
+	^self class real: self realPart negated imag: self imaginaryPart negated
 ]
 
 { #category : 'private - initialization' }
