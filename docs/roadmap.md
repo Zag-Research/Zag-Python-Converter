@@ -1,31 +1,72 @@
 # Zag-Python-Converter Roadmap
 
-This roadmap is based on [The Python Language Reference](https://docs.python.org/3/reference/index.html), to get an unbiased completion percentage.  Each item is considered completed when everything described in that section can be translated to and from Zag.  This requires all subsections to also be complete.
+This roadmap is based on [The Python Language Reference](https://docs.python.org/3/reference/index.html), to get an unbiased completion percentage.  Each item is considered completed when everything described in that section can be translated to and from Zag.
 
 Each entry in the below list refers to a section in this reference, denoted by the section symbol §.
 
-## Feature List
+## Versions 0.1.0 & 0.2.0 (182‰)
 
-There are a total of 258 items to implement.
+*These two versions implemented the same features, but 0.1.0 implemented them in Python-to-Zag translation, while 0.2.0 implemented them in Zag-to-Python translation.*
+
+- §2.1 Line structure
+- §2.1.1 Logical lines
+- §2.1.2 Physical lines
+- §2.1.4 Encoding declarations
+- §2.1.5 Explicit line joining
+- §2.1.6 Implicit line joining
+- §2.1.7 Blank lines
+- §2.1.8 Indentation
+- §2.1.9 Whitespace between tokens
+- §2.1.10 End marker
+- §2.2 Other tokens
+- §2.4 Literals
+- §2.5 String and Bytes literals
+- §2.6.1 Integer literals
+- §2.6.2 Floating-point literals
+- §2.7 Operators and delimiters
+- §3.1 Objects, values and types
+- §3.2 The standard type hierarchy
+- §3.2.4 numbers.Number
+- §3.2.4.1 numbers.Integral
+- §3.2.4.2 numbers.Real (float)
+- §3.2.5 Sequences
+- §3.2.5.2 Mutable sequences
+- §4.1 Structure of a program
+- §4.2.2 Resolution of names
+- §6.1 Arithmetic conversions
+- §6.2.1 Built-in constants
+- §6.5 The power operator
+- §6.6 Unary arithmetic and bitwise operations
+- §6.7 Binary arithmetic operations
+- §6.8 Shifting operations
+- §6.9 Binary bitwise operations
+- §6.10 Comparisons
+- §6.10.1 Value comparisons
+- §6.10.2 Membership test operations
+- §6.10.3 Identity comparisons
+- §6.11 Boolean operations
+- §6.14 Lambdas
+- §6.16 Evaluation order
+- §6.17 Operator precedence
+- §7.1 Expression statements
+- §7.2 Assignment statements
+- §7.2.1 Augmented assignment statements
+- §7.6 The return statement
+- §8.1 The if statement
+- §8.2 The while statement
+- §8.3 The for statement
+
+## Unassigned Features
+
+There are a total of 258 items to implement.  If the item is surrounded by brackets, this means the item itself is categorized but it is left here because some sub-items are not.
 
 - §2 Lexical Analysis
-  - §2.1 Line structure
-		- §2.1.1 Logical lines
-		- §2.1.2 Physical lines
+  - (§2.1 Line structure)
 		- §2.1.3 Comments
-		- §2.1.4 Encoding declarations
-		- §2.1.5 Explicit line joining
-		- §2.1.6 Implicit line joining
-		- §2.1.7 Blank lines
-		- §2.1.8 Indentation
-		- §2.1.9 Whitespace between tokens
-		- §2.1.10 End marker
-	- §2.2 Other tokens
 	- §2.3 Names (identifiers and keywords)
 		- §2.3.1 Keywords
 		- §2.3.2 Soft keywords
-	- §2.4 Literals
-	- §2.5 String and Bytes literals
+	- (§2.5 String and Bytes literals)
     - §2.5.1 Triple-quoted strings
     - §2.5.2 String prefixes
     - §2.5.3 Formal grammar
@@ -43,23 +84,16 @@ There are a total of 258 items to implement.
     - §2.5.8 t-strings
     - §2.5.9 Formal grammar for f-strings
 	- §2.6 Numeric literals
-    - §2.6.1 Integer literals
-    - §2.6.2 Floating-point literals
     - §2.6.3 Imaginary literals
-	- §2.7 Operators and delimiters
 - §3 Data model
-  - §3.1 Objects, values and types
-  - §3.2 The standard type hierarchy
-    - §3.2.1 `None
+  - (§3.2 The standard type hierarchy)
+    - §3.2.1 None
     - §3.2.2 NotImplemented
     - §3.2.3 Ellipsis
-    - §3.2.4 numbers.Number
-	    - §3.2.4.1 numbers.Integral
-	    - §3.2.4.2 numbers.Real (float)
+    - (§3.2.4 numbers.Number)
 	    - §3.2.4.3 numbers.Complex (complex)
-    - §3.2.5 Sequences
+    - (§3.2.5 Sequences)
 	    - §3.2.5.1 Immutable sequences
-	    - §3.2.5.2 Mutable sequences
     - §3.2.6 Set types
     - §3.2.7 Mappings
 	    - §3.2.7.1 Dictionaries
@@ -130,10 +164,8 @@ There are a total of 258 items to implement.
     - §3.4.3 Asynchronous Iterators
     - §3.4.4 Asynchronous Context Managers
 - §4 Execution model
-  - §4.1 Structure of a program
   - §4.2 Naming and binding
     - §4.2.1 Binding of names
-    - §4.2.2 Resolution of names
     - §4.2.3 Annotation scopes
     - §4.2.4 Lazy evaluation
     - §4.2.5 Builtins and restricted execution
@@ -168,9 +200,7 @@ There are a total of 258 items to implement.
     - §5.8.1 `__main__.__spec__`
   - §5.9 References
 - §6 Expressions
-  - §6.1 Arithmetic conversions
   - §6.2 Atoms
-    - §6.2.1 Built-in constants
     - §6.2.2 Identifiers (Names)
       - §6.2.2.1 Private name mangling
     - §6.2.3 Literals
@@ -196,31 +226,15 @@ There are a total of 258 items to implement.
       - §6.3.2.4 Formal subscription grammar
     - §6.3.3 Calls
   - §6.4 Await expression
-  - §6.5 The power operator
-  - §6.6 Unary arithmetic and bitwise operations
-  - §6.7 Binary arithmetic operations
-  - §6.8 Shifting operations
-  - §6.9 Binary bitwise operations
-  - §6.10 Comparisons
-    - §6.10.1 Value comparisons
-    - §6.10.2 Membership test operations
-    - §6.10.3 Identity comparisons
-  - §6.11 Boolean operations
   - §6.12 Assignment expressions
   - §6.13 Conditional expressions
-  - §6.14 Lambdas
   - §6.15 Expression lists
-  - §6.16 Evaluation order
-  - §6.17 Operator precedence
 - §7 Simple statements
-  - §7.1 Expression statements
-  - §7.2 Assignment statements
-    - §7.2.1 Augmented assignment statements
+  - (§7.2 Assignment statements)
     - §7.2.2 Annotated assignment statements
   - §7.3 The assert statement
   - §7.4 The pass statement
   - §7.5 The del statement
-  - §7.6 The return statement
   - §7.7 The yield statement
   - §7.8 The raise statement
   - §7.9 The break statement
@@ -231,9 +245,6 @@ There are a total of 258 items to implement.
   - §7.13 The nonlocal statement
   - §7.14 The type statement
 - §8 Compound statements
-  - §8.1 The if statement
-  - §8.2 The while statement
-  - §8.3 The for statement
   - §8.4 The try statement
 	  - §8.4.1 except clause
     - §8.4.2 except* clause
