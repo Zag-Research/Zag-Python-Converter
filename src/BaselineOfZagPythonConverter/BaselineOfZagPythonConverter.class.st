@@ -26,7 +26,9 @@ BaselineOfZagPythonConverter >> baseline: spec [
 			
 			"Packages"
 			spec
-				package: 'Zag-FromPython' with: [ spec requires: #('ZagSmalltalk' 'TreeSitter') ];
+				package: 'Zag-PythonFeatures';
+				package: 'Zag-PythonFeatures-Tests' with: [ spec requires: #('Zag-PythonFeatures') ];
+				package: 'Zag-FromPython' with: [ spec requires: #('ZagSmalltalk' 'TreeSitter' 'Zag-PythonFeatures') ];
 				package: 'Zag-FromPython-Tests' with: [ spec requires: #('Zag-FromPython') ];
 				package: 'Zag-ToPython';
 				package: 'Zag-ToPython-Tests' with: [ spec requires: #('Zag-ToPython') ].
