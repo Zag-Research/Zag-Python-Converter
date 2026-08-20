@@ -5,6 +5,35 @@ Class {
 	#package : 'Zag-PythonFeatures-Tests'
 }
 
+{ #category : 'tests - mathematical functions' }
+ComplexNumberTest >> testAbs [
+	{ 3 + 4i . 3 - 4i . -3 + 4i . -3 - 4i . 4 + 3i . 4 - 3i . -4 + 3i . -4 - 3i } do: [ :each |
+		self assert: each abs equals: 5
+	].
+	{ 1 + 1i . 1 - 1i . -1 + 1i . -1 - 1i } do: [ :each | self assert: each abs equals: 2 sqrt ].
+	{ 3 + 0i . -3 + 0i . 3i . -3i } do: [ :each | self assert: each abs equals: 3 ].
+]
+
+{ #category : 'tests - mathematical functions' }
+ComplexNumberTest >> testArgument [
+	"x -> y means that arg(x) should = y * tau"
+	{
+		0 + 0i -> 0.
+		1 + 0i -> 0.
+		0.75 sqrt + 0.5 i -> (1/12).
+		0.5 sqrt + 0.5 sqrt i -> (1/8).
+		0.5 + 0.75 sqrt i -> (1/6).
+		1.0i -> (1/4).
+		-0.5 + 0.75 sqrt i -> (1/3).
+		-1.0 + 0.0i -> (1/2).
+		-1.0i -> (-1/4).
+	} do: [ :each |
+		self assert: each key argument closeTo: each value * Float twoPi.
+		self assert: (each key * 2) argument closeTo: each key argument.
+		
+	].
+]
+
 { #category : 'tests - arithmetic' }
 ComplexNumberTest >> testConjugate [
 	self assert: (1 + 0i) conjugate equals: 1 + 0i.
@@ -31,6 +60,35 @@ ComplexNumberTest >> testEqual [
 	c2 := ComplexNumber real: 1 imag: 2.
 	self assert: c1 equals: c2.
 	self assert: c1 hash equals: c2 hash.
+]
+
+{ #category : 'tests - mathematical functions' }
+ComplexNumberTest >> testExp [
+	"x -> y means that exp(x tau i) should = y"
+	{
+		0 -> (1.0 + 0.0i).
+		1/12 -> (0.75 sqrt + 0.5i).
+		1/8 -> (0.5 sqrt + 0.5 sqrt i).
+		1/6 -> (0.5 + 0.75 sqrt i).
+		1/4 -> 1.0i.
+		1/3 -> (-0.5 + 0.75 sqrt i).
+		1/2 -> (-1.0 + 0.0i).
+		3/4 -> -1.0i.
+		1 -> (1.0 + 0.0i).
+	} do: [ :each | self assert: (each key * Float twoPi) i exp closeTo: each value ].
+	
+	"x -> y means that exp(x) should = y"
+	{ 
+		0 + 0i -> (1 + 0i).
+		1 + 0i -> (1 exp + 0i).
+		-1 + 0i -> (-1 exp + 0i).
+		0 + (Float twoPi / 4)i -> (0 + 1i).
+		1 + (Float twoPi / 4)i -> (0 + 1 exp i).
+		-1 + (Float twoPi / 4)i -> (0 + -1 exp i).
+		0 - (Float twoPi / 4)i -> (0 - 1i).
+		1 - (Float twoPi / 4)i -> (0 - 1 exp i).
+		-1 - (Float twoPi / 4)i -> (0 - -1 exp i).
+	} do: [ :each | self assert: each key exp closeTo: each value ].
 ]
 
 { #category : 'tests' }
@@ -80,6 +138,46 @@ ComplexNumberTest >> testPlus [
 	self assert: (-1 + 1i) + (1 - 1i) equals: (0 + 0i).
 	self assert: (-1 + 0i) + (-2 + 1i) equals: (-3 + 1i).
 	self assert: (1 + 0.5i) + (6 - 4i) equals: (7 - 3.5i).
+]
+
+{ #category : 'tests - mathematical functions' }
+ComplexNumberTest >> testPolarCoordinates [
+	"Test that polar and rectangular coordinates return the same numbers."
+	
+	"(x@y) -> (a@b) means that x + yi should = a exp(b tau i)"
+	{
+		(0@0) -> (0@0).
+		
+		(1 @ 0) -> (1 @ 0).
+		(0.75 sqrt @ 0.5) -> (1 @ (1/12)).
+		(0.5 sqrt @ 0.5 sqrt) -> (1 @ (1/8)).
+		(0.5 @ 0.75 sqrt) -> (1 @ (1/6)).
+		(0 @ 1) -> (1 @ (1/4)).
+		(-0.5 @ 0.75 sqrt) -> (1 @ (1/3)).
+		(-1 @ 0) -> (1 @ (1/2)).
+		(0 @ -1) -> (1 @ (-1/4)).
+		
+		(3 @ 4) -> (5 @ ((4 arcTan: 3) / Float twoPi)).
+	} do: [ :each | | rectangular polar |
+		rectangular := ComplexNumber real: each key x imag: each key y.
+		polar := ComplexNumber magnitude: each value x argument: each value y * Float twoPi.
+		self assert: polar closeTo: rectangular.
+		
+		"also test extracting the coordinates"
+		self assert: rectangular realPart equals: each key x.
+		self assert: rectangular imaginaryPart equals: each key y.
+		self assert: rectangular abs closeTo: each value x.
+		self assert: rectangular argument closeTo: each value y * Float twoPi.
+	]
+]
+
+{ #category : 'tests' }
+ComplexNumberTest >> testPolarLiterals [
+	"Ensure that polar complex numbers made with arithmetic are the same as the constructor."
+	| c1 c2 |
+	c1 := 2 * (0.35 * Float twoPi) i exp.
+	c2 := ComplexNumber magnitude: 2 argument: 0.35 * Float twoPi.
+	self assert: c1 equals: c2.
 ]
 
 { #category : 'tests - arithmetic' }

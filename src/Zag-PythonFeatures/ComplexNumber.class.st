@@ -15,6 +15,12 @@ Class {
 }
 
 { #category : 'instance creation' }
+ComplexNumber class >> magnitude: mag argument: arg [
+	"Returns a complex number from its polar coordinate (argument is in radians)."
+	^mag * arg i exp
+]
+
+{ #category : 'instance creation' }
 ComplexNumber class >> new [
 	^self basicNew real: 0 imag: 0
 ]
@@ -68,6 +74,11 @@ ComplexNumber >> = aComplex [
 	^aComplex isComplexNumber and: [ self realPart = aComplex realPart and: [ self imaginaryPart = aComplex imaginaryPart ] ]
 ]
 
+{ #category : 'mathematical functions' }
+ComplexNumber >> abs [
+	^(self realPart squared + self imaginaryPart squared) sqrt
+]
+
 { #category : 'converting' }
 ComplexNumber >> adaptToNumber: rcvr andSend: selector [
 	"If I am involved in arithmetic with a number, convert it to a complex number."
@@ -76,9 +87,34 @@ ComplexNumber >> adaptToNumber: rcvr andSend: selector [
 	^asComplex perform: selector with: self.
 ]
 
+{ #category : 'mathematical functions' }
+ComplexNumber >> argument [
+	"Returns the angle between the number 1 and me, in radians."
+	^self imaginaryPart arcTan: self realPart
+]
+
+{ #category : 'comparing' }
+ComplexNumber >> closeTo: aNumber [
+	^self closeTo: aNumber precision: Float defaultComparisonPrecision
+]
+
+{ #category : 'comparing' }
+ComplexNumber >> closeTo: aNumber precision: epsilon [
+	(aNumber isNumber or: [ aNumber isComplexNumber ]) ifFalse: [ ^false ].
+	^self = (aNumber + 0i) or: [ (self - aNumber) abs <= epsilon ].
+]
+
 { #category : 'arithmetic' }
 ComplexNumber >> conjugate [
 	^self class real: self realPart imag: self imaginaryPart negated
+]
+
+{ #category : 'mathematical functions' }
+ComplexNumber >> exp [
+	"Answer the exponential of the receiver as a complex number."
+	^self class
+		real: self realPart exp * self imaginaryPart cos
+		imag: self realPart exp * self imaginaryPart sin
 ]
 
 { #category : 'comparing' }
