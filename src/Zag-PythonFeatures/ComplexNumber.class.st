@@ -186,6 +186,11 @@ ComplexNumber >> realPart [
 ]
 
 { #category : 'arithmetic' }
+ComplexNumber >> reciprocal [
+	^1 / self
+]
+
+{ #category : 'arithmetic' }
 ComplexNumber >> sqrt [
 	^self raisedTo: 0.5
 ]
