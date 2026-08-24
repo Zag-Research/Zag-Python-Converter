@@ -370,6 +370,8 @@ ZagTSNode >> notToZagAST [
 { #category : 'converting - literals' }
 ZagTSNode >> numberToZagAST [
 	"Converts a number to a Zag AST."
+	(self sourcePart endsWith: 'j') ifTrue: [ ^ASSend target: (
+		ASLiteral literal: self sourcePart allButLast asNumber) selector: #i ].
 	^ASLiteral literal: self sourcePart asNumber.
 ]
 

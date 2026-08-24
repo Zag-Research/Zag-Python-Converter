@@ -183,6 +183,12 @@ PythonConversionTest >> testComparison [
 	self assertExpression: source convertsTo: expected.
 ]
 
+{ #category : 'tests - literals' }
+PythonConversionTest >> testComplexNumberNode [
+	"Tests that complex literals convert properly."
+	self assertExpression: '10j' convertsTo: (ASSend target: (ASLiteral literal: 10) selector: #i).
+]
+
 { #category : 'tests - comparison & membership operators' }
 PythonConversionTest >> testEquals [
 	"Ensure an == expression can be converted to Zag properly."
