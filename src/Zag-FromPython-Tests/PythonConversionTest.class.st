@@ -187,6 +187,10 @@ PythonConversionTest >> testComparison [
 PythonConversionTest >> testComplexNumberNode [
 	"Tests that complex literals convert properly."
 	self assertExpression: '10j' convertsTo: (ASSend target: (ASLiteral literal: 10) selector: #i).
+	
+	self assertExpression: '1j' convertsTo: (ASSend target: (ASLiteral literal: 1) selector: #i).
+	self assertExpression: '0j' convertsTo: (ASSend target: (ASLiteral literal: 0) selector: #i).
+	self assertExpression: '0.5j' convertsTo: (ASSend target: (ASLiteral literal: 0.5) selector: #i).
 ]
 
 { #category : 'tests - comparison & membership operators' }
