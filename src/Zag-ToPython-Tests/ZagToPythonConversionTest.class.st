@@ -86,6 +86,15 @@ ZagToPythonConversionTest >> testAssociativeAddition2 [
 ]
 
 { #category : 'tests - basic expressions' }
+ZagToPythonConversionTest >> testComplexNumberLiteral [
+	"Test that complex number literals convert properly."
+	| ast expected |
+	ast := ASSend target: (ASLiteral literal: 10) selector: #i.
+	expected := '10j'.
+	self assert: ast convertsTo: expected.
+]
+
+{ #category : 'tests - basic expressions' }
 ZagToPythonConversionTest >> testDatatypeConversion [
 	"Ensures datatype conversions can be converted."
 	| ast expected |

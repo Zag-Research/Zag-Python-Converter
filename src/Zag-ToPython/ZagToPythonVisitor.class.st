@@ -407,6 +407,10 @@ ZagToPythonVisitor >> visitSend: aSend [
 	(aSend selector = #whileTrue:) ifTrue: [ ^self visitWhile: aSend ].
 	(aSend selector = #whileFalse:) ifTrue: [ ^self visitWhile: (
 		ASSend target: aSend target negateLastStatement selector: aSend selector args: aSend args) ].
+	(aSend selector = #i and: [ aSend target isASLiteral ]) ifTrue: [
+		self visitLiteral: aSend target.
+		^self resultStream nextPut: $j.
+	].
 	self error: 'Unrecognized selector'
 ]
 
