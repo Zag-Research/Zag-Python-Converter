@@ -10,8 +10,9 @@ Class {
 		'real',
 		'imag'
 	],
-	#category : 'Zag-PythonFeatures',
-	#package : 'Zag-PythonFeatures'
+	#category : 'Zag-PythonFeatures-Math',
+	#package : 'Zag-PythonFeatures',
+	#tag : 'Math'
 }
 
 { #category : 'instance creation' }

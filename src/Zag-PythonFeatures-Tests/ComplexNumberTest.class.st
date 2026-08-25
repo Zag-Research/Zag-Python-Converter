@@ -1,8 +1,9 @@
 Class {
 	#name : 'ComplexNumberTest',
 	#superclass : 'TestCase',
-	#category : 'Zag-PythonFeatures-Tests',
-	#package : 'Zag-PythonFeatures-Tests'
+	#category : 'Zag-PythonFeatures-Tests-Math',
+	#package : 'Zag-PythonFeatures-Tests',
+	#tag : 'Math'
 }
 
 { #category : 'tests - mathematical functions' }
