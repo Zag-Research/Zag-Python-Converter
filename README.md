@@ -4,6 +4,8 @@ This is a project that converts Python code to and from [Zag Smalltalk](https://
 
 This project is currently in the early stages of development; don't expect every Python feature to work at the moment.
 
+[See the development roadmap here.](./docs/roadmap.md)
+
 ## Installation
 
 ```
