@@ -56,42 +56,42 @@ Each entry in the below list refers to a section in this reference, denoted by t
 - §8.2 The while statement
 - §8.3 The for statement
 
-## Version 0.3.0 (cumulative 306‰)
+## Version 0.3 (cumulative 306‰)
 
 This phase of development is mostly oriented around things that I missed in versions 0.1.0 and 0.2.0, where I was mostly making ad-hoc decisions without relying on any feature list.  I intend for future phases to be oriented around specific major features, like functions or exceptions.
 
-- §2.1.3 Comments
-- §2.3 Names (identifiers and keywords)
-- §2.3.1 Keywords
-- §2.3.2 Soft keywords
-- §2.5.1 Triple-quoted strings
-- §2.5.2 String prefixes
-- §2.5.3 Formal grammar
-- §2.5.4 Escape sequences
-- §2.5.4.1 Ignored end of line
-- §2.5.4.2 Escaped characters
-- §2.5.4.3 Octal character
-- §2.5.4.4 Hexadecimal character
-- §2.5.4.5 Named Unicode character
-- §2.5.4.6 Hexadecimal Unicode characters
-- §2.5.4.7 Unrecognized escape sequences
-- §2.5.5 Bytes literals
-- §2.5.6 Raw string literals
-- §2.6 Numeric literals
-- §2.6.3 Imaginary literals
-- §3.2.1 None
-- §3.2.2 NotImplemented
-- §3.2.3 Ellipsis
-- §3.2.4.3 numbers.Complex (complex)
-- §3.2.5.1 Immutable sequences
-- §3.2.6 Set types
-- §3.2.7 Mappings
-- §3.2.7.1 Dictionaries
-- §6.12 Assignment expressions
-- §6.13 Conditional expressions
-- §7.3 The assert statement
-- §7.4 The pass statement
-- §7.5 The del statement
+- [ ] §2.1.3 Comments
+- [ ] §2.3 Names (identifiers and keywords)
+- [ ] §2.3.1 Keywords
+- [ ] §2.3.2 Soft keywords
+- [ ] §2.5.1 Triple-quoted strings
+- [ ] §2.5.2 String prefixes
+- [ ] §2.5.3 Formal grammar
+- [ ] §2.5.4 Escape sequences
+- [ ] §2.5.4.1 Ignored end of line
+- [ ] §2.5.4.2 Escaped characters
+- [ ] §2.5.4.3 Octal character
+- [ ] §2.5.4.4 Hexadecimal character
+- [ ] §2.5.4.5 Named Unicode character
+- [ ] §2.5.4.6 Hexadecimal Unicode characters
+- [ ] §2.5.4.7 Unrecognized escape sequences
+- [ ] §2.5.5 Bytes literals
+- [ ] §2.5.6 Raw string literals
+- [X] §2.6 Numeric literals
+- [X] §2.6.3 Imaginary literals
+- [ ] §3.2.1 None
+- [ ] §3.2.2 NotImplemented
+- [ ] §3.2.3 Ellipsis
+- [X] §3.2.4.3 numbers.Complex (complex)
+- [ ] §3.2.5.1 Immutable sequences
+- [ ] §3.2.6 Set types
+- [ ] §3.2.7 Mappings
+- [ ] §3.2.7.1 Dictionaries
+- [ ] §6.12 Assignment expressions
+- [ ] §6.13 Conditional expressions
+- [ ] §7.3 The assert statement
+- [ ] §7.4 The pass statement
+- [ ] §7.5 The del statement
 
 ## Unassigned Features
 
