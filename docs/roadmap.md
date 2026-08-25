@@ -1,0 +1,281 @@
+# Zag-Python-Converter Roadmap
+
+This roadmap is based on [The Python Language Reference](https://docs.python.org/3/reference/index.html), to get an unbiased completion percentage.  Each item is considered completed when everything described in that section can be translated to and from Zag.
+
+Each entry in the below list refers to a section in this reference, denoted by the section symbol §.
+
+## Versions 0.1.0 & 0.2.0 (182‰)
+
+*These two versions implemented the same features, but 0.1.0 implemented them in Python-to-Zag translation, while 0.2.0 implemented them in Zag-to-Python translation.*
+
+- §2.1 Line structure
+- §2.1.1 Logical lines
+- §2.1.2 Physical lines
+- §2.1.4 Encoding declarations
+- §2.1.5 Explicit line joining
+- §2.1.6 Implicit line joining
+- §2.1.7 Blank lines
+- §2.1.8 Indentation
+- §2.1.9 Whitespace between tokens
+- §2.1.10 End marker
+- §2.2 Other tokens
+- §2.4 Literals
+- §2.5 String and Bytes literals
+- §2.6.1 Integer literals
+- §2.6.2 Floating-point literals
+- §2.7 Operators and delimiters
+- §3.1 Objects, values and types
+- §3.2 The standard type hierarchy
+- §3.2.4 numbers.Number
+- §3.2.4.1 numbers.Integral
+- §3.2.4.2 numbers.Real (float)
+- §3.2.5 Sequences
+- §3.2.5.2 Mutable sequences
+- §4.1 Structure of a program
+- §4.2.2 Resolution of names
+- §6.1 Arithmetic conversions
+- §6.2.1 Built-in constants
+- §6.5 The power operator
+- §6.6 Unary arithmetic and bitwise operations
+- §6.7 Binary arithmetic operations
+- §6.8 Shifting operations
+- §6.9 Binary bitwise operations
+- §6.10 Comparisons
+- §6.10.1 Value comparisons
+- §6.10.2 Membership test operations
+- §6.10.3 Identity comparisons
+- §6.11 Boolean operations
+- §6.14 Lambdas
+- §6.16 Evaluation order
+- §6.17 Operator precedence
+- §7.1 Expression statements
+- §7.2 Assignment statements
+- §7.2.1 Augmented assignment statements
+- §7.6 The return statement
+- §8.1 The if statement
+- §8.2 The while statement
+- §8.3 The for statement
+
+## Version 0.3.0 (cumulative 306‰)
+
+This phase of development is mostly oriented around things that I missed in versions 0.1.0 and 0.2.0, where I was mostly making ad-hoc decisions without relying on any feature list.  I intend for future phases to be oriented around specific major features, like functions or exceptions.
+
+- §2.1.3 Comments
+- §2.3 Names (identifiers and keywords)
+- §2.3.1 Keywords
+- §2.3.2 Soft keywords
+- §2.5.1 Triple-quoted strings
+- §2.5.2 String prefixes
+- §2.5.3 Formal grammar
+- §2.5.4 Escape sequences
+- §2.5.4.1 Ignored end of line
+- §2.5.4.2 Escaped characters
+- §2.5.4.3 Octal character
+- §2.5.4.4 Hexadecimal character
+- §2.5.4.5 Named Unicode character
+- §2.5.4.6 Hexadecimal Unicode characters
+- §2.5.4.7 Unrecognized escape sequences
+- §2.5.5 Bytes literals
+- §2.5.6 Raw string literals
+- §2.6 Numeric literals
+- §2.6.3 Imaginary literals
+- §3.2.1 None
+- §3.2.2 NotImplemented
+- §3.2.3 Ellipsis
+- §3.2.4.3 numbers.Complex (complex)
+- §3.2.5.1 Immutable sequences
+- §3.2.6 Set types
+- §3.2.7 Mappings
+- §3.2.7.1 Dictionaries
+- §6.12 Assignment expressions
+- §6.13 Conditional expressions
+- §7.3 The assert statement
+- §7.4 The pass statement
+- §7.5 The del statement
+
+## Unassigned Features
+
+There are a total of 258 items to implement.  If the item is surrounded by brackets, this means the item itself is categorized but it is left here because some sub-items are not.
+
+- §2 Lexical Analysis
+	- (§2.5 String and Bytes literals)
+    - §2.5.7 f-strings
+    - §2.5.8 t-strings
+    - §2.5.9 Formal grammar for f-strings
+- §3 Data model
+  - (§3.2 The standard type hierarchy)
+    - §3.2.8 Callable types
+	    - §3.2.8.1 User-defined functions
+		    - §3.2.8.1.1 Special read-only attributes
+		    - §3.2.8.1.2 Special writable attributes
+	    - §3.2.8.2 Instance methods
+	    - §3.2.8.3 Generator functions
+	    - §3.2.8.4 Coroutine functions
+	    - §3.2.8.5 Asynchronous generator functions
+	    - §3.2.8.6 Built-in functions
+	    - §3.2.8.7 Built-in methods
+	    - §3.2.8.8 Classes
+	    - §3.2.8.9 Class Instances
+    - §3.2.9 Modules
+	    - §3.2.9.1 Import-related attributes on module objects
+	    - §3.2.9.2 Other writable attributes on module objects
+	    - §3.2.9.3 Module dictionaries
+    - §3.2.10 Custom classes
+	    - §3.2.10.1 Special attributes
+	    - §3.2.10.2 Special methods
+    - §3.2.11 Class instances
+	    - §3.2.11.1 Special attributes
+    - §3.2.12 I/O objects (also known as file objects)
+    - §3.2.13 Internal types
+	    - §3.2.13.1 Code objects
+		    - §3.2.13.1.1 Special read-only attributes
+		    - §3.2.13.1.2 Methods on code objects
+	    - §3.2.13.2 Frame objects
+		    - §3.2.13.2.1 Special read-only attributes
+		    - §3.2.13.2.2 Special writable attributes
+		    - §3.2.13.2.3 Frame object methods
+	    - §3.2.13.3 Traceback objects
+	    - §3.2.13.4 Slice objects
+	    - §3.2.13.5 Static method objects
+	    - §3.2.13.6 Class method objects
+  - §3.3 Special method names
+    - §3.3.1 Basic customization
+    - §3.3.2 Customizing attribute access
+	    - §3.3.2.1 Customizing module attribute access
+	    - §3.3.2.2 Implementing Descriptors
+	    - §3.3.2.3 Invoking Descriptors
+	    - §3.3.2.4 __slots__
+    - §3.3.3 Customizing class creation
+	    - §3.3.3.1 Metaclasses
+	    - §3.3.3.2 Resolving MRO entries
+	    - §3.3.3.3 Determining the appropriate metaclass
+	    - §3.3.3.4 Preparing the class namespace
+	    - §3.3.3.5 Executing the class body
+	    - §3.3.3.6 Creating the class object
+	    - §3.3.3.7 Uses for metaclasses
+    - §3.3.4 Customizing instance and subclass checks
+    - §3.3.5 Emulating generic types
+	    - §3.3.5.1 The purpose of `__class_getitem__`
+	    - §3.3.5.2 `__class_getitem__` versus `__getitem__`
+    - §3.3.6 Emulating callable objects
+    - §3.3.7 Emulating container types
+    - §3.3.8 Emulating numeric types
+    - §3.3.9 With Statement Context Managers
+    - §3.3.10 Customizing positional arguments in class pattern matching
+    - §3.3.11 Emulating buffer types
+    - §3.3.12 Annotations
+    - §3.3.13 Special method lookup
+  - §3.4 Coroutines
+    - §3.4.1 Awaitable Objects
+    - §3.4.2 Coroutine Objects
+    - §3.4.3 Asynchronous Iterators
+    - §3.4.4 Asynchronous Context Managers
+- §4 Execution model
+  - §4.2 Naming and binding
+    - §4.2.1 Binding of names
+    - §4.2.3 Annotation scopes
+    - §4.2.4 Lazy evaluation
+    - §4.2.5 Builtins and restricted execution
+    - §4.2.6 Interaction with dynamic features
+  - §4.3 Exceptions
+  - §4.4 Runtime Components
+    - §4.4.1 General Computing Model
+    - §4.4.2 Python Runtime Model
+- §5 The import system
+  - §5.1 importlib
+  - §5.2 Packages
+    - §5.2.1 Regular packages
+    - §5.2.2 Namespace packages
+  - §5.3 Searching
+    - §5.3.1 The module cache
+    - §5.3.2 Finders and loaders
+    - §5.3.3 Import hooks
+    - §5.3.4 The meta path
+  - §5.4 Loading
+    - §5.4.1 Loaders
+    - §5.4.2 Submodules
+    - §5.4.3 Module specs
+    - §5.4.4 `__path__` attributes on modules
+    - §5.4.5 Module reprs
+    - §5.4.6 Cached bytecode invalidation
+  - §5.5 The Path Based Finder
+    - §5.5.1 Path entry finders
+    - §5.5.2 Path entry finder protocol
+  - §5.6 Replacing the standard import system
+  - §5.7 Package Relative Imports
+  - §5.8 Special considerations for `__main__`
+    - §5.8.1 `__main__.__spec__`
+  - §5.9 References
+- §6 Expressions
+  - §6.2 Atoms
+    - §6.2.2 Identifiers (Names)
+      - §6.2.2.1 Private name mangling
+    - §6.2.3 Literals
+      - §6.2.3.1 Literals and object identity
+      - §6.2.3.2 String literal concatenation
+    - §6.2.4 Parenthesized forms
+    - §6.2.5 Displays for lists, sets and dictionaries
+    - §6.2.6 List displays
+    - §6.2.7 Set displays
+    - §6.2.8 Dictionary displays
+    - §6.2.9 Generator expressions
+    - §6.2.10 Yield expressions
+      - §6.2.10.1 Generator-iterator methods
+      - §6.2.10.2 Examples
+      - §6.2.10.3 Asynchronous generator functions
+      - §6.2.10.4 Asynchronous generator-iterator methods
+  - §6.3 Primaries
+    - §6.3.1 Attribute references
+    - §6.3.2 Subscriptions and slicings
+      - §6.3.2.1 Slicings
+      - §6.3.2.2 Comma-separated subscripts
+      - §6.3.2.3 “Starred” subscriptions
+      - §6.3.2.4 Formal subscription grammar
+    - §6.3.3 Calls
+  - §6.4 Await expression
+  - §6.15 Expression lists
+- §7 Simple statements
+  - (§7.2 Assignment statements)
+    - §7.2.2 Annotated assignment statements
+  - §7.7 The yield statement
+  - §7.8 The raise statement
+  - §7.9 The break statement
+  - §7.10 The continue statement
+  - §7.11 The import statement
+    - §7.11.1 Future statements
+  - §7.12 The global statement
+  - §7.13 The nonlocal statement
+  - §7.14 The type statement
+- §8 Compound statements
+  - §8.4 The try statement
+	  - §8.4.1 except clause
+    - §8.4.2 except* clause
+    - §8.4.3 else clause
+    - §8.4.4 finally clause
+  - §8.5 The with statement
+  - §8.6 The match statement
+    - §8.6.1 Overview
+    - §8.6.2 Guards
+    - §8.6.3 Irrefutable Case Blocks
+    - §8.6.4 Patterns
+      - §8.6.4.1 OR Patterns
+      - §8.6.4.2 AS Patterns
+      - §8.6.4.3 Literal Patterns
+      - §8.6.4.4 Capture Patterns
+      - §8.6.4.5 Wildcard Patterns
+      - §8.6.4.6 Value Patterns
+      - §8.6.4.7 Group Patterns
+      - §8.6.4.8 Sequence Patterns
+      - §8.6.4.9 Mapping Patterns
+      - §8.6.4.10 Class Patterns
+  - §8.7 Function definitions
+  - §8.8 Class definitions
+  - §8.9 Coroutines
+    - §8.9.1 Coroutine function definition
+    - §8.9.2 The async for statement
+    - §8.9.3 The async with statement
+  - §8.10 Type parameter lists
+    - §8.10.1 Generic functions
+    - §8.10.2 Generic classes
+    - §8.10.3 Generic type aliases
+  - §8.11 Annotations
