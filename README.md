@@ -41,4 +41,4 @@ This project implements a few extension messages in order to handle things as th
 
 ## Authors/Contact
 
-This is the thesis project of [Adrien Hopkins](https://ahopkins.ca/) (<a1hopkins@torontomu.ca>), made as part of the [Zag Research](https://github.com/Zag-Research/) team.
+This is the thesis project of [Adrien Hopkins](https://ahopkins.ca/) (<a1hopkins@torontomu.ca>), made as part of the [Zag Research](https://github.com/Zag-Research/) team and the [Human-Centered Systems Lab](https://hcsl-tmu.ca/).
