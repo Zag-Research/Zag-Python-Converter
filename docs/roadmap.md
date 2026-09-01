@@ -87,7 +87,7 @@ This phase of development is mostly oriented around things that I missed in vers
 - [ ] §3.2.6 Set types
 - [ ] §3.2.7 Mappings
 - [ ] §3.2.7.1 Dictionaries
-- [ ] §6.12 Assignment expressions
+- [X] §6.12 Assignment expressions
 - [ ] §6.13 Conditional expressions
 - [ ] §7.3 The assert statement
 - [ ] §7.4 The pass statement
