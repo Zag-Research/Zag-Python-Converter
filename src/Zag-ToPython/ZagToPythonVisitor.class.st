@@ -6,7 +6,8 @@ Class {
 	#superclass : 'Object',
 	#instVars : [
 		'resultStream',
-		'indentLevel'
+		'indentLevel',
+		'nestingLevel'
 	],
 	#category : 'Zag-ToPython-Converter',
 	#package : 'Zag-ToPython',
@@ -51,6 +52,7 @@ ZagToPythonVisitor class >> needsBrackets: anObject forChild: itsChild isTarget:
 	"Determines whether I need to place brackets around an object's child."
 	| parentPrecedence childPrecedence |
 	(itsChild isKindOf: ASStatement) ifFalse: [ ^true ].
+	(itsChild isKindOf: ASAssign) ifTrue: [ ^true ].
 	itsChild isASLiteral ifTrue: [ ^false ].
 	itsChild isASRef ifTrue: [ ^false ].
 	parentPrecedence := self pythonPrecedence: anObject.
@@ -62,7 +64,7 @@ ZagToPythonVisitor class >> needsBrackets: anObject forChild: itsChild isTarget:
 
 { #category : 'instance creation' }
 ZagToPythonVisitor class >> new [
-	^self basicNew indentLevel: 0; yourself.
+	^self basicNew indentLevel: 0; nestingLevel: 0; yourself.
 ]
 
 { #category : 'constants' }
@@ -164,6 +166,13 @@ ZagToPythonVisitor >> addIndent: anInteger [
 	indentLevel := indentLevel + anInteger.
 ]
 
+{ #category : 'setting' }
+ZagToPythonVisitor >> addNesting: anInteger [
+	"Changes my nesting level by the amount provided."
+	"The argument can be a negative integer to reduce nesting."
+	nestingLevel := nestingLevel + anInteger.
+]
+
 { #category : 'accessing' }
 ZagToPythonVisitor >> indentLevel [
 	"The current indent level for my outputted Python code."
@@ -177,14 +186,26 @@ ZagToPythonVisitor >> indentLevel: anInteger [
 	indentLevel := anInteger.
 ]
 
+{ #category : 'accessing' }
+ZagToPythonVisitor >> nestingLevel [
+	"The current nesting level for my outputted Python code."
+	^nestingLevel
+]
+
+{ #category : 'setting' }
+ZagToPythonVisitor >> nestingLevel: anInteger [
+	"Sets my current nesting level."
+	nestingLevel := anInteger.
+]
+
 { #category : 'visiting - message sends' }
 ZagToPythonVisitor >> outputCall: selector args: args [
 	"Prints a function call to my stream."
 	resultStream nextPutAll: selector asString; nextPut: $(.
-	args first accept: self.
+	self visit: args first.
 	args allButFirstDo: [ :arg |
 		resultStream nextPutAll: ', '.
-		arg accept: self.
+		self visit: arg.
 	].
 	resultStream nextPut: $).
 ]
@@ -202,7 +223,7 @@ ZagToPythonVisitor >> outputFormattedIfElse: switchASTMap [
 ' ]
 			ifFalse: [
 				self resultStream nextPutAll: (isFirst ifTrue: ['if '] ifFalse: ['elif ']).
-				part key accept: self.
+				self visit: part key.
 				self resultStream nextPutAll: ':
 '
 			].
@@ -228,23 +249,27 @@ ZagToPythonVisitor >> resultStream: aStream [
 { #category : 'visiting' }
 ZagToPythonVisitor >> visit: anAST [
 	"Accepts an AST, and prints its corresponding Python source to my result stream."
-	^anAST accept: self
+	| returnValue |
+	self addNesting: 1.
+	returnValue := anAST accept: self.
+	self addNesting: -1.
+	^returnValue.
 ]
 
 { #category : 'visiting' }
 ZagToPythonVisitor >> visit: anObject withBrackets: enableBrackets [
 	"Prints an object, maybe with brackets around it."
 	enableBrackets ifTrue: [ resultStream nextPut: $( ].
-	anObject accept: self.
+	self visit: anObject.
 	enableBrackets ifTrue: [ resultStream nextPut: $) ].
 ]
 
 { #category : 'visiting - message sends' }
 ZagToPythonVisitor >> visitArrayAccess: arrayTree index: index isZeroIndexed: isZeroIndexed [
 	"Translates an array access operation to a subscript."
-	arrayTree accept: self.
+	self visit: arrayTree.
 	resultStream nextPut: $[.
-	index accept: self.
+	self visit: index.
 	isZeroIndexed ifFalse: [ resultStream nextPutAll: ' - 1' ].
 	resultStream nextPut: $].
 ]
@@ -254,7 +279,7 @@ ZagToPythonVisitor >> visitArraySet: arrayTree index: index value: value isZeroI
 	"Translates an array access operation to a subscript."
 	self visitArrayAccess: arrayTree index: index isZeroIndexed: isZeroIndexed.
 	resultStream nextPutAll: ' = '.
-	value accept: self.
+	self visit: value.
 ]
 
 { #category : 'visiting' }
@@ -303,7 +328,7 @@ ZagToPythonVisitor >> visitForEach: aSend [
 	self resultStream nextPutAll: 'for '.
 	self visitRef: aSend args first arguments first.
 	self resultStream nextPutAll: ' in '.
-	aSend target accept: self.
+	self visit: aSend target.
 	self resultStream nextPut: $:; nextPut: Character cr.
 	self addIndent: 1.
 	self visitStatements: aSend args first.
@@ -356,14 +381,14 @@ ZagToPythonVisitor >> visitRange: aSend exclusive: exclusive [
 	| hasStep |
 	hasStep := aSend selector asString includesSubstring: 'by:'.
 	self resultStream nextPutAll: 'range('.
-	aSend target accept: self.
+	self visit: aSend target.
 	self resultStream nextPutAll: ', '.
 	exclusive ifFalse: [ self resultStream nextPut: $( ].
-	aSend args first accept: self.
+	self visit: aSend args first.
 	exclusive ifFalse: [ self resultStream nextPutAll: ') + 1' ].
 	hasStep ifTrue: [
 		self resultStream nextPutAll: ', '.
-		aSend args last accept: self.
+		self visit: aSend args last.
 	].
 	self resultStream nextPut: $).
 ]
@@ -419,6 +444,9 @@ ZagToPythonVisitor >> visitStatements: aCollectionOrNil [
 	"Outputs the statements in aCollection, calling their accept: method."
 	"The argument can be nil, in which case 'pass' will be outputted."
 	"The argument can also be a method/block node, in which its body will be visited."
+	| oldNestingLevel |
+	oldNestingLevel := self nestingLevel.
+	self nestingLevel: 0.
 	aCollectionOrNil
 		ifNil: [ self withIndentAndNewline: [ self resultStream nextPutAll: 'pass' ] ]
 		ifNotNil: [ | statements |
@@ -426,8 +454,9 @@ ZagToPythonVisitor >> visitStatements: aCollectionOrNil [
 				ifTrue: [ aCollectionOrNil body ]
 				ifFalse: [ aCollectionOrNil ].
 			statements do: [ :each |
-				self withIndentAndNewline: [ each accept: self ]
+				self withIndentAndNewline: [ self visit: each ]
 		] ].
+	self nestingLevel: oldNestingLevel.
 ]
 
 { #category : 'visiting - message sends' }
@@ -446,7 +475,7 @@ ZagToPythonVisitor >> visitWhile: aSend [
 	aSend target isASBlock ifFalse: [ self error: 'While condition must be a block.' ].
 	aSend target body size = 1 ifFalse: [ self notYetImplemented ].
 	self resultStream nextPutAll: 'while '.
-	aSend target body first accept: self.
+	self visit: aSend target body first.
 	self resultStream nextPut: $:; nextPut: Character cr.
 	self addIndent: 1.
 	self visitStatements: aSend args first.
