@@ -61,6 +61,28 @@ ZagToPythonConversionTest >> testAssign [
 	self assert: ast convertsTo: expected.
 ]
 
+{ #category : 'tests - basic expressions' }
+ZagToPythonConversionTest >> testAssignCapture [
+	"Test that capturing the value of an ASAssign converts correctly."
+	| ast expected |
+	ast := ASSend target: (ASLiteral literal: 1) selector: #+ args: {
+		ASAssign variable: (ASRef variable: #x) expression: (ASLiteral literal: 2)}.
+	expected := '1 + (x := 2)'.
+	self assert: ast convertsTo: expected.
+]
+
+{ #category : 'tests - basic expressions' }
+ZagToPythonConversionTest >> testAssignMultiple [
+	"Test that assigning multiple variables converts properly."
+	| ast expected1 expected2 actual |
+	ast := ASAssign variable: (ASRef variable: #x) expression: (
+		ASAssign variable: (ASRef variable: #y) expression: (ASLiteral literal: 2)).
+	expected1 := 'x = (y := 2)'. "what the visitor pattern would generate, and still fully functional"
+	expected2 := 'x = y = 2'. "more idiomatic, but very hard to generate with this architecture"
+	actual := ZagToPythonVisitor astToPythonSource: ast.
+	self assert: ({ expected1. expected2 } includes: actual).
+]
+
 { #category : 'tests - operations' }
 ZagToPythonConversionTest >> testAssociativeAddition1 [
 	"Tests converting a simple 3-argument addition expression."

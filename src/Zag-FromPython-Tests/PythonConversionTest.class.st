@@ -563,6 +563,19 @@ PythonConversionTest >> testWalrus [
 	self assertExpression: source convertsTo: expected withLocals: #(#a).
 ]
 
+{ #category : 'tests - assignment' }
+PythonConversionTest >> testWalrusCapture [
+	"Ensure capturing the value of a := expression can be converted to Zag properly."
+	| expected source |
+	source := 'a := (b := c)'.
+	expected := ASAssign
+		variable: (ASRef variable: #a)
+		expression: (ASAssign
+			variable: (ASRef variable: #b)
+			expression: (ASRef variable: #c)).
+	self assertExpression: source convertsTo: expected withLocals: #(#a).
+]
+
 { #category : 'tests - control flow' }
 PythonConversionTest >> testWhile [
 	"Tests converting a simple while loop."

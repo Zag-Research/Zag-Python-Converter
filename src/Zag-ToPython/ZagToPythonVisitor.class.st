@@ -286,8 +286,8 @@ ZagToPythonVisitor >> visitArraySet: arrayTree index: index value: value isZeroI
 ZagToPythonVisitor >> visitAssign: anAssign [
 	"Visits an ASAssign, adding its associated Python source to my stream."
 	self visit: anAssign variable.
-	resultStream nextPutAll: ' = '.
-	self visit: anAssign expression.
+	resultStream nextPutAll: (self nestingLevel > 1 ifTrue: [' := '] ifFalse: [' = ']).
+	self visit: anAssign expression withBrackets: anAssign expression isASAssign.
 ]
 
 { #category : 'visiting - message sends' }
