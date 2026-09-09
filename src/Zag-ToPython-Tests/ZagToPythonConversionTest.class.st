@@ -58,9 +58,21 @@ ZagToPythonConversionTest >> testAssert [
 	| ast expected |
 	ast := ASSend target: (
 		ASBlockNode locals: #() body: {
-			ASSend target: (ASRef variable: #x) selector: #~= args: { ASRef variable:#y } }
+			ASSend target: (ASRef variable: #x) selector: #~= args: { ASRef variable: #y } }
 	) selector: #assert.
 	expected := 'assert x != y'.
+	self assert: ast convertsTo: expected.
+]
+
+{ #category : 'tests - control flow' }
+ZagToPythonConversionTest >> testAssertDescription [
+	"Tests converting an assert statement with a description"
+	| ast expected |
+	ast := ASSend target: (
+		ASBlockNode locals: #() body: {
+			ASSend target: (ASRef variable: #x) selector: #~= args: { ASRef variable: #y } }
+	) selector: #assertWithDescription: args: { ASLiteral literal: 'test error message' }.
+	expected := 'assert x != y, "test error message"'.
 	self assert: ast convertsTo: expected.
 ]
 
