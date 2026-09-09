@@ -121,8 +121,11 @@ ZagTSNode >> asZagASTNode [
 { #category : 'asserting' }
 ZagTSNode >> assertToZagAST [
 	| assertBlock |
-	assertBlock := ASCodeBlock locals: #() body: { (self >> 1) asZagASTNode }.
-	^ASSend target: assertBlock selector: #assert
+	assertBlock := ASBlockNode locals: #() body: { (self >> 1) asZagASTNode }.
+	^self childrenCount = 1
+		ifTrue: [ ASSend target: assertBlock selector: #assert ]
+		ifFalse: [ ASSend target: assertBlock selector: #assertWithDescription: args: {
+			(self >> 2) asZagASTNode } ].
 ]
 
 { #category : 'converting - operators' }

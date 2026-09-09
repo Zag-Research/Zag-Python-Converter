@@ -100,13 +100,24 @@ PythonConversionTest >> testArrayAssignPlus [
 
 { #category : 'tests - control flow' }
 PythonConversionTest >> testAssert [
-	"Tests that assert statements can be translated properly."
+	"Tests that basic assert statements can be translated properly."
 	self
 		assertExpression: 'assert a == b'
 		convertsTo: (ASSend target: (
-			ASCodeBlock locals: #() body: {
+			ASBlockNode locals: #() body: {
 				ASSend target: (ASRef variable: #a) selector: #= args: { ASRef variable: #b } })
 			selector: #assert)
+]
+
+{ #category : 'tests - control flow' }
+PythonConversionTest >> testAssertDescription [
+	"Tests that assert statements with a description can be translated properly."
+	self
+		assertExpression: 'assert a == b, "test error message"'
+		convertsTo: (ASSend target: (
+			ASBlockNode locals: #() body: {
+				ASSend target: (ASRef variable: #a) selector: #= args: { ASRef variable: #b } })
+			selector: #assertWithDescription: args: { ASLiteral literal: 'test error message' })
 ]
 
 { #category : 'tests - assignment' }
