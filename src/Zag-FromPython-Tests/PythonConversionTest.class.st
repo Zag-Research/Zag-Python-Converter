@@ -98,6 +98,17 @@ PythonConversionTest >> testArrayAssignPlus [
 	self assertExpression: source convertsTo: expected.
 ]
 
+{ #category : 'tests - control flow' }
+PythonConversionTest >> testAssert [
+	"Tests that assert statements can be translated properly."
+	self
+		assertExpression: 'assert a == b'
+		convertsTo: (ASSend target: (
+			ASCodeBlock locals: #() body: {
+				ASSend target: (ASRef variable: #a) selector: #= args: { ASRef variable: #b } })
+			selector: #assert)
+]
+
 { #category : 'tests - assignment' }
 PythonConversionTest >> testAssign [
 	"Ensure an assignment expression can be converted to Zag properly."

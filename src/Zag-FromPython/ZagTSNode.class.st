@@ -35,6 +35,7 @@ ZagTSNode class >> converter: type [
 	type = #'if_statement' ifTrue: [ ^#ifToZagAST ].
 	type = #'for_statement' ifTrue: [ ^#forToZagAST ].
 	type = #'while_statement' ifTrue: [ ^#whileToZagAST ].
+	type = #'assert_statement' ifTrue: [ ^#assertToZagAST ].
 	^(type asString,'ToZagAST') asSymbol
 ]
 
@@ -115,6 +116,13 @@ ZagTSNode >> asZagASTNode [
 	| converter |
 	converter := self class converter: self tsNodeType.
 	^converter value: self.
+]
+
+{ #category : 'asserting' }
+ZagTSNode >> assertToZagAST [
+	| assertBlock |
+	assertBlock := ASCodeBlock locals: #() body: { (self >> 1) asZagASTNode }.
+	^ASSend target: assertBlock selector: #assert
 ]
 
 { #category : 'converting - operators' }
