@@ -108,6 +108,14 @@ ZagToPythonConversionTest >> testAssociativeAddition2 [
 ]
 
 { #category : 'tests - basic expressions' }
+ZagToPythonConversionTest >> testComment [
+	| ast expected |
+	ast := ASComment text: 'test comment'.
+	expected := '# test comment'.
+	self assert: ast convertsTo: expected.
+]
+
+{ #category : 'tests - basic expressions' }
 ZagToPythonConversionTest >> testComplexNumberLiteral [
 	"Test that complex number literals convert properly."
 	| ast expected |

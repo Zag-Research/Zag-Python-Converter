@@ -171,6 +171,12 @@ PythonConversionTest >> testBooleanNodes [
 	self assertExpression: 'False' convertsTo: (ASLiteral literal: false).
 ]
 
+{ #category : 'tests' }
+PythonConversionTest >> testComment [
+	"Test converting a comment to Zag."
+	self assertExpression: '# test comment' convertsTo: (ASComment text: 'test comment')
+]
+
 { #category : 'tests - comparison & membership operators' }
 PythonConversionTest >> testComparison [
 	"Ensure a comparison expression can be converted to Zag properly."

@@ -44,7 +44,7 @@ ZagTSNode class >> formatCode: code [
 	^String streamContents: [ :stream |
 		code linesDo: [ :line |
 			stream nextPutAll: line.
-			(':;' includes: line last) ifFalse: [
+			((':;' includes: line last) or: [ line includes: $# ]) ifFalse: [
 				stream nextPut: $;
 			].
 			stream nextPut: Character cr.
@@ -248,7 +248,7 @@ ZagTSNode >> childrenDo: aBlock [
 
 { #category : 'converting - by node type' }
 ZagTSNode >> commentToZagAST [
-	^ASComment text: self sourcePart allButFirst trimLeft
+	^ASComment text: self sourcePart allButFirst trimBoth
 ]
 
 { #category : 'converting - literals' }
