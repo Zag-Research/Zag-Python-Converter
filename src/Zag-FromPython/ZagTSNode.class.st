@@ -118,7 +118,7 @@ ZagTSNode >> asZagASTNode [
 	^converter value: self.
 ]
 
-{ #category : 'asserting' }
+{ #category : 'converting - control flow' }
 ZagTSNode >> assertToZagAST [
 	| assertBlock |
 	assertBlock := ASBlockNode locals: #() body: { (self >> 1) asZagASTNode }.
