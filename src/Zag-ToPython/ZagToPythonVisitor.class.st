@@ -282,6 +282,12 @@ ZagToPythonVisitor >> visitArraySet: arrayTree index: index value: value isZeroI
 	self visit: value.
 ]
 
+{ #category : 'visiting - message sends' }
+ZagToPythonVisitor >> visitAssert: aStatement [
+	self resultStream nextPutAll: 'assert '.
+	self visit: aStatement.
+]
+
 { #category : 'visiting' }
 ZagToPythonVisitor >> visitAssign: anAssign [
 	"Visits an ASAssign, adding its associated Python source to my stream."
@@ -435,6 +441,9 @@ ZagToPythonVisitor >> visitSend: aSend [
 	(aSend selector = #i and: [ aSend target isASLiteral ]) ifTrue: [
 		self visitLiteral: aSend target.
 		^self resultStream nextPut: $j.
+	].
+	(aSend target isASBlock and: [ aSend target body size = 1 ]) ifTrue: [
+		aSend selector = #assert ifTrue: [ ^self visitAssert: aSend target body first ].
 	].
 	self error: 'Unrecognized selector'
 ]

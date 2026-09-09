@@ -52,6 +52,18 @@ ZagToPythonConversionTest >> testArrayPut [
 	self assert: ast convertsTo: expected.
 ]
 
+{ #category : 'tests - control flow' }
+ZagToPythonConversionTest >> testAssert [
+	"Tests converting a basic assert statement"
+	| ast expected |
+	ast := ASSend target: (
+		ASBlockNode locals: #() body: {
+			ASSend target: (ASRef variable: #x) selector: #~= args: { ASRef variable:#y } }
+	) selector: #assert.
+	expected := 'assert x != y'.
+	self assert: ast convertsTo: expected.
+]
+
 { #category : 'tests - basic expressions' }
 ZagToPythonConversionTest >> testAssign [
 	"Test that an ASAssign converts correctly."
