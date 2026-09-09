@@ -314,6 +314,12 @@ ZagToPythonVisitor >> visitCascade: aCascade [
 	aCascade sends collect: [ :send | send target: aCascade target ] thenDo: [ :each | self visit: each ]
 ]
 
+{ #category : 'visiting' }
+ZagToPythonVisitor >> visitComment: aComment [
+	self resultStream nextPutAll: '# '.
+	self resultStream nextPutAll: aComment text.
+]
+
 { #category : 'visiting - message sends' }
 ZagToPythonVisitor >> visitDatatypeConversion: aSend [
 	"Prints a datatype conversion to my stream."

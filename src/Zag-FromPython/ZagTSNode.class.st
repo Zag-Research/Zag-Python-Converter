@@ -246,6 +246,11 @@ ZagTSNode >> childrenDo: aBlock [
 	1 to: self childrenCount do: [ :i | aBlock value: (self >> i) ].
 ]
 
+{ #category : 'converting - by node type' }
+ZagTSNode >> commentToZagAST [
+	^ASComment text: self sourcePart allButFirst trimLeft
+]
+
 { #category : 'converting - literals' }
 ZagTSNode >> falseToZagAST [
 	^ASLiteral literal: false.
