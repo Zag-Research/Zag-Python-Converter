@@ -462,7 +462,7 @@ ZagToPythonVisitor >> visitSend: aSend [
 { #category : 'visiting' }
 ZagToPythonVisitor >> visitStatements: aCollectionOrNil [
 	"Outputs the statements in aCollection, calling their accept: method."
-	"The argument can be nil, in which case 'pass' will be outputted."
+	"The argument can be nil or empty, in which case 'pass' will be outputted."
 	"The argument can also be a method/block node, in which its body will be visited."
 	| oldNestingLevel |
 	oldNestingLevel := self nestingLevel.
@@ -473,8 +473,10 @@ ZagToPythonVisitor >> visitStatements: aCollectionOrNil [
 			statements := (aCollectionOrNil respondsTo: #body)
 				ifTrue: [ aCollectionOrNil body ]
 				ifFalse: [ aCollectionOrNil ].
-			statements do: [ :each |
-				self withIndentAndNewline: [ self visit: each ]
+			statements
+				ifEmpty: [ self withIndentAndNewline: [ self resultStream nextPutAll: 'pass' ] ]
+				ifNotEmpty: [ statements do: [ :each |
+					self withIndentAndNewline: [ self visit: each ] ].
 		] ].
 	self nestingLevel: oldNestingLevel.
 ]

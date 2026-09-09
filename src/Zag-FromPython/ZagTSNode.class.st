@@ -36,6 +36,9 @@ ZagTSNode class >> converter: type [
 	type = #'for_statement' ifTrue: [ ^#forToZagAST ].
 	type = #'while_statement' ifTrue: [ ^#whileToZagAST ].
 	type = #'assert_statement' ifTrue: [ ^#assertToZagAST ].
+	type = #'pass_statement' ifTrue: [
+		self error: 'Pass statements convert to nothing, so they should be handled outside the converter system.'
+	].
 	^(type asString,'ToZagAST') asSymbol
 ]
 
@@ -196,8 +199,16 @@ ZagTSNode >> binaryToZagASTSelector: selector [
 { #category : 'converting - control flow' }
 ZagTSNode >> blockToZagAST [
 	"Converts a block to a Zag AST."
-	^ASBlockNode arguments: #() locals: #() body: (
-		(1 to: self childrenCount) collect: [ :i | (self >> i) asZagASTNode ]
+	^self blockToZagASTArgs: #()
+]
+
+{ #category : 'converting - control flow' }
+ZagTSNode >> blockToZagASTArgs: args [
+	"Converts a block to a Zag AST.  The provided variable is arguments for the Zag block."
+	^ASBlockNode arguments: args locals: #() body: (
+		((1 to: self childrenCount)
+			select: [ :i | (self >> i) tsNodeType ~= #'pass_statement' ])
+			collect: [ :i | (self >> i) asZagASTNode ]
 	).
 ]
 
@@ -273,8 +284,7 @@ ZagTSNode >> floatToZagAST [
 ZagTSNode >> forToZagAST [
 	"Converts for loop nodes to Zag AST."
 	^ASSend target: (self >> 2) asZagASTNode selector: #do: args: {
-		ASBlockNode arguments: { (self >> 1) asZagASTNode } locals: #() body: (
-			(self >> 3) children collect: #asZagASTNode )}.
+		(self >> 3) blockToZagASTArgs: { (self >> 1) asZagASTNode } }
 ]
 
 { #category : 'computing' }

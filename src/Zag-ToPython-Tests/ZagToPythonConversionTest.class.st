@@ -299,6 +299,21 @@ else:
 	self assert: ast convertsTo: expected.
 ]
 
+{ #category : 'tests - control flow' }
+ZagToPythonConversionTest >> testIfPass [
+	"Tests that an ifTrue: statement with an empty block can be converted to if/else, and that pass is outputted."
+	| ast expected |
+	ast := ASSend target: (
+		ASSend target: (ASRef variable: #x) selector: #> args: { ASRef variable: #y }
+	) selector: #ifTrue: args: {
+		ASBlockNode locals: #() body: { } 
+	}.
+	expected := 'if x > y:
+	pass
+'.
+	self assert: ast convertsTo: expected.
+]
+
 { #category : 'tests' }
 ZagToPythonConversionTest >> testIndent [
 	"Tests that indents can be set."

@@ -272,6 +272,17 @@ PythonConversionTest >> testFor [
 	self assertExpression: source convertsTo: expected.
 ]
 
+{ #category : 'tests - control flow' }
+PythonConversionTest >> testForPass [
+	"Tests converting a basic for loop."
+	| source expected |
+	source := 'for i in c:
+	pass'.
+	expected := ASSend target: (ASRef variable: #c) selector: #do: args: {
+		ASBlockNode arguments: { ASRef variable: #i } locals: #() body: {}}.
+	self assertExpression: source convertsTo: expected.
+]
+
 { #category : 'tests - full programs' }
 PythonConversionTest >> testGuessingGame [
 	"Tests converting a simple guessing game program."
@@ -367,6 +378,18 @@ else:
 			ASAssign variable: (ASRef variable: #x) expression: (ASLiteral literal: 0)}.
 		ASBlockNode arguments: #() locals: #() body: {
 			ASAssign variable: (ASRef variable: #x) expression: (ASLiteral literal: 1)}}.
+	self assertExpression: source convertsTo: expected "withLocals: #(#x)".
+]
+
+{ #category : 'tests - control flow' }
+PythonConversionTest >> testIfPass [
+	"Tests converting an if statement without any elif or else blocks."
+	| source expected |
+	source := 'if condition:
+	pass'.
+	expected := ASSend
+		target: (ASSend target: (ASRef variable: #condition) selector: #asPythonBoolean)
+		selector: #ifTrue: args: { ASBlockNode locals: #() body: {} }.
 	self assertExpression: source convertsTo: expected "withLocals: #(#x)".
 ]
 
@@ -609,5 +632,17 @@ PythonConversionTest >> testWhile [
 	}) selector: #whileTrue: args: { ASBlockNode arguments: #() locals: #() body: {
 		ASAssign variable: (ASRef variable: #x) expression: (
 			ASSend target: (ASRef variable: #x) selector: #- args: { ASLiteral literal: 3 })}}.
+	self assertExpression: source convertsTo: expected.
+]
+
+{ #category : 'tests - control flow' }
+PythonConversionTest >> testWhilePass [
+	"Tests converting a while loop with a pass statement."
+	| source expected |
+	source := 'while x > 0:
+	pass'.
+	expected := ASSend target: (ASBlockNode arguments: #() locals: #() body: {
+		ASSend target: (ASRef variable: #x) selector: #> args: { ASLiteral literal: 0 }
+	}) selector: #whileTrue: args: { ASBlockNode arguments: #() locals: #() body: {}}.
 	self assertExpression: source convertsTo: expected.
 ]
