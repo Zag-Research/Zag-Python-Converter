@@ -379,6 +379,9 @@ ZagToPythonVisitor >> visitLiteral: aLiteral [
 			resultStream nextPut: $".
 		].
 		aLiteral literal isNil -> [ resultStream nextPutAll: 'None' ].
+		"using == true/false as the literal can be any type"
+		aLiteral literal == true -> [ resultStream nextPutAll: 'True' ].
+		aLiteral literal == false -> [ resultStream nextPutAll: 'False' ].
 		true -> [ resultStream nextPutAll: aLiteral literal asString ]
 	} switch
 ]

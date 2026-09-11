@@ -132,6 +132,13 @@ ZagToPythonConversionTest >> testAssociativeAddition2 [
 ]
 
 { #category : 'tests - basic expressions' }
+ZagToPythonConversionTest >> testBooleanLiterals [
+	"Test that true/false literals convert properly."
+	self assert: (ASLiteral literal: true) convertsTo: 'True'.
+	self assert: (ASLiteral literal: false) convertsTo: 'False'.
+]
+
+{ #category : 'tests - basic expressions' }
 ZagToPythonConversionTest >> testComplexNumberLiteral [
 	"Test that complex number literals convert properly."
 	| ast expected |
