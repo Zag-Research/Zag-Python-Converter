@@ -360,6 +360,15 @@ ZagToPythonConversionTest >> testNegatedAddition [
 ]
 
 { #category : 'tests - basic expressions' }
+ZagToPythonConversionTest >> testNilLiteral [
+	"Test that nil literals convert properly."
+	| ast expected |
+	ast := ASLiteral literal: nil.
+	expected := 'None'.
+	self assert: ast convertsTo: expected.
+]
+
+{ #category : 'tests - basic expressions' }
 ZagToPythonConversionTest >> testPrint [
 	"Ensures the print statement can be converted to."
 	| ast expected |

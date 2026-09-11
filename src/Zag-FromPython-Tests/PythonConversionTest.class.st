@@ -514,6 +514,11 @@ PythonConversionTest >> testNegation [
 	self assertExpression: source convertsTo: expected.
 ]
 
+{ #category : 'tests - literals' }
+PythonConversionTest >> testNoneNode [
+	self assertExpression: 'None' convertsTo: (ASLiteral literal: nil). 
+]
+
 { #category : 'tests - comparison & membership operators' }
 PythonConversionTest >> testNotIn [
 	"Ensure a 'not in' expression can be converted to Zag properly.  Included because it has distinct semantics from 'is' and is one operator of two words."

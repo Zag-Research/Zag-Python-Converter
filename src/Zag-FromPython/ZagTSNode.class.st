@@ -381,6 +381,11 @@ ZagTSNode >> moduleToZagAST [
 	^ASMethodNode selector: self class mainMethodSelector locals: locals body: children.
 ]
 
+{ #category : 'converting - literals' }
+ZagTSNode >> noneToZagAST [
+	^ASLiteral literal: nil.
+]
+
 { #category : 'converting - operators' }
 ZagTSNode >> notToZagAST [
 	"comment stating purpose of instance-side method"

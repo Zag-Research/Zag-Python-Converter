@@ -372,12 +372,15 @@ ZagToPythonVisitor >> visitIfElse: aSend [
 { #category : 'visiting' }
 ZagToPythonVisitor >> visitLiteral: aLiteral [
 	"Visits an ASLiteral, adding its associated Python source to my stream."
-	aLiteral literal isString
-		ifTrue: [
+	{ 
+		aLiteral literal isString -> [
 			resultStream nextPut: $".
 			resultStream nextPutAll: aLiteral literal.
 			resultStream nextPut: $".
-		] ifFalse: [ resultStream nextPutAll: aLiteral literal asString ]
+		].
+		aLiteral literal isNil -> [ resultStream nextPutAll: 'None' ].
+		true -> [ resultStream nextPutAll: aLiteral literal asString ]
+	} switch
 ]
 
 { #category : 'visiting' }
