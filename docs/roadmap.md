@@ -79,18 +79,18 @@ This phase of development is mostly oriented around things that I missed in vers
 - [ ] §2.5.6 Raw string literals
 - [X] §2.6 Numeric literals
 - [X] §2.6.3 Imaginary literals
-- [ ] §3.2.1 None
-- [ ] §3.2.2 NotImplemented
-- [ ] §3.2.3 Ellipsis
+- [X] §3.2.1 None
+- [X] §3.2.2 NotImplemented
+- [X] §3.2.3 Ellipsis
 - [X] §3.2.4.3 numbers.Complex (complex)
 - [ ] §3.2.5.1 Immutable sequences
 - [ ] §3.2.6 Set types
 - [ ] §3.2.7 Mappings
 - [ ] §3.2.7.1 Dictionaries
 - [X] §6.12 Assignment expressions
-- [ ] §6.13 Conditional expressions
-- [ ] §7.3 The assert statement
-- [ ] §7.4 The pass statement
+- [X] §6.13 Conditional expressions
+- [X] §7.3 The assert statement
+- [X] §7.4 The pass statement
 - [ ] §7.5 The del statement
 
 ## Unassigned Features
