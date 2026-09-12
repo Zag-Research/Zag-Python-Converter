@@ -390,6 +390,11 @@ ZagToPythonConversionTest >> testNilLiteral [
 ]
 
 { #category : 'tests - basic expressions' }
+ZagToPythonConversionTest >> testNotImplemented [
+	self assert: (ASLiteral literal: NotImplemented) convertsTo: 'NotImplemented'.
+]
+
+{ #category : 'tests - basic expressions' }
 ZagToPythonConversionTest >> testPrint [
 	"Ensures the print statement can be converted to."
 	| ast expected |

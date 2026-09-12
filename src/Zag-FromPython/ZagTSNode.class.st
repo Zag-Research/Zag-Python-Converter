@@ -309,6 +309,7 @@ ZagTSNode >> getUnaryOperator [
 { #category : 'converting - by node type' }
 ZagTSNode >> identifierToZagAST [
 	"Converts me to a Zag AST, assuming I am an identifier."
+	self sourcePart asSymbol = #NotImplemented ifTrue: [ ^ASLiteral literal: NotImplemented ].
 	^ASRef variable: self sourcePart asSymbol.
 ]
 
