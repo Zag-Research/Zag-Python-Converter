@@ -156,6 +156,11 @@ ZagToPythonConversionTest >> testDatatypeConversion [
 	self assert: ast convertsTo: expected.
 ]
 
+{ #category : 'tests - basic expressions' }
+ZagToPythonConversionTest >> testEllipsis [
+	self assert: (ASLiteral literal: Ellipsis) convertsTo: 'Ellipsis'.
+]
+
 { #category : 'tests - control flow' }
 ZagToPythonConversionTest >> testElse [
 	"Tests that an ifFalse: statement can be converted to if/else."

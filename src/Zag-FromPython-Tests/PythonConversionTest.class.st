@@ -215,6 +215,11 @@ PythonConversionTest >> testComplexNumberNode [
 	self assertExpression: '0.5j' convertsTo: (ASSend target: (ASLiteral literal: 0.5) selector: #i).
 ]
 
+{ #category : 'tests - literals' }
+PythonConversionTest >> testEllipsisNode [
+	self assertExpression: 'Ellipsis' convertsTo: (ASLiteral literal: Ellipsis).
+]
+
 { #category : 'tests - comparison & membership operators' }
 PythonConversionTest >> testEquals [
 	"Ensure an == expression can be converted to Zag properly."
