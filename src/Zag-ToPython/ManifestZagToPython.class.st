@@ -20,7 +20,7 @@ ManifestZagToPython class >> ruleBadMessageRule2V1FalsePositive [
 ManifestZagToPython class >> ruleEqualsTrueRuleV1FalsePositive [
 
 	<ignoreForCoverage>
-	^ #(#(#(#RGMethodDefinition #(#ZagToPythonVisitor #outputFormattedIfElse: #false)) #'2026-06-25T17:39:20.865-05:00') #(#(#RGMethodDefinition #(#ZagToPythonVisitor #visitLiteral: #false)) #'2026-09-11T11:40:00.554-05:00') )
+	^ #(#(#(#RGMethodDefinition #(#ZagToPythonVisitor #outputFormattedIfElseStatement: #false)) #'2026-06-25T17:39:20.865-05:00') #(#(#RGMethodDefinition #(#ZagToPythonVisitor #visitLiteral: #false)) #'2026-09-11T11:40:00.554-05:00') #(#(#RGMethodDefinition #(#ZagToPythonVisitor #outputFormattedIfElse: #false)) #'2026-09-11T19:13:14.526-05:00') )
 ]
 
 { #category : 'code-critics' }

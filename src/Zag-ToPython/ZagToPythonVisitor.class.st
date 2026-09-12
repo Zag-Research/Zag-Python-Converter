@@ -215,6 +215,26 @@ ZagToPythonVisitor >> outputFormattedIfElse: switchASTMap [
 	"Outputs an if/else statement based on the provided AST."
 	"It should be a collection made of associations, as in Zag-FromPython's switch statement."
 	"Use the literal true (not an ASLiteral) as the key to specify the else statement."
+	self nestingLevel > 1 ifTrue: [
+		(switchASTMap size = 2 and: [ switchASTMap last key == true or: [ switchASTMap last key = (ASLiteral literal: true) ] ]) ifFalse: [ ^self notYetImplemented ].
+		self outputFormattedIfElseExpression: switchASTMap first key if: switchASTMap first value else: switchASTMap last value.
+	] ifFalse: [ self outputFormattedIfElseStatement: switchASTMap ].
+	
+]
+
+{ #category : 'visiting - message sends' }
+ZagToPythonVisitor >> outputFormattedIfElseExpression: condition if: ifValue else: elseValue [
+	ifValue body size = 1 ifFalse: [ self notYetImplemented ].
+	elseValue body size = 1 ifFalse: [ self notYetImplemented ].
+	self visit: ifValue body first.
+	self resultStream nextPutAll: ' if '.
+	self visit: condition.
+	self resultStream nextPutAll: ' else '.
+	self visit: elseValue body first.
+]
+
+{ #category : 'visiting - message sends' }
+ZagToPythonVisitor >> outputFormattedIfElseStatement: switchASTMap [
 	| isFirst |
 	isFirst := true.
 	switchASTMap do: [ :part |

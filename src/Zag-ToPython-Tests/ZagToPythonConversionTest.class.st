@@ -307,6 +307,20 @@ else:
 ]
 
 { #category : 'tests - control flow' }
+ZagToPythonConversionTest >> testIfExpression [
+	"Tests that an ifTrue:ifFalse: expression can be converted to an if/else expression."
+	| ast expected |
+	ast := ASAssign variable: (ASRef variable: #z) expression: (ASSend target: (
+		ASSend target: (ASRef variable: #x) selector: #> args: { ASRef variable: #y }
+	) selector: #ifTrue:ifFalse: args: {
+		ASBlockNode locals: #() body: { ASLiteral literal: 1 }.
+		ASBlockNode locals: #() body: { ASLiteral literal: -1 } 
+	}).
+	expected := 'z = 1 if x > y else -1'.
+	self assert: ast convertsTo: expected.
+]
+
+{ #category : 'tests - control flow' }
 ZagToPythonConversionTest >> testIfPass [
 	"Tests that an ifTrue: statement with an empty block can be converted to if/else, and that pass is outputted."
 	| ast expected |

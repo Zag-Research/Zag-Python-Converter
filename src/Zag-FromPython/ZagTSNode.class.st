@@ -33,6 +33,7 @@ ZagTSNode class >> converter: type [
 	type = #'augmented_assignment' ifTrue: [ ^#augmentedAssignToZagAST ].
 	type = #'named_expression' ifTrue: [ ^#assignToZagAST ]. ":= - temp - should have different semantics later"
 	type = #'if_statement' ifTrue: [ ^#ifToZagAST ].
+	type = #'conditional_expression' ifTrue: [ ^#ifExpressionToZagAST ].
 	type = #'for_statement' ifTrue: [ ^#forToZagAST ].
 	type = #'while_statement' ifTrue: [ ^#whileToZagAST ].
 	type = #'assert_statement' ifTrue: [ ^#assertToZagAST ].
@@ -327,6 +328,14 @@ ZagTSNode >> ifElifToZagAST [
 				selector: #-> args: {(self >> i >> 2) asZagASTNode } ]
 			ifFalse: [ ASSend target: (ASLiteral literal: true) selector: #-> args: {(self >> i >> 1) asZagASTNode } ])].
 	^ASSend target: conditions selector: #switch.
+]
+
+{ #category : 'converting - control flow' }
+ZagTSNode >> ifExpressionToZagAST [
+	^ASSend
+		target: (self >> 2) asZagASTNode
+		selector: #ifTrue:ifFalse:
+		args: (#(1 3) collect: [ :i | ASBlockNode locals: #() body: { (self >> i) asZagASTNode } ])
 ]
 
 { #category : 'converting - control flow' }

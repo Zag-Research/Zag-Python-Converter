@@ -382,6 +382,15 @@ else:
 ]
 
 { #category : 'tests - control flow' }
+PythonConversionTest >> testIfExpression [
+	self assertExpression: 'a if c else b' convertsTo: (
+		ASSend target: (ASRef variable: #c) selector: #ifTrue:ifFalse: args: {
+			ASBlockNode locals: #() body: { ASRef variable: #a }.
+			ASBlockNode locals: #() body: { ASRef variable: #b }
+		}).
+]
+
+{ #category : 'tests - control flow' }
 PythonConversionTest >> testIfPass [
 	"Tests converting an if statement without any elif or else blocks."
 	| source expected |
