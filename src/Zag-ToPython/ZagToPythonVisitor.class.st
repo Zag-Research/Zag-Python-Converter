@@ -471,6 +471,18 @@ ZagToPythonVisitor >> visitSend: aSend [
 		[ ^self visitDatatypeConversion: aSend ].
 	(aSend selector = #fromNumberOrString: and: [ aSend target = (ASRef variable: #ByteArray) ]) ifTrue:
 		[ ^self outputCall: #bytearray args: aSend args ].
+	(aSend selector = #asSet) ifTrue: [
+		(aSend target isKindOf: ASLiteral) ifTrue: [
+			"can't use outputCollection because literal elements are not ASLiterals."
+			self resultStream nextPut: ${.
+			aSend target literal
+				do: [ :each | self resultStream nextPutAll: each asString ]
+				separatedBy: [ self resultStream nextPutAll: ', ' ].
+			^self resultStream nextPut: $}. ].
+		(aSend target isKindOf: ASArray) ifTrue: [ 
+			^self outputCollection: aSend target statements begin: '{' end: '}' separator: ', ' ].
+		^self outputCall: #set args: { aSend target }.
+	].
 	(self class isInput: aSend) ifTrue: [ ^self outputCall: #input args: { aSend args first } ].
 	(aSend selector = #at:) ifTrue:
 		[ ^self visitArrayAccess: aSend target index: aSend args first isZeroIndexed: false ].

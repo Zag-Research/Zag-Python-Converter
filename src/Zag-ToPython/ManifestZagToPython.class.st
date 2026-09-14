@@ -13,7 +13,7 @@ Class {
 ManifestZagToPython class >> ruleBadMessageRule2V1FalsePositive [
 
 	<ignoreForCoverage>
-	^ #(#(#(#RGMetaclassDefinition #(#'ZagToPythonVisitor class' #ZagToPythonVisitor)) #'2026-06-19T15:11:37.535-05:00') #(#(#RGMethodDefinition #(#ZagToPythonVisitor #visitStatements: #false)) #'2026-06-26T08:34:36.534-05:00') )
+	^ #(#(#(#RGMetaclassDefinition #(#'ZagToPythonVisitor class' #ZagToPythonVisitor)) #'2026-06-19T15:11:37.535-05:00') #(#(#RGMethodDefinition #(#ZagToPythonVisitor #visitStatements: #false)) #'2026-06-26T08:34:36.534-05:00') #(#(#RGMethodDefinition #(#ZagToPythonVisitor #visitSend: #false)) #'2026-09-14T12:56:06.885-05:00') )
 ]
 
 { #category : 'code-critics' }

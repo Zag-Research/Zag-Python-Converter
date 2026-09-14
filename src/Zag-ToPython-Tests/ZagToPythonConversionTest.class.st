@@ -14,6 +14,14 @@ ZagToPythonConversionTest >> assert: ast convertsTo: source [
 	self assert: actual equals: source.
 ]
 
+{ #category : 'asserting' }
+ZagToPythonConversionTest >> assert: ast convertsToAnyOf: sources [
+	"Assert the provided Zag AST converts to the provided Python source."
+	| actual |
+	actual := ZagToPythonVisitor astToPythonSource: ast.
+	self assert: (sources includes: actual).
+]
+
 { #category : 'tests - arrays' }
 ZagToPythonConversionTest >> testASArray [
 	self assert: (ASArray statements: {
@@ -430,6 +438,17 @@ ZagToPythonConversionTest >> testPrint [
 	}.
 	expected := 'print(out)'.
 	self assert: ast convertsTo: expected.
+]
+
+{ #category : 'tests - basic expressions' }
+ZagToPythonConversionTest >> testSetLiteral [
+	"Tests that (literal array) asSet converts to a set literal."
+	| source1 source2 expecteds |
+	source1 := ASSend target: ((1 to: 3) collect: [ :each | ASLiteral literal: each ] as: ASArray) selector: #asSet.
+	source2 := ASSend target: (ASLiteral literal: #(1 2 3)) selector: #asSet.
+	expecteds := #('{1, 2, 3}' '{1, 3, 2}' '{2, 1, 3}' '{2, 3, 1}' '{3, 1, 2}' '{3, 2, 1}').
+	self assert: source1 convertsToAnyOf: expecteds.
+	self assert: source2 convertsToAnyOf: expecteds.
 ]
 
 { #category : 'tests - basic expressions' }
