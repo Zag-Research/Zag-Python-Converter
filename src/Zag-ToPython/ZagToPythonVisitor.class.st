@@ -284,6 +284,18 @@ ZagToPythonVisitor >> visit: anObject withBrackets: enableBrackets [
 	enableBrackets ifTrue: [ resultStream nextPut: $) ].
 ]
 
+{ #category : 'visiting' }
+ZagToPythonVisitor >> visitArray: anArray [
+	anArray statements ifEmpty: [ ^self resultStream nextPutAll: '[]' ].
+	self resultStream nextPut: $[.
+	self visit: anArray statements first.
+	anArray statements allButFirstDo: [ :each |
+		self resultStream nextPutAll: ', '.
+		self visit: each.
+	].
+	self resultStream nextPut: $].
+]
+
 { #category : 'visiting - message sends' }
 ZagToPythonVisitor >> visitArrayAccess: arrayTree index: index isZeroIndexed: isZeroIndexed [
 	"Translates an array access operation to a subscript."
@@ -397,6 +409,10 @@ ZagToPythonVisitor >> visitLiteral: aLiteral [
 			resultStream nextPut: $".
 			resultStream nextPutAll: aLiteral literal.
 			resultStream nextPut: $".
+		].
+		aLiteral literal isCollection -> [ | literals |
+			literals := aLiteral literal collect: [ :each | ASLiteral literal: each ].
+			self visitArray: (ASArray statements: literals)
 		].
 		aLiteral literal isNil -> [ resultStream nextPutAll: 'None' ].
 		"using == true/false as the literal can be any type"

@@ -14,6 +14,13 @@ ZagToPythonConversionTest >> assert: ast convertsTo: source [
 	self assert: actual equals: source.
 ]
 
+{ #category : 'tests - arrays' }
+ZagToPythonConversionTest >> testASArray [
+	self assert: (ASArray statements: {
+		ASRef variable: #a . ASRef variable: #b . ASRef variable: #c
+	}) convertsTo: '[a, b, c]'
+]
+
 { #category : 'tests - operations' }
 ZagToPythonConversionTest >> testAddition [
 	"Tests converting a simple addition expression."
@@ -41,6 +48,11 @@ ZagToPythonConversionTest >> testArrayAccess [
 	ast := ASSend target: (ASRef variable: #a) selector: #at: args: { ASRef variable: #i }.
 	expected := 'a[i - 1]'.
 	self assert: ast convertsTo: expected.
+]
+
+{ #category : 'tests - arrays' }
+ZagToPythonConversionTest >> testArrayLiteral [
+	self assert: (ASLiteral literal: #('a' 'b' 'c')) convertsTo: '["a", "b", "c"]'
 ]
 
 { #category : 'tests - arrays' }

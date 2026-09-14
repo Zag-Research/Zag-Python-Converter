@@ -200,6 +200,14 @@ PythonConversionTest >> testBooleanNodes [
 	self assertExpression: 'False' convertsTo: (ASLiteral literal: false).
 ]
 
+{ #category : 'tests - functions' }
+PythonConversionTest >> testBytearrayCall [
+	"Ensures bytearray() converts properly."
+	self assertExpression: 'bytearray(10)' convertsTo: (
+		ASSend target: (ASRef variable: #ByteArray) selector: #fromNumberOrString: args: {
+			ASLiteral literal: 10 }).
+]
+
 { #category : 'tests - comparison & membership operators' }
 PythonConversionTest >> testComparison [
 	"Ensure a comparison expression can be converted to Zag properly."

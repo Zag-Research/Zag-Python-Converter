@@ -95,7 +95,7 @@ ZagTSNode class >> pythonToZagAST: source [
 
 { #category : 'constants' }
 ZagTSNode class >> supportedBuiltins [
-	^#(#print #input #float #int #range) asSet.
+	^#(#print #input #float #int #range #bytearray) asSet.
 ]
 
 { #category : 'accessing' }
@@ -236,6 +236,13 @@ ZagTSNode >> builtinToZagAST [
 	name = #float ifTrue: [ ^self floatToZagAST ].
 	name = #int ifTrue: [ ^self intToZagAST ].
 	name = #range ifTrue: [ ^self rangeToZagAST ].
+	name = #bytearray ifTrue: [ ^self byteArrayToZagAST ].
+]
+
+{ #category : 'converting - functions' }
+ZagTSNode >> byteArrayToZagAST [
+	^ASSend target: (ASRef variable: #ByteArray) selector: #fromNumberOrString: args: {
+		(self >> 2 >> 1) asZagASTNode }
 ]
 
 { #category : 'converting - functions' }
