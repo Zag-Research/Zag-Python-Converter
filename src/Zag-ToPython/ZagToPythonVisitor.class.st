@@ -471,6 +471,8 @@ ZagToPythonVisitor >> visitSend: aSend [
 		[ ^self visitUnaryOperation: aSend ].
 	(self class smalltalkToPythonDatatypeConversions includesKey: aSend selector) ifTrue:
 		[ ^self visitDatatypeConversion: aSend ].
+	(aSend selector = #fromNumberOrString: and: [ aSend target = (ASRef variable: #ByteArray) ]) ifTrue:
+		[ ^self outputCall: #bytearray args: aSend args ].
 	(self class isInput: aSend) ifTrue: [ ^self outputCall: #input args: { aSend args first } ].
 	(aSend selector = #at:) ifTrue:
 		[ ^self visitArrayAccess: aSend target index: aSend args first isZeroIndexed: false ].

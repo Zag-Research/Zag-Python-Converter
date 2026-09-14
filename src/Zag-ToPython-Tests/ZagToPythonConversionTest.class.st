@@ -150,6 +150,15 @@ ZagToPythonConversionTest >> testBooleanLiterals [
 	self assert: (ASLiteral literal: false) convertsTo: 'False'.
 ]
 
+{ #category : 'tests - arrays' }
+ZagToPythonConversionTest >> testBytearray [
+	self assert: (ASSend
+		target: (ASRef variable: #ByteArray)
+		selector: #fromNumberOrString:
+		args: { ASLiteral literal: 10 }
+	) convertsTo: 'bytearray(10)'
+]
+
 { #category : 'tests - basic expressions' }
 ZagToPythonConversionTest >> testComplexNumberLiteral [
 	"Test that complex number literals convert properly."
