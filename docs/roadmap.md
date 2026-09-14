@@ -4,7 +4,7 @@ This roadmap is based on [The Python Language Reference](https://docs.python.org
 
 Each entry in the below list refers to a section in this reference, denoted by the section symbol §.
 
-## Versions 0.1.0 & 0.2.0 (182‰)
+## Versions 0.1.0 & 0.2.0 (178‰)
 
 *These two versions implemented the same features, but 0.1.0 implemented them in Python-to-Zag translation, while 0.2.0 implemented them in Zag-to-Python translation.*
 
@@ -30,7 +30,6 @@ Each entry in the below list refers to a section in this reference, denoted by t
 - §3.2.4.1 numbers.Integral
 - §3.2.4.2 numbers.Real (float)
 - §3.2.5 Sequences
-- §3.2.5.2 Mutable sequences
 - §4.1 Structure of a program
 - §4.2.2 Resolution of names
 - §6.1 Arithmetic conversions
@@ -84,6 +83,7 @@ This phase of development is mostly oriented around things that I missed in vers
 - [X] §3.2.3 Ellipsis
 - [X] §3.2.4.3 numbers.Complex (complex)
 - [ ] §3.2.5.1 Immutable sequences
+- [X] §3.2.5.2 Mutable sequences
 - [ ] §3.2.6 Set types
 - [ ] §3.2.7 Mappings
 - [ ] §3.2.7.1 Dictionaries
