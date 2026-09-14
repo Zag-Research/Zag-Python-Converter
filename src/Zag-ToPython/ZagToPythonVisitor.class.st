@@ -198,19 +198,24 @@ ZagToPythonVisitor >> nestingLevel: anInteger [
 	nestingLevel := anInteger.
 ]
 
-{ #category : 'visiting - message sends' }
+{ #category : 'printing helpers' }
 ZagToPythonVisitor >> outputCall: selector args: args [
 	"Prints a function call to my stream."
-	resultStream nextPutAll: selector asString; nextPut: $(.
-	self visit: args first.
-	args allButFirstDo: [ :arg |
-		resultStream nextPutAll: ', '.
-		self visit: arg.
-	].
-	resultStream nextPut: $).
+	self resultStream nextPutAll: selector asString.
+	self outputCollection: args begin: '(' end: ')' separator: ', '.
 ]
 
-{ #category : 'visiting - message sends' }
+{ #category : 'printing helpers' }
+ZagToPythonVisitor >> outputCollection: aCollection begin: startDelimiter end: endDelimiter separator: separator [
+	"Output a collection to the standard output.  The start, end and separator can be customized.  All should be strings."
+	self resultStream nextPutAll: startDelimiter.
+	aCollection
+		do: [ :each | self visit: each ]
+		separatedBy: [ self resultStream nextPutAll: separator ].
+	self resultStream nextPutAll: endDelimiter.
+]
+
+{ #category : 'printing helpers' }
 ZagToPythonVisitor >> outputFormattedIfElse: switchASTMap [
 	"Outputs an if/else statement based on the provided AST."
 	"It should be a collection made of associations, as in Zag-FromPython's switch statement."
@@ -222,7 +227,7 @@ ZagToPythonVisitor >> outputFormattedIfElse: switchASTMap [
 	
 ]
 
-{ #category : 'visiting - message sends' }
+{ #category : 'printing helpers' }
 ZagToPythonVisitor >> outputFormattedIfElseExpression: condition if: ifValue else: elseValue [
 	ifValue body size = 1 ifFalse: [ self notYetImplemented ].
 	elseValue body size = 1 ifFalse: [ self notYetImplemented ].
@@ -233,7 +238,7 @@ ZagToPythonVisitor >> outputFormattedIfElseExpression: condition if: ifValue els
 	self visit: elseValue body first.
 ]
 
-{ #category : 'visiting - message sends' }
+{ #category : 'printing helpers' }
 ZagToPythonVisitor >> outputFormattedIfElseStatement: switchASTMap [
 	| isFirst |
 	isFirst := true.
@@ -286,14 +291,7 @@ ZagToPythonVisitor >> visit: anObject withBrackets: enableBrackets [
 
 { #category : 'visiting' }
 ZagToPythonVisitor >> visitArray: anArray [
-	anArray statements ifEmpty: [ ^self resultStream nextPutAll: '[]' ].
-	self resultStream nextPut: $[.
-	self visit: anArray statements first.
-	anArray statements allButFirstDo: [ :each |
-		self resultStream nextPutAll: ', '.
-		self visit: each.
-	].
-	self resultStream nextPut: $].
+	self outputCollection: anArray statements begin: '[' end: ']' separator: ', '
 ]
 
 { #category : 'visiting - message sends' }
