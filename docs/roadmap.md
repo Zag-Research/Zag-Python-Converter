@@ -84,7 +84,7 @@ This phase of development is mostly oriented around things that I missed in vers
 - [X] §3.2.4.3 numbers.Complex (complex)
 - [ ] §3.2.5.1 Immutable sequences
 - [X] §3.2.5.2 Mutable sequences
-- [ ] §3.2.6 Set types
+- [X] §3.2.6 Set types
 - [ ] §3.2.7 Mappings
 - [ ] §3.2.7.1 Dictionaries
 - [X] §6.12 Assignment expressions
