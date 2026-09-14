@@ -98,6 +98,13 @@ PythonConversionTest >> testArrayAssignPlus [
 	self assertExpression: source convertsTo: expected.
 ]
 
+{ #category : 'tests - literals' }
+PythonConversionTest >> testArrayLiteralNode [
+	"Tests converting array/list literals"
+	self assertExpression: '[a, b, c]' convertsTo: (ASArray statements: {
+		ASRef variable: #a . ASRef variable: #b . ASRef variable: #c })
+]
+
 { #category : 'tests - control flow' }
 PythonConversionTest >> testAssert [
 	"Tests that basic assert statements can be translated properly."

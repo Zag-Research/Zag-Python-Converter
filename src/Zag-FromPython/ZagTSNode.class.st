@@ -383,6 +383,11 @@ ZagTSNode >> lambdaToZagAST [
 ]
 
 { #category : 'converting - by node type' }
+ZagTSNode >> listToZagAST [
+	^self children collect: #asZagASTNode as: ASArray
+]
+
+{ #category : 'converting - by node type' }
 ZagTSNode >> moduleToZagAST [
 	"Converts a module to a #main method."
 	| children locals |
