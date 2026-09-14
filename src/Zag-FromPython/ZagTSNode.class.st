@@ -13,6 +13,20 @@ Class {
 	#tag : 'AST'
 }
 
+{ #category : 'constants' }
+ZagTSNode class >> builtinMap [
+	"Return a dictionary mapping Python builtin function names to methods that should be called to convert them.  Functions outside this map are not yet supported."
+	^{
+		#print -> #printToZagAST.
+		#input -> #inputToZagAST.
+		#float -> #floatToZagAST.
+		#int -> #intToZagAST.
+		#range -> #rangeToZagAST.
+		#bytearray -> #byteArrayToZagAST.
+		#set -> #setCallToZagAST. "setToZagAST is taken by the set literal"
+	} asDictionary
+]
+
 { #category : 'computing' }
 ZagTSNode class >> computeLocals: body [
 	"Gets the set of local variables in a collection of statements."
@@ -91,11 +105,6 @@ ZagTSNode class >> parsePythonTS: source [
 ZagTSNode class >> pythonToZagAST: source [
 	"Converts the provided code to a Zag AST node."
 	^(self newRoot: source) asZagASTNode.
-]
-
-{ #category : 'constants' }
-ZagTSNode class >> supportedBuiltins [
-	^#(#print #input #float #int #range #bytearray) asSet.
 ]
 
 { #category : 'accessing' }
@@ -229,14 +238,10 @@ ZagTSNode >> booleanToZagAST [
 { #category : 'converting - functions' }
 ZagTSNode >> builtinToZagAST [
 	"Converts a builtin method to a Zag AST."
-	| name |
-	name := (self >> 1) sourcePart asSymbol.
-	name = #print ifTrue: [ ^self printToZagAST ].
-	name = #input ifTrue: [ ^self inputToZagAST ].
-	name = #float ifTrue: [ ^self floatToZagAST ].
-	name = #int ifTrue: [ ^self intToZagAST ].
-	name = #range ifTrue: [ ^self rangeToZagAST ].
-	name = #bytearray ifTrue: [ ^self byteArrayToZagAST ].
+	^self class builtinMap
+		at: (self >> 1) sourcePart asSymbol
+		ifPresent: [ :func | func value: self ]
+		ifAbsent: [ self notYetImplemented ]
 ]
 
 { #category : 'converting - functions' }
@@ -248,9 +253,9 @@ ZagTSNode >> byteArrayToZagAST [
 { #category : 'converting - functions' }
 ZagTSNode >> callToZagAST [
 	"Converts a function call to a Zag AST."
-	(self class supportedBuiltins includes: (self >> 1) sourcePart asSymbol)
+	(self class builtinMap includesKey: (self >> 1) sourcePart asSymbol)
 		ifTrue: [ ^self builtinToZagAST ]
-		ifFalse: [ self error ].
+		ifFalse: [ self notYetImplemented ].
 ]
 
 { #category : 'converting - by node type' }
@@ -446,10 +451,20 @@ ZagTSNode >> rangeToZagAST [
 			args: { (self >> 2 >> 2) asZagASTNode . (self >> 2 >> 3) asZagASTNode } ]
 ]
 
+{ #category : 'converting - functions' }
+ZagTSNode >> setCallToZagAST [
+	^ASSend target: (self >> 2 >> 1) asZagASTNode selector: #asSet
+]
+
 { #category : 'initialization' }
 ZagTSNode >> setNode: aNode source: aString [
 	node := aNode.
 	source := aString.
+]
+
+{ #category : 'initialization' }
+ZagTSNode >> setToZagAST [
+	^ASSend target: (self children collect: #asZagASTNode as: ASArray) selector: #asSet
 ]
 
 { #category : 'accessing' }

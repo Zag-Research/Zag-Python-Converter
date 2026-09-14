@@ -26,6 +26,16 @@ PythonConversionTest >> assertExpression: source convertsTo: tree withLocals: lo
 	self assert: actual equals: expected.
 ]
 
+{ #category : 'tests - helpers' }
+PythonConversionTest >> assertExpression: source convertsToAnyOf: trees [
+	"Asserts the provided Python code converts to any of the provided possibilities."
+	"Puts the provided AST in a main method."
+	| expecteds actual |
+	expecteds := trees collect: [ :tree | ASMethodNode selector: ZagTSNode mainMethodSelector body: {tree} ].
+	actual := ZagTSNode pythonToZagAST: source.
+	self assert: (expecteds includes: actual).
+]
+
 { #category : 'tests - operators' }
 PythonConversionTest >> testAddition [
 	"Ensure an addition expression can be converted to Zag properly."
@@ -619,6 +629,18 @@ PythonConversionTest >> testRangeCall3Arg [
 		selector: #toExclusive:by:
 		args: { ASRef variable: #b . ASRef variable: #c }.
 	self assertExpression: source convertsTo: expected.
+]
+
+{ #category : 'tests - literals' }
+PythonConversionTest >> testSetLiteralNode [
+	"Tests that set literals and the set() call both produce Smalltalk set literals."
+	| expecteds |
+	expecteds := { #(1 2 3) . #(1 3 2) . #(2 1 3) . #(2 3 1) . #(3 1 2) . #(3 2 1)}
+		collect: [ :list | | statements |
+			statements := list collect: [ :each | ASLiteral literal: each ] as: ASArray.
+			ASSend target: statements selector: #asSet ].
+	self assertExpression: '{1, 2, 3}' convertsToAnyOf: expecteds.
+	self assertExpression: 'set([1, 2, 3])' convertsToAnyOf: expecteds.
 ]
 
 { #category : 'tests - literals' }
