@@ -277,19 +277,6 @@ ZagToPythonVisitor >> visitCascade: aCascade [
 	aCascade sends collect: [ :send | send target: aCascade target ] thenDo: [ :each | self visit: each ]
 ]
 
-{ #category : 'visiting - message sends' }
-ZagToPythonVisitor >> visitForEach: aSend [
-	"Visits and outputs a do: send as a for-in loop."
-	self resultStream nextPutAll: 'for '.
-	self visitRef: aSend args first arguments first.
-	self resultStream nextPutAll: ' in '.
-	self visit: aSend target.
-	self resultStream nextPut: $:; nextPut: Character cr.
-	self addIndent: 1.
-	self visitStatements: aSend args first.
-	self addIndent: -1.
-]
-
 { #category : 'visiting' }
 ZagToPythonVisitor >> visitLiteral: aLiteral [
 	"Visits an ASLiteral, adding its associated Python source to my stream."
@@ -366,10 +353,6 @@ ZagToPythonVisitor >> visitSend: aSend [
 		^self resultStream nextPut: $}.
 	].
 	(self class isInput: aSend) ifTrue: [ ^self outputCall: #input args: { aSend args first } ].
-	(aSend selector = #do:) ifTrue: [ ^self visitForEach: aSend ].
-	(aSend selector = #whileTrue:) ifTrue: [ ^self visitWhile: aSend ].
-	(aSend selector = #whileFalse:) ifTrue: [ ^self visitWhile: (
-		ASSend target: aSend target negateLastStatement selector: aSend selector args: aSend args) ].
 	(aSend selector = #i and: [ aSend target isASLiteral ]) ifTrue: [
 		self visitLiteral: aSend target.
 		^self resultStream nextPut: $j.
@@ -407,19 +390,6 @@ ZagToPythonVisitor >> visitUnaryOperation: aSend [
 	self visit: aSend target withBrackets: (
 		self class needsBrackets: aSend forChild: aSend target isTarget: true).
 	
-]
-
-{ #category : 'visiting - message sends' }
-ZagToPythonVisitor >> visitWhile: aSend [
-	"Translate a while loop to Python."
-	aSend target isASBlock ifFalse: [ self error: 'While condition must be a block.' ].
-	aSend target body size = 1 ifFalse: [ self notYetImplemented ].
-	self resultStream nextPutAll: 'while '.
-	self visit: aSend target body first.
-	self resultStream nextPut: $:; nextPut: Character cr.
-	self addIndent: 1.
-	self visitStatements: aSend args first.
-	self addIndent: -1.
 ]
 
 { #category : 'visiting' }
