@@ -241,6 +241,17 @@ PythonConversionTest >> testComplexNumberNode [
 ]
 
 { #category : 'tests - literals' }
+PythonConversionTest >> testDictionaryLiteralNode [
+	self assertExpression: '{"a": b}' convertsTo: (
+		ASSend
+			target: (ASArray statements: {
+				ASSend target: (ASLiteral literal: 'a') selector: #-> args: { ASRef variable: #b }
+			})
+			selector: #asDictionary
+	)
+]
+
+{ #category : 'tests - literals' }
 PythonConversionTest >> testEllipsisNode [
 	self assertExpression: 'Ellipsis' convertsTo: (ASLiteral literal: Ellipsis).
 ]

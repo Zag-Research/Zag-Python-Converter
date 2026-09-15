@@ -282,6 +282,17 @@ ZagTSNode >> childrenDo: aBlock [
 ]
 
 { #category : 'converting - literals' }
+ZagTSNode >> dictionaryToZagAST [
+	^ASSend
+		target: (self children collect: [ :each | 
+			ASSend
+				target: (each >> 1) asZagASTNode
+				selector: #->
+				args: { (each >> 2) asZagASTNode } ] as: ASArray)
+		selector: #asDictionary
+]
+
+{ #category : 'converting - literals' }
 ZagTSNode >> falseToZagAST [
 	^ASLiteral literal: false.
 ]
