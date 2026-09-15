@@ -515,7 +515,10 @@ ZagToPythonConversionTest >> testSwitchOutput [
 			-> (ASBlockNode arguments: #() locals: #() body: {ASReturn expression: (ASLiteral literal: 2)}).
 		true -> (ASBlockNode arguments: #() locals: #() body: {ASReturn expression: (ASLiteral literal: 3)}).
 	}.
-	actual := String streamContents: [ :stream | ZagToPythonVisitor new resultStream: stream; outputFormattedIfElse: switch ].
+	actual := String streamContents: [ :stream | | visitor |
+		visitor := ZagToPythonVisitor new resultStream: stream.
+		ZagIfElseConverter new acceptStatement: switch asVisitor: visitor.
+	].
 	expected := 'if 0:
 	return 1
 elif x >= 0:
