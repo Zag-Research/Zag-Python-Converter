@@ -328,8 +328,6 @@ ZagToPythonVisitor >> visitSend: aSend [
 		[ ^self visitBinaryOperation: aSend ].
 	(self class smalltalkToPythonUnaryOperations includesKey: aSend selector) ifTrue:
 		[ ^self visitUnaryOperation: aSend ].
-	(aSend selector = #fromNumberOrString: and: [ aSend target = (ASRef variable: #ByteArray) ]) ifTrue:
-		[ ^self outputCall: #bytearray args: aSend args ].
 	(aSend selector = #asSet) ifTrue: [
 		(aSend target isKindOf: ASLiteral) ifTrue: [
 			"can't use outputCollection because literal elements are not ASLiterals."
