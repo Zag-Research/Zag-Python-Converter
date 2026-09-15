@@ -351,10 +351,6 @@ ZagToPythonVisitor >> visitSend: aSend [
 		^self resultStream nextPut: $}.
 	].
 	(self class isInput: aSend) ifTrue: [ ^self outputCall: #input args: { aSend args first } ].
-	(aSend selector = #i and: [ aSend target isASLiteral ]) ifTrue: [
-		self visitLiteral: aSend target.
-		^self resultStream nextPut: $j.
-	].
 	ZagSendConverter accept: aSend asVisitor: self.
 ]
 
