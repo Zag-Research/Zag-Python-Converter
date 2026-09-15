@@ -163,6 +163,12 @@ ZagToPythonVisitor >> addNesting: anInteger [
 ]
 
 { #category : 'accessing' }
+ZagToPythonVisitor >> inSubexpression [
+	"Returns true iff I am currently visiting a subexpression, like the bracketed part of a := (b := c)."
+	^self nestingLevel > 1
+]
+
+{ #category : 'accessing' }
 ZagToPythonVisitor >> indentLevel [
 	"The current indent level for my outputted Python code."
 	"A non-negative integer referring to the number of tab characters I will output before each line."
@@ -202,50 +208,6 @@ ZagToPythonVisitor >> outputCollection: aCollection begin: startDelimiter end: e
 		do: [ :each | self visit: each ]
 		separatedBy: [ self resultStream nextPutAll: separator ].
 	self resultStream nextPutAll: endDelimiter.
-]
-
-{ #category : 'printing helpers' }
-ZagToPythonVisitor >> outputFormattedIfElse: switchASTMap [
-	"Outputs an if/else statement based on the provided AST."
-	"It should be a collection made of associations, as in Zag-FromPython's switch statement."
-	"Use the literal true (not an ASLiteral) as the key to specify the else statement."
-	self nestingLevel > 1 ifTrue: [
-		(switchASTMap size = 2 and: [ switchASTMap last key == true or: [ switchASTMap last key = (ASLiteral literal: true) ] ]) ifFalse: [ ^self notYetImplemented ].
-		self outputFormattedIfElseExpression: switchASTMap first key if: switchASTMap first value else: switchASTMap last value.
-	] ifFalse: [ self outputFormattedIfElseStatement: switchASTMap ].
-	
-]
-
-{ #category : 'printing helpers' }
-ZagToPythonVisitor >> outputFormattedIfElseExpression: condition if: ifValue else: elseValue [
-	ifValue body size = 1 ifFalse: [ self notYetImplemented ].
-	elseValue body size = 1 ifFalse: [ self notYetImplemented ].
-	self visit: ifValue body first.
-	self resultStream nextPutAll: ' if '.
-	self visit: condition.
-	self resultStream nextPutAll: ' else '.
-	self visit: elseValue body first.
-]
-
-{ #category : 'printing helpers' }
-ZagToPythonVisitor >> outputFormattedIfElseStatement: switchASTMap [
-	| isFirst |
-	isFirst := true.
-	switchASTMap do: [ :part |
-		(part key == true or: [ part key = (ASLiteral literal: true)]) "== true used because part key is usually not a boolean"
-			ifTrue: [ self resultStream nextPutAll: 'else:
-' ]
-			ifFalse: [
-				self resultStream nextPutAll: (isFirst ifTrue: ['if '] ifFalse: ['elif ']).
-				self visit: part key.
-				self resultStream nextPutAll: ':
-'
-			].
-		self addIndent: 1.
-		self visitStatements: part value.
-		self addIndent: -1.
-		isFirst := false.
-	].
 ]
 
 { #category : 'accessing' }
@@ -326,26 +288,6 @@ ZagToPythonVisitor >> visitForEach: aSend [
 	self addIndent: 1.
 	self visitStatements: aSend args first.
 	self addIndent: -1.
-]
-
-{ #category : 'visiting - message sends' }
-ZagToPythonVisitor >> visitIfElse: aSend [
-	"Prepares aSend for outputFormattedIfElse: and outputs it."
-	aSend selector = #ifTrue: ifTrue: [ ^self outputFormattedIfElse: { aSend target -> aSend args first } ].
-	aSend selector = #ifFalse: ifTrue: [ ^self outputFormattedIfElse: {
-		aSend target -> nil. true -> aSend args first.
-	} ].
-	aSend selector = #ifFalse:ifTrue: ifTrue: [ ^self outputFormattedIfElse: { 
-		aSend target -> aSend args last. true -> aSend args first.
-	} ].
-	aSend selector = #ifTrue:ifFalse: ifTrue: [ ^self outputFormattedIfElse: { 
-		aSend target -> aSend args first. true -> aSend args last.
-	} ].
-	aSend selector = #switch ifTrue: [ ^self outputFormattedIfElse: (
-		aSend target statements collect: [ :each | each selector = #->
-			ifTrue: [ each target -> each args first ]
-			ifFalse: [ self error: 'Invalid selector for switch statement part.' ] ]
-	) ].
 ]
 
 { #category : 'visiting' }
@@ -441,8 +383,6 @@ ZagToPythonVisitor >> visitSend: aSend [
 		^self resultStream nextPut: $}.
 	].
 	(self class isInput: aSend) ifTrue: [ ^self outputCall: #input args: { aSend args first } ].
-	(#(#ifTrue: #ifFalse: #ifFalse:ifTrue: #ifTrue:ifFalse: #switch) includes: aSend selector) ifTrue:
-		[ ^self visitIfElse: aSend ].
 	(#(#to: #to:by:) includes: aSend selector) ifTrue: [ ^self visitRange: aSend exclusive: false ].
 	(#(#toExclusive: #toExclusive:by:) includes: aSend selector) ifTrue: [ ^self visitRange: aSend exclusive: true ].
 	(aSend selector = #do:) ifTrue: [ ^self visitForEach: aSend ].
