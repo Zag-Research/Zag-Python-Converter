@@ -295,24 +295,6 @@ ZagToPythonVisitor >> visitArray: anArray [
 ]
 
 { #category : 'visiting - message sends' }
-ZagToPythonVisitor >> visitArrayAccess: arrayTree index: index isZeroIndexed: isZeroIndexed [
-	"Translates an array access operation to a subscript."
-	self visit: arrayTree.
-	resultStream nextPut: $[.
-	self visit: index.
-	isZeroIndexed ifFalse: [ resultStream nextPutAll: ' - 1' ].
-	resultStream nextPut: $].
-]
-
-{ #category : 'visiting - message sends' }
-ZagToPythonVisitor >> visitArraySet: arrayTree index: index value: value isZeroIndexed: isZeroIndexed [
-	"Translates an array access operation to a subscript."
-	self visitArrayAccess: arrayTree index: index isZeroIndexed: isZeroIndexed.
-	resultStream nextPutAll: ' = '.
-	self visit: value.
-]
-
-{ #category : 'visiting - message sends' }
 ZagToPythonVisitor >> visitAssert: aStatement [
 	self resultStream nextPutAll: 'assert '.
 	self visit: aStatement.
@@ -494,14 +476,6 @@ ZagToPythonVisitor >> visitSend: aSend [
 		^self resultStream nextPut: $}.
 	].
 	(self class isInput: aSend) ifTrue: [ ^self outputCall: #input args: { aSend args first } ].
-	(aSend selector = #at:) ifTrue:
-		[ ^self visitArrayAccess: aSend target index: aSend args first isZeroIndexed: false ].
-	(aSend selector = #zwAt:) ifTrue:
-		[ ^self visitArrayAccess: aSend target index: aSend args first isZeroIndexed: true ].
-	(aSend selector = #at:put:) ifTrue:
-		[ ^self visitArraySet: aSend target index: aSend args first value: aSend args last isZeroIndexed: false ].
-	(aSend selector = #zwAt:put:) ifTrue:
-		[ ^self visitArraySet: aSend target index: aSend args first value: aSend args last isZeroIndexed: true ].
 	(#(#ifTrue: #ifFalse: #ifFalse:ifTrue: #ifTrue:ifFalse: #switch) includes: aSend selector) ifTrue:
 		[ ^self visitIfElse: aSend ].
 	(#(#to: #to:by:) includes: aSend selector) ifTrue: [ ^self visitRange: aSend exclusive: false ].
@@ -520,7 +494,7 @@ ZagToPythonVisitor >> visitSend: aSend [
 			^self visitAssert: aSend target body first withDescription: aSend args first	 
 		].
 	].
-	self error: 'Unrecognized selector'
+	ZagSendConverter accept: aSend asVisitor: self.
 ]
 
 { #category : 'visiting' }
