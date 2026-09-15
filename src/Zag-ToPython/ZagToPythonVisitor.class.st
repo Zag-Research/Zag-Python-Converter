@@ -138,17 +138,6 @@ ZagToPythonVisitor class >> smalltalkToPythonBinaryOperations [
 ]
 
 { #category : 'constants' }
-ZagToPythonVisitor class >> smalltalkToPythonDatatypeConversions [
-	"A dictionary mapping datatype conversions."
-	"Always maps 'a m1' to 'm2(a)', where m1 -> m2 is an element here"
-	^{
-		#asInteger -> #int.
-		#asNumber -> #float.
-		#asString -> #str.
-	} asDictionary
-]
-
-{ #category : 'constants' }
 ZagToPythonVisitor class >> smalltalkToPythonUnaryOperations [
 	"Returns a dictionary mapping unary Smalltalk operands to Python."
 	^{ 
@@ -341,14 +330,6 @@ ZagToPythonVisitor >> visitCascade: aCascade [
 ]
 
 { #category : 'visiting - message sends' }
-ZagToPythonVisitor >> visitDatatypeConversion: aSend [
-	"Prints a datatype conversion to my stream."
-	| pythonSelector |
-	pythonSelector := self class smalltalkToPythonDatatypeConversions at: aSend selector.
-	self outputCall: pythonSelector args: { aSend target }.
-]
-
-{ #category : 'visiting - message sends' }
 ZagToPythonVisitor >> visitForEach: aSend [
 	"Visits and outputs a do: send as a for-in loop."
 	self resultStream nextPutAll: 'for '.
@@ -449,8 +430,6 @@ ZagToPythonVisitor >> visitSend: aSend [
 		[ ^self visitBinaryOperation: aSend ].
 	(self class smalltalkToPythonUnaryOperations includesKey: aSend selector) ifTrue:
 		[ ^self visitUnaryOperation: aSend ].
-	(self class smalltalkToPythonDatatypeConversions includesKey: aSend selector) ifTrue:
-		[ ^self visitDatatypeConversion: aSend ].
 	(aSend selector = #fromNumberOrString: and: [ aSend target = (ASRef variable: #ByteArray) ]) ifTrue:
 		[ ^self outputCall: #bytearray args: aSend args ].
 	(aSend selector = #asSet) ifTrue: [

@@ -22,6 +22,15 @@ ZagToPythonConversionTest >> assert: ast convertsToAnyOf: sources [
 	self assert: (sources includes: actual).
 ]
 
+{ #category : 'running' }
+ZagToPythonConversionTest >> setUp [
+	super setUp.
+	"Put here a common initialization logic for tests"
+	
+	"Reset the ZagSendConverter dictionary, in case I added new converters."
+	ZagSendConverter initialize.
+]
+
 { #category : 'tests - arrays' }
 ZagToPythonConversionTest >> testASArray [
 	self assert: (ASArray statements: {
