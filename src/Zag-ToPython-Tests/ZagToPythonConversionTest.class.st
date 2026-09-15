@@ -186,6 +186,17 @@ ZagToPythonConversionTest >> testDatatypeConversion [
 ]
 
 { #category : 'tests - basic expressions' }
+ZagToPythonConversionTest >> testDictionaryLiteral [
+	"Tests that (literal array) asSet converts to a set literal."
+	| source expected |
+	source := ASSend target: (ASArray statements: {
+		ASSend target: (ASLiteral literal: 'a') selector: #-> args: { ASRef variable: #b }
+	}) selector: #asDictionary.
+	expected := '{"a": b}'.
+	self assert: source convertsTo: expected.
+]
+
+{ #category : 'tests - basic expressions' }
 ZagToPythonConversionTest >> testEllipsis [
 	self assert: (ASLiteral literal: Ellipsis) convertsTo: 'Ellipsis'.
 ]

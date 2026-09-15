@@ -483,6 +483,16 @@ ZagToPythonVisitor >> visitSend: aSend [
 			^self outputCollection: aSend target statements begin: '{' end: '}' separator: ', ' ].
 		^self outputCall: #set args: { aSend target }.
 	].
+	(aSend selector = #asDictionary) ifTrue: [
+		self resultStream nextPut: ${.
+		aSend target statements
+			do: [ :each |
+				self visit: each target.
+				self resultStream nextPutAll: ': '.
+				self visit: each args first.
+			] separatedBy: [ self resultStream nextPutAll: ', ' ].
+		^self resultStream nextPut: $}.
+	].
 	(self class isInput: aSend) ifTrue: [ ^self outputCall: #input args: { aSend args first } ].
 	(aSend selector = #at:) ifTrue:
 		[ ^self visitArrayAccess: aSend target index: aSend args first isZeroIndexed: false ].
