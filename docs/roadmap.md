@@ -85,8 +85,8 @@ This phase of development is mostly oriented around things that I missed in vers
 - [ ] §3.2.5.1 Immutable sequences
 - [X] §3.2.5.2 Mutable sequences
 - [X] §3.2.6 Set types
-- [ ] §3.2.7 Mappings
-- [ ] §3.2.7.1 Dictionaries
+- [X] §3.2.7 Mappings
+- [X] §3.2.7.1 Dictionaries
 - [X] §6.12 Assignment expressions
 - [X] §6.13 Conditional expressions
 - [X] §7.3 The assert statement
