@@ -328,28 +328,6 @@ ZagToPythonVisitor >> visitSend: aSend [
 		[ ^self visitBinaryOperation: aSend ].
 	(self class smalltalkToPythonUnaryOperations includesKey: aSend selector) ifTrue:
 		[ ^self visitUnaryOperation: aSend ].
-	(aSend selector = #asSet) ifTrue: [
-		(aSend target isKindOf: ASLiteral) ifTrue: [
-			"can't use outputCollection because literal elements are not ASLiterals."
-			self resultStream nextPut: ${.
-			aSend target literal
-				do: [ :each | self resultStream nextPutAll: each asString ]
-				separatedBy: [ self resultStream nextPutAll: ', ' ].
-			^self resultStream nextPut: $}. ].
-		(aSend target isKindOf: ASArray) ifTrue: [ 
-			^self outputCollection: aSend target statements begin: '{' end: '}' separator: ', ' ].
-		^self outputCall: #set args: { aSend target }.
-	].
-	(aSend selector = #asDictionary) ifTrue: [
-		self resultStream nextPut: ${.
-		aSend target statements
-			do: [ :each |
-				self visit: each target.
-				self resultStream nextPutAll: ': '.
-				self visit: each args first.
-			] separatedBy: [ self resultStream nextPutAll: ', ' ].
-		^self resultStream nextPut: $}.
-	].
 	(self class isInput: aSend) ifTrue: [ ^self outputCall: #input args: { aSend args first } ].
 	ZagSendConverter accept: aSend asVisitor: self.
 ]
