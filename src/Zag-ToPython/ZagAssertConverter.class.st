@@ -18,7 +18,7 @@ ZagAssertConverter class >> putRules: aClass [
 ]
 
 { #category : 'visiting' }
-ZagAssertConverter >> accept: aSend asVisitor: aVisitor [
+ZagAssertConverter >> visit: aSend asVisitor: aVisitor [
 	"Converts aSend to Python, outputting the code to aVisitor.  You may call its visiting helpers."
 	"This method assumes, and will only be called if, aSend's selector is appropriate for this object."
 	(aSend target isASBlock and: [ aSend target body size = 1 ]) ifFalse: [ self notYetImplemented ].

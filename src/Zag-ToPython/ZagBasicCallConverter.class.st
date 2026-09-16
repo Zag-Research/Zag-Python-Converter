@@ -21,14 +21,6 @@ ZagBasicCallConverter class >> putRules: aClass [
 	aClass at: #asString putRule: (self new pythonSelector: #str).
 ]
 
-{ #category : 'visiting' }
-ZagBasicCallConverter >> accept: aSend asVisitor: aVisitor [
-	"Converts aSend to Python, outputting the code to aVisitor.  You may call its visiting helpers."
-	"This method assumes, and will only be called if, aSend's selector is appropriate for this object."
-	aVisitor outputCall: self pythonSelector args: { aSend target }
-	
-]
-
 { #category : 'accessing' }
 ZagBasicCallConverter >> pythonSelector [
 
@@ -39,4 +31,12 @@ ZagBasicCallConverter >> pythonSelector [
 ZagBasicCallConverter >> pythonSelector: aSymbol [
 
 	pythonSelector := aSymbol
+]
+
+{ #category : 'visiting' }
+ZagBasicCallConverter >> visit: aSend asVisitor: aVisitor [
+	"Converts aSend to Python, outputting the code to aVisitor.  You may call its visiting helpers."
+	"This method assumes, and will only be called if, aSend's selector is appropriate for this object."
+	aVisitor outputCall: self pythonSelector args: { aSend target }
+	
 ]

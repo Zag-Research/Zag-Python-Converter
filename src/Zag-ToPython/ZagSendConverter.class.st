@@ -12,16 +12,6 @@ Class {
 	#tag : 'Converter'
 }
 
-{ #category : 'visiting' }
-ZagSendConverter class >> accept: aSend asVisitor: aVisitor [
-	"Converts aSend to Python, outputting the code to aVisitor."
-	self isInitialized ifFalse: [ self initialize ].
-	ConverterRules
-		at: aSend selector
-		ifPresent: [ :converter | converter accept: aSend asVisitor: aVisitor ]
-		ifAbsent: [ self error: 'No converter found for provided send' ].
-]
-
 { #category : 'setting' }
 ZagSendConverter class >> at: aSelector putRule: aConverter [
 	"Add a conversion rule for the provided selector."
@@ -60,7 +50,17 @@ ZagSendConverter class >> putRules: aClass [
 ]
 
 { #category : 'visiting' }
-ZagSendConverter >> accept: aSend asVisitor: aVisitor [
+ZagSendConverter class >> visit: aSend asVisitor: aVisitor [
+	"Converts aSend to Python, outputting the code to aVisitor."
+	self isInitialized ifFalse: [ self initialize ].
+	ConverterRules
+		at: aSend selector
+		ifPresent: [ :converter | converter visit: aSend asVisitor: aVisitor ]
+		ifAbsent: [ self error: 'No converter found for provided send' ].
+]
+
+{ #category : 'visiting' }
+ZagSendConverter >> visit: aSend asVisitor: aVisitor [
 	"Converts aSend to Python, outputting the code to aVisitor.  You may call its visiting helpers."
 	"This method assumes, and will only be called if, aSend's selector is appropriate for this object."
 	self subclassResponsibility

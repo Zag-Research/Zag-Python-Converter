@@ -201,7 +201,7 @@ ZagToPythonVisitor >> visitReturn: aReturn [
 { #category : 'visiting - message sends' }
 ZagToPythonVisitor >> visitSend: aSend [
 	"Prints a send operation to my stream."
-	ZagSendConverter accept: aSend asVisitor: self
+	ZagSendConverter visit: aSend asVisitor: self
 ]
 
 { #category : 'visiting' }

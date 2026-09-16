@@ -23,23 +23,6 @@ ZagRangeConverter class >> putRules: aClass [
 	aClass at: #toExclusive:by: putRule: (self new isExclusive: true; hasStep: true).
 ]
 
-{ #category : 'visiting' }
-ZagRangeConverter >> accept: aSend asVisitor: aVisitor [
-	"Converts aSend to Python, outputting the code to aVisitor.  You may call its visiting helpers."
-	"This method assumes, and will only be called if, aSend's selector is appropriate for this object."
-	aVisitor resultStream nextPutAll: 'range('.
-	aVisitor visit: aSend target.
-	aVisitor resultStream nextPutAll: ', '.
-	self isExclusive ifFalse: [ aVisitor resultStream nextPut: $( ].
-	aVisitor visit: aSend args first.
-	self isExclusive ifFalse: [ aVisitor resultStream nextPutAll: ') + 1' ].
-	self hasStep ifTrue: [
-		aVisitor resultStream nextPutAll: ', '.
-		aVisitor visit: aSend args last.
-	].
-	aVisitor resultStream nextPut: $).
-]
-
 { #category : 'accessing' }
 ZagRangeConverter >> hasStep [
 
@@ -62,4 +45,21 @@ ZagRangeConverter >> isExclusive [
 ZagRangeConverter >> isExclusive: aBoolean [
 
 	isExclusive := aBoolean
+]
+
+{ #category : 'visiting' }
+ZagRangeConverter >> visit: aSend asVisitor: aVisitor [
+	"Converts aSend to Python, outputting the code to aVisitor.  You may call its visiting helpers."
+	"This method assumes, and will only be called if, aSend's selector is appropriate for this object."
+	aVisitor resultStream nextPutAll: 'range('.
+	aVisitor visit: aSend target.
+	aVisitor resultStream nextPutAll: ', '.
+	self isExclusive ifFalse: [ aVisitor resultStream nextPut: $( ].
+	aVisitor visit: aSend args first.
+	self isExclusive ifFalse: [ aVisitor resultStream nextPutAll: ') + 1' ].
+	self hasStep ifTrue: [
+		aVisitor resultStream nextPutAll: ', '.
+		aVisitor visit: aSend args last.
+	].
+	aVisitor resultStream nextPut: $).
 ]

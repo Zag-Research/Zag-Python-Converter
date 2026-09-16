@@ -20,17 +20,6 @@ ZagArrayAccessConverter class >> putRules: aClass [
 	aClass at: #zwAt: putRule: (self new isZeroIndexed: true).
 ]
 
-{ #category : 'visiting' }
-ZagArrayAccessConverter >> accept: aSend asVisitor: aVisitor [
-	"Converts aSend to Python, outputting the code to aVisitor.  You may call its visiting helpers."
-	"This method assumes, and will only be called if, aSend's selector is appropriate for this object."
-	aVisitor visit: aSend target.
-	aVisitor resultStream nextPut: $[.
-	aVisitor visit: aSend args first.
-	self isZeroIndexed ifFalse: [ aVisitor resultStream nextPutAll: ' - 1' ].
-	aVisitor resultStream nextPut: $].
-]
-
 { #category : 'accessing' }
 ZagArrayAccessConverter >> isZeroIndexed [
 
@@ -40,4 +29,15 @@ ZagArrayAccessConverter >> isZeroIndexed [
 { #category : 'accessing' }
 ZagArrayAccessConverter >> isZeroIndexed: aBoolean [
 	isZeroIndexed := aBoolean
+]
+
+{ #category : 'visiting' }
+ZagArrayAccessConverter >> visit: aSend asVisitor: aVisitor [
+	"Converts aSend to Python, outputting the code to aVisitor.  You may call its visiting helpers."
+	"This method assumes, and will only be called if, aSend's selector is appropriate for this object."
+	aVisitor visit: aSend target.
+	aVisitor resultStream nextPut: $[.
+	aVisitor visit: aSend args first.
+	self isZeroIndexed ifFalse: [ aVisitor resultStream nextPutAll: ' - 1' ].
+	aVisitor resultStream nextPut: $].
 ]

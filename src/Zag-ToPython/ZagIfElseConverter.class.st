@@ -26,23 +26,6 @@ ZagIfElseConverter class >> representsElse: switchKey [
 ]
 
 { #category : 'visiting' }
-ZagIfElseConverter >> accept: aSend asVisitor: aVisitor [
-	"Converts aSend to Python, outputting the code to aVisitor.  You may call its visiting helpers."
-	"This method assumes, and will only be called if, aSend's selector is appropriate for this object."
-	| switch |
-	switch := self sendToSwitch: aSend.
-	aVisitor inSubexpression ifTrue: [
-		(switch size = 2 and: [ self class representsElse: switch last key ])
-			ifFalse: [ ^self notYetImplemented ].
-		self
-			acceptExpression: switch first key
-			if: switch first value
-			else: switch last value
-			asVisitor: aVisitor.
-	] ifFalse: [ self acceptStatement: switch asVisitor: aVisitor ]
-]
-
-{ #category : 'visiting' }
 ZagIfElseConverter >> acceptExpression: condition if: ifValue else: elseValue asVisitor: aVisitor [
 	"Converts aSend to Python, outputting the code to aVisitor.  You may call its visiting helpers."
 	"This method assumes, and will only be called if, aSend's selector is appropriate for this object."
@@ -91,4 +74,21 @@ ZagIfElseConverter >> sendToSwitch: aSend [
 	"Converts the provided ASSend to a list of associations."
 	"Each association should map a condition AST to a block AST."
 	self subclassResponsibility
+]
+
+{ #category : 'visiting' }
+ZagIfElseConverter >> visit: aSend asVisitor: aVisitor [
+	"Converts aSend to Python, outputting the code to aVisitor.  You may call its visiting helpers."
+	"This method assumes, and will only be called if, aSend's selector is appropriate for this object."
+	| switch |
+	switch := self sendToSwitch: aSend.
+	aVisitor inSubexpression ifTrue: [
+		(switch size = 2 and: [ self class representsElse: switch last key ])
+			ifFalse: [ ^self notYetImplemented ].
+		self
+			acceptExpression: switch first key
+			if: switch first value
+			else: switch last value
+			asVisitor: aVisitor.
+	] ifFalse: [ self acceptStatement: switch asVisitor: aVisitor ]
 ]

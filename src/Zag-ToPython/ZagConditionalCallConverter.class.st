@@ -31,16 +31,6 @@ ZagConditionalCallConverter class >> putRules: aClass [
 	}).
 ]
 
-{ #category : 'visiting' }
-ZagConditionalCallConverter >> accept: aSend asVisitor: aVisitor [
-	"Converts aSend to Python, outputting the code to aVisitor.  You may call its visiting helpers."
-	"This method assumes, and will only be called if, aSend's selector is appropriate for this object."
-	self pythonSelectorSwitch
-		detect: [ :condition | condition key value: aSend ]
-		ifFound: [ :condition | aVisitor outputCall: condition value args: aSend args ]
-		ifNone: [ self error: 'No converter found for this send.' ]
-]
-
 { #category : 'accessing' }
 ZagConditionalCallConverter >> pythonSelectorSwitch [
 
@@ -51,4 +41,14 @@ ZagConditionalCallConverter >> pythonSelectorSwitch [
 ZagConditionalCallConverter >> pythonSelectorSwitch: aSwitch [
 
 	pythonSelectorSwitch := aSwitch
+]
+
+{ #category : 'visiting' }
+ZagConditionalCallConverter >> visit: aSend asVisitor: aVisitor [
+	"Converts aSend to Python, outputting the code to aVisitor.  You may call its visiting helpers."
+	"This method assumes, and will only be called if, aSend's selector is appropriate for this object."
+	self pythonSelectorSwitch
+		detect: [ :condition | condition key value: aSend ]
+		ifFound: [ :condition | aVisitor outputCall: condition value args: aSend args ]
+		ifNone: [ self error: 'No converter found for this send.' ]
 ]

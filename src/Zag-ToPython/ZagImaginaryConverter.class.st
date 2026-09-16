@@ -17,7 +17,7 @@ ZagImaginaryConverter class >> putRules: aClass [
 ]
 
 { #category : 'visiting' }
-ZagImaginaryConverter >> accept: aSend asVisitor: aVisitor [
+ZagImaginaryConverter >> visit: aSend asVisitor: aVisitor [
 	"Converts aSend to Python, outputting the code to aVisitor.  You may call its visiting helpers."
 	"This method assumes, and will only be called if, aSend's selector is appropriate for this object."
 	aSend target isASLiteral ifTrue: [

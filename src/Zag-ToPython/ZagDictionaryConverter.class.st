@@ -17,7 +17,7 @@ ZagDictionaryConverter class >> putRules: aClass [
 ]
 
 { #category : 'visiting' }
-ZagDictionaryConverter >> accept: aSend asVisitor: aVisitor [
+ZagDictionaryConverter >> visit: aSend asVisitor: aVisitor [
 	"Converts aSend to Python, outputting the code to aVisitor.  You may call its visiting helpers."
 	"This method assumes, and will only be called if, aSend's selector is appropriate for this object."
 	aVisitor resultStream nextPut: ${.

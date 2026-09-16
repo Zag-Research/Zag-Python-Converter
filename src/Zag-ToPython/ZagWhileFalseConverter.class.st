@@ -10,7 +10,7 @@ Class {
 }
 
 { #category : 'visiting' }
-ZagWhileFalseConverter >> accept: aSend asVisitor: aVisitor [
+ZagWhileFalseConverter >> visit: aSend asVisitor: aVisitor [
 	"Converts aSend to Python, outputting the code to aVisitor.  You may call its visiting helpers."
 	"This method assumes, and will only be called if, aSend's selector is appropriate for this object."
 	| negated |
@@ -18,5 +18,5 @@ ZagWhileFalseConverter >> accept: aSend asVisitor: aVisitor [
 		target: aSend target negateLastStatement
 		selector: aSend selector
 		args: aSend args.
-	super accept: negated asVisitor: aVisitor.
+	super visit: negated asVisitor: aVisitor.
 ]
