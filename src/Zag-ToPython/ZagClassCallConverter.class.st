@@ -17,7 +17,7 @@ ZagClassCallConverter class >> putRules: aClass [
 	"Add all of my conversion rules to aClass using its at:putRule: message."
 	"This message will be called once for each subclass of ZagSendConverter on initialization."
 	aClass at: #fromNumberOrString: putRule: (
-		self new pythonSelectorDict: { #ByteArray -> #bytearray } asDictionary).
+		self new pythonSelectorSwitch: { #ByteArray -> #bytearray } asDictionary).
 ]
 
 { #category : 'visiting' }
@@ -25,20 +25,20 @@ ZagClassCallConverter >> accept: aSend asVisitor: aVisitor [
 	"Converts aSend to Python, outputting the code to aVisitor.  You may call its visiting helpers."
 	"This method assumes, and will only be called if, aSend's selector is appropriate for this object."
 	aSend target isASRef ifFalse: [ self error: 'Target of class calls should be an ASRef.' ].
-	self pythonSelectorDict
+	self pythonSelectorSwitch
 		at: aSend target variable
 		ifPresent: [ :pythonSelector | aVisitor outputCall: pythonSelector args: aSend args ]
 		ifAbsent: [ self error: 'No converter found for this selector & target.' ]
 ]
 
 { #category : 'accessing' }
-ZagClassCallConverter >> pythonSelectorDict [
+ZagClassCallConverter >> pythonSelectorSwitch [
 
 	^ pythonSelectorDict
 ]
 
 { #category : 'accessing' }
-ZagClassCallConverter >> pythonSelectorDict: aDictionary [
+ZagClassCallConverter >> pythonSelectorSwitch: aDictionary [
 
 	pythonSelectorDict := aDictionary
 ]

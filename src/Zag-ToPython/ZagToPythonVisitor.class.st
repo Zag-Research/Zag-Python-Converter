@@ -21,16 +21,6 @@ ZagToPythonVisitor class >> astToPythonSource: anAST [
 ]
 
 { #category : 'testing' }
-ZagToPythonVisitor class >> isInput: aSend [
-	"Tests if a send should be translated to an input() statement."
-	| targetValid |
-	aSend isASSend ifFalse: [ ^false ].
-	targetValid := (aSend target isKindOf: ASSend) and: [ aSend target target = (ASRef variable: #UIManager) and:
-			[ aSend target selector = #default ] ].
-	^targetValid and: [ aSend selector = #request: ].
-]
-
-{ #category : 'testing' }
 ZagToPythonVisitor class >> isPrint: aCascade [
 	"Tests if an ASCascade should be translated to a print statement."
 	| targetMatches twoSends firstMatches secondMatches |
@@ -211,8 +201,7 @@ ZagToPythonVisitor >> visitReturn: aReturn [
 { #category : 'visiting - message sends' }
 ZagToPythonVisitor >> visitSend: aSend [
 	"Prints a send operation to my stream."
-	(self class isInput: aSend) ifTrue: [ ^self outputCall: #input args: { aSend args first } ].
-	ZagSendConverter accept: aSend asVisitor: self.
+	ZagSendConverter accept: aSend asVisitor: self
 ]
 
 { #category : 'visiting' }
