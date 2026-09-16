@@ -47,105 +47,9 @@ ZagToPythonVisitor class >> mainMethodSelector [
 	^#main.
 ]
 
-{ #category : 'testing' }
-ZagToPythonVisitor class >> needsBrackets: anObject forChild: itsChild isTarget: isTarget [
-	"Determines whether I need to place brackets around an object's child."
-	| parentPrecedence childPrecedence |
-	(itsChild isKindOf: ASStatement) ifFalse: [ ^true ].
-	(itsChild isKindOf: ASAssign) ifTrue: [ ^true ].
-	itsChild isASLiteral ifTrue: [ ^false ].
-	itsChild isASRef ifTrue: [ ^false ].
-	parentPrecedence := self pythonPrecedence: anObject.
-	childPrecedence := self pythonPrecedence: itsChild.
-	^isTarget
-		ifTrue: [ parentPrecedence > childPrecedence ]
-		ifFalse: [ parentPrecedence >= childPrecedence ].
-]
-
 { #category : 'instance creation' }
 ZagToPythonVisitor class >> new [
 	^self basicNew indentLevel: 0; nestingLevel: 0; yourself.
-]
-
-{ #category : 'constants' }
-ZagToPythonVisitor class >> pythonBinaryOperatorPrecedence [
-	"A dictionary mapping binary Python operators to their precedence."
-	"source: https://www.w3schools.com/python/python_operators_precedence.asp"
-	^{
-		#** -> 11.
-		#* -> 9. #/ -> 9. #// -> 9. #% -> 9.
-		#+ -> 8. #- -> 8.
-		#<< -> 7. #>> -> 7.
-		#& -> 6.
-		#'^' -> 5.
-		#| -> 4.
-		#== -> 3. #!= -> 3. #> -> 3. #>= -> 3. #< -> 3. #<= -> 3.
-		#is -> 3. #'is not' -> 3. #in -> 3. #'not in' -> 3.
-		#and -> 1.
-		#or -> 0.
-	} asDictionary.
-]
-
-{ #category : 'accessing' }
-ZagToPythonVisitor class >> pythonPrecedence: aSend [
-	"Gets the predence of the provided send operator."
-	aSend args isEmpty
-		ifTrue: [ ^self pythonUnaryOperatorPrecedence at: (
-			self smalltalkToPythonUnaryOperations at: aSend selector) ]
-		ifFalse: [ ^self pythonBinaryOperatorPrecedence at: (
-			self smalltalkToPythonBinaryOperations at: aSend selector) ]
-	
-]
-
-{ #category : 'constants' }
-ZagToPythonVisitor class >> pythonUnaryOperatorPrecedence [
-	"A dictionary mapping unary Python operators to their precedence."
-	"source: https://www.w3schools.com/python/python_operators_precedence.asp"
-	^{
-		#+ -> 10. #- -> 10. #~ -> 10.
-		#not -> 2.
-	} asDictionary.
-]
-
-{ #category : 'constants' }
-ZagToPythonVisitor class >> smalltalkToPythonBinaryOperations [
-	"Returns a dictionary mapping Smalltalk operands to Python."
-	^{ 
-		#+ -> #+.
-		#- -> #-.
-		#* -> #*.
-		#/ -> #/.
-		#// -> #//.
-		#% -> #%.
-		#& -> #&.
-		#| -> #|.
-		#< -> #<.
-		#<= -> #<=.
-		#> -> #>.
-		#>= -> #>=.
-		#raisedTo: -> #**.
-		#bitXor: -> #'^'.
-		#bitShift: -> #<<.
-		#= -> #==.
-		#~= -> #!=.
-		#== -> #is.
-		#~~ -> #'is not'.
-		#and: -> #and.
-		#pythonAnd: -> #and.
-		#or: -> #or.
-		#pythonOr: -> #or.
-	} asDictionary.
-]
-
-{ #category : 'constants' }
-ZagToPythonVisitor class >> smalltalkToPythonUnaryOperations [
-	"Returns a dictionary mapping unary Smalltalk operands to Python."
-	^{ 
-		#not -> #not.
-		#pythonNot -> #not.
-		#negated -> #-.
-		#bitInvert -> #~.
-	} asDictionary.
 ]
 
 { #category : 'setting' }
@@ -254,23 +158,6 @@ ZagToPythonVisitor >> visitAssign: anAssign [
 ]
 
 { #category : 'visiting - message sends' }
-ZagToPythonVisitor >> visitBinaryOperation: aSend [
-	"Like visitSend, but the selector is in smalltalkToPythonBinaryOperations."
-	| arg |
-	self visit: aSend target withBrackets: (
-		self class needsBrackets: aSend forChild: aSend target isTarget: true).
-	resultStream nextPut: Character space.
-	resultStream nextPutAll: (self class smalltalkToPythonBinaryOperations at: aSend selector).
-	resultStream nextPut: Character space.
-	arg := aSend args first isASBlock
-		ifTrue: [ aSend args first body last ]
-		ifFalse: [ aSend args first ].
-	self visit: arg withBrackets: (
-		self class needsBrackets: aSend forChild: arg isTarget: false).
-	
-]
-
-{ #category : 'visiting - message sends' }
 ZagToPythonVisitor >> visitCascade: aCascade [
 	"Visits an ASCascade, adding its associated Python source to my stream."
 	(self class isPrint: aCascade) ifTrue: [ ^self outputCall: #print args: { aCascade sends first args first } ].
@@ -324,10 +211,6 @@ ZagToPythonVisitor >> visitReturn: aReturn [
 { #category : 'visiting - message sends' }
 ZagToPythonVisitor >> visitSend: aSend [
 	"Prints a send operation to my stream."
-	(self class smalltalkToPythonBinaryOperations includesKey: aSend selector) ifTrue:
-		[ ^self visitBinaryOperation: aSend ].
-	(self class smalltalkToPythonUnaryOperations includesKey: aSend selector) ifTrue:
-		[ ^self visitUnaryOperation: aSend ].
 	(self class isInput: aSend) ifTrue: [ ^self outputCall: #input args: { aSend args first } ].
 	ZagSendConverter accept: aSend asVisitor: self.
 ]
@@ -352,16 +235,6 @@ ZagToPythonVisitor >> visitStatements: aCollectionOrNil [
 					self withIndentAndNewline: [ self visit: each ] ].
 		] ].
 	self nestingLevel: oldNestingLevel.
-]
-
-{ #category : 'visiting - message sends' }
-ZagToPythonVisitor >> visitUnaryOperation: aSend [
-	"Like visitSend, but the selector is in smalltalkToPythonUnaryOperations."
-	resultStream nextPutAll: (self class smalltalkToPythonUnaryOperations at: aSend selector).
-	aSend selector = #not ifTrue: [ self resultStream nextPut: Character space ].
-	self visit: aSend target withBrackets: (
-		self class needsBrackets: aSend forChild: aSend target isTarget: true).
-	
 ]
 
 { #category : 'visiting' }

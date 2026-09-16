@@ -13,7 +13,7 @@ Class {
 ManifestZagToPython class >> ruleBadMessageRule2V1FalsePositive [
 
 	<ignoreForCoverage>
-	^ #(#(#(#RGMetaclassDefinition #(#'ZagToPythonVisitor class' #ZagToPythonVisitor)) #'2026-06-19T15:11:37.535-05:00') #(#(#RGMethodDefinition #(#ZagToPythonVisitor #visitStatements: #false)) #'2026-06-26T08:34:36.534-05:00') #(#(#RGMethodDefinition #(#ZagToPythonVisitor #visitSend: #false)) #'2026-09-14T12:56:06.885-05:00') #(#(#RGMethodDefinition #(#ZagSetConverter #accept:asVisitor: #false)) #'2026-09-15T19:08:43.264-05:00') )
+	^ #(#(#(#RGMetaclassDefinition #(#'ZagToPythonVisitor class' #ZagToPythonVisitor)) #'2026-06-19T15:11:37.535-05:00') #(#(#RGMethodDefinition #(#ZagToPythonVisitor #visitStatements: #false)) #'2026-06-26T08:34:36.534-05:00') #(#(#RGMethodDefinition #(#ZagToPythonVisitor #visitSend: #false)) #'2026-09-14T12:56:06.885-05:00') #(#(#RGMethodDefinition #(#ZagSetConverter #accept:asVisitor: #false)) #'2026-09-15T19:08:43.264-05:00') #(#(#RGMethodDefinition #(#'ZagOperatorConverter class' #needsBrackets:forChild:isTarget: #true)) #'2026-09-16T09:01:08.778-05:00') )
 ]
 
 { #category : 'code-critics' }
@@ -35,4 +35,11 @@ ManifestZagToPython class >> ruleReCyclomaticComplexityRuleV1FalsePositive [
 
 	<ignoreForCoverage>
 	^ #(#(#(#RGMethodDefinition #(#ZagToPythonVisitor #visitSend: #false)) #'2026-06-26T10:45:51.904-05:00') )
+]
+
+{ #category : 'code-critics' }
+ManifestZagToPython class >> ruleRefersToClassRuleV1FalsePositive [
+
+	<ignoreForCoverage>
+	^ #(#(#(#RGMethodDefinition #(#'ZagOperatorConverter class' #pythonPrecedence: #true)) #'2026-09-16T08:58:36.633-05:00') )
 ]
