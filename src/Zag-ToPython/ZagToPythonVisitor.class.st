@@ -56,7 +56,7 @@ ZagToPythonVisitor >> addNesting: anInteger [
 	nestingLevel := nestingLevel + anInteger.
 ]
 
-{ #category : 'accessing' }
+{ #category : 'testing' }
 ZagToPythonVisitor >> inSubexpression [
 	"Returns true iff I am currently visiting a subexpression, like the bracketed part of a := (b := c)."
 	^self nestingLevel > 1
@@ -126,7 +126,7 @@ ZagToPythonVisitor >> visit: anAST [
 	^returnValue.
 ]
 
-{ #category : 'visiting' }
+{ #category : 'printing helpers' }
 ZagToPythonVisitor >> visit: anObject withBrackets: enableBrackets [
 	"Prints an object, maybe with brackets around it."
 	enableBrackets ifTrue: [ resultStream nextPut: $( ].
@@ -147,7 +147,7 @@ ZagToPythonVisitor >> visitAssign: anAssign [
 	self visit: anAssign expression withBrackets: anAssign expression isASAssign.
 ]
 
-{ #category : 'visiting - message sends' }
+{ #category : 'visiting' }
 ZagToPythonVisitor >> visitCascade: aCascade [
 	"Visits an ASCascade, adding its associated Python source to my stream."
 	(self class isPrint: aCascade) ifTrue: [ ^self outputCall: #print args: { aCascade sends first args first } ].
@@ -198,13 +198,13 @@ ZagToPythonVisitor >> visitReturn: aReturn [
 	self visit: aReturn expression.
 ]
 
-{ #category : 'visiting - message sends' }
+{ #category : 'visiting' }
 ZagToPythonVisitor >> visitSend: aSend [
 	"Prints a send operation to my stream."
 	ZagSendConverter visit: aSend asVisitor: self
 ]
 
-{ #category : 'visiting' }
+{ #category : 'printing helpers' }
 ZagToPythonVisitor >> visitStatements: aCollectionOrNil [
 	"Outputs the statements in aCollection, calling their accept: method."
 	"The argument can be nil or empty, in which case 'pass' will be outputted."
@@ -226,7 +226,7 @@ ZagToPythonVisitor >> visitStatements: aCollectionOrNil [
 	self nestingLevel: oldNestingLevel.
 ]
 
-{ #category : 'visiting' }
+{ #category : 'printing helpers' }
 ZagToPythonVisitor >> withIndentAndNewline: aBlock [
 	"Indents, then runs aBlock, then outputs a newline."
 	self indentLevel timesRepeat: [
