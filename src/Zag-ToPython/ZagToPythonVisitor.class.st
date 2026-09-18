@@ -21,16 +21,6 @@ ZagToPythonVisitor class >> astToPythonSource: anAST [
 ]
 
 { #category : 'testing' }
-ZagToPythonVisitor class >> isInput: aSend [
-	"Tests if a send should be translated to an input() statement."
-	| targetValid |
-	aSend isASSend ifFalse: [ ^false ].
-	targetValid := (aSend target isKindOf: ASSend) and: [ aSend target target = (ASRef variable: #UIManager) and:
-			[ aSend target selector = #default ] ].
-	^targetValid and: [ aSend selector = #request: ].
-]
-
-{ #category : 'testing' }
 ZagToPythonVisitor class >> isPrint: aCascade [
 	"Tests if an ASCascade should be translated to a print statement."
 	| targetMatches twoSends firstMatches secondMatches |
@@ -47,116 +37,9 @@ ZagToPythonVisitor class >> mainMethodSelector [
 	^#main.
 ]
 
-{ #category : 'testing' }
-ZagToPythonVisitor class >> needsBrackets: anObject forChild: itsChild isTarget: isTarget [
-	"Determines whether I need to place brackets around an object's child."
-	| parentPrecedence childPrecedence |
-	(itsChild isKindOf: ASStatement) ifFalse: [ ^true ].
-	(itsChild isKindOf: ASAssign) ifTrue: [ ^true ].
-	itsChild isASLiteral ifTrue: [ ^false ].
-	itsChild isASRef ifTrue: [ ^false ].
-	parentPrecedence := self pythonPrecedence: anObject.
-	childPrecedence := self pythonPrecedence: itsChild.
-	^isTarget
-		ifTrue: [ parentPrecedence > childPrecedence ]
-		ifFalse: [ parentPrecedence >= childPrecedence ].
-]
-
 { #category : 'instance creation' }
 ZagToPythonVisitor class >> new [
 	^self basicNew indentLevel: 0; nestingLevel: 0; yourself.
-]
-
-{ #category : 'constants' }
-ZagToPythonVisitor class >> pythonBinaryOperatorPrecedence [
-	"A dictionary mapping binary Python operators to their precedence."
-	"source: https://www.w3schools.com/python/python_operators_precedence.asp"
-	^{
-		#** -> 11.
-		#* -> 9. #/ -> 9. #// -> 9. #% -> 9.
-		#+ -> 8. #- -> 8.
-		#<< -> 7. #>> -> 7.
-		#& -> 6.
-		#'^' -> 5.
-		#| -> 4.
-		#== -> 3. #!= -> 3. #> -> 3. #>= -> 3. #< -> 3. #<= -> 3.
-		#is -> 3. #'is not' -> 3. #in -> 3. #'not in' -> 3.
-		#and -> 1.
-		#or -> 0.
-	} asDictionary.
-]
-
-{ #category : 'accessing' }
-ZagToPythonVisitor class >> pythonPrecedence: aSend [
-	"Gets the predence of the provided send operator."
-	aSend args isEmpty
-		ifTrue: [ ^self pythonUnaryOperatorPrecedence at: (
-			self smalltalkToPythonUnaryOperations at: aSend selector) ]
-		ifFalse: [ ^self pythonBinaryOperatorPrecedence at: (
-			self smalltalkToPythonBinaryOperations at: aSend selector) ]
-	
-]
-
-{ #category : 'constants' }
-ZagToPythonVisitor class >> pythonUnaryOperatorPrecedence [
-	"A dictionary mapping unary Python operators to their precedence."
-	"source: https://www.w3schools.com/python/python_operators_precedence.asp"
-	^{
-		#+ -> 10. #- -> 10. #~ -> 10.
-		#not -> 2.
-	} asDictionary.
-]
-
-{ #category : 'constants' }
-ZagToPythonVisitor class >> smalltalkToPythonBinaryOperations [
-	"Returns a dictionary mapping Smalltalk operands to Python."
-	^{ 
-		#+ -> #+.
-		#- -> #-.
-		#* -> #*.
-		#/ -> #/.
-		#// -> #//.
-		#% -> #%.
-		#& -> #&.
-		#| -> #|.
-		#< -> #<.
-		#<= -> #<=.
-		#> -> #>.
-		#>= -> #>=.
-		#raisedTo: -> #**.
-		#bitXor: -> #'^'.
-		#bitShift: -> #<<.
-		#= -> #==.
-		#~= -> #!=.
-		#== -> #is.
-		#~~ -> #'is not'.
-		#and: -> #and.
-		#pythonAnd: -> #and.
-		#or: -> #or.
-		#pythonOr: -> #or.
-	} asDictionary.
-]
-
-{ #category : 'constants' }
-ZagToPythonVisitor class >> smalltalkToPythonDatatypeConversions [
-	"A dictionary mapping datatype conversions."
-	"Always maps 'a m1' to 'm2(a)', where m1 -> m2 is an element here"
-	^{
-		#asInteger -> #int.
-		#asNumber -> #float.
-		#asString -> #str.
-	} asDictionary
-]
-
-{ #category : 'constants' }
-ZagToPythonVisitor class >> smalltalkToPythonUnaryOperations [
-	"Returns a dictionary mapping unary Smalltalk operands to Python."
-	^{ 
-		#not -> #not.
-		#pythonNot -> #not.
-		#negated -> #-.
-		#bitInvert -> #~.
-	} asDictionary.
 ]
 
 { #category : 'setting' }
@@ -171,6 +54,12 @@ ZagToPythonVisitor >> addNesting: anInteger [
 	"Changes my nesting level by the amount provided."
 	"The argument can be a negative integer to reduce nesting."
 	nestingLevel := nestingLevel + anInteger.
+]
+
+{ #category : 'testing' }
+ZagToPythonVisitor >> inSubexpression [
+	"Returns true iff I am currently visiting a subexpression, like the bracketed part of a := (b := c)."
+	^self nestingLevel > 1
 ]
 
 { #category : 'accessing' }
@@ -215,50 +104,6 @@ ZagToPythonVisitor >> outputCollection: aCollection begin: startDelimiter end: e
 	self resultStream nextPutAll: endDelimiter.
 ]
 
-{ #category : 'printing helpers' }
-ZagToPythonVisitor >> outputFormattedIfElse: switchASTMap [
-	"Outputs an if/else statement based on the provided AST."
-	"It should be a collection made of associations, as in Zag-FromPython's switch statement."
-	"Use the literal true (not an ASLiteral) as the key to specify the else statement."
-	self nestingLevel > 1 ifTrue: [
-		(switchASTMap size = 2 and: [ switchASTMap last key == true or: [ switchASTMap last key = (ASLiteral literal: true) ] ]) ifFalse: [ ^self notYetImplemented ].
-		self outputFormattedIfElseExpression: switchASTMap first key if: switchASTMap first value else: switchASTMap last value.
-	] ifFalse: [ self outputFormattedIfElseStatement: switchASTMap ].
-	
-]
-
-{ #category : 'printing helpers' }
-ZagToPythonVisitor >> outputFormattedIfElseExpression: condition if: ifValue else: elseValue [
-	ifValue body size = 1 ifFalse: [ self notYetImplemented ].
-	elseValue body size = 1 ifFalse: [ self notYetImplemented ].
-	self visit: ifValue body first.
-	self resultStream nextPutAll: ' if '.
-	self visit: condition.
-	self resultStream nextPutAll: ' else '.
-	self visit: elseValue body first.
-]
-
-{ #category : 'printing helpers' }
-ZagToPythonVisitor >> outputFormattedIfElseStatement: switchASTMap [
-	| isFirst |
-	isFirst := true.
-	switchASTMap do: [ :part |
-		(part key == true or: [ part key = (ASLiteral literal: true)]) "== true used because part key is usually not a boolean"
-			ifTrue: [ self resultStream nextPutAll: 'else:
-' ]
-			ifFalse: [
-				self resultStream nextPutAll: (isFirst ifTrue: ['if '] ifFalse: ['elif ']).
-				self visit: part key.
-				self resultStream nextPutAll: ':
-'
-			].
-		self addIndent: 1.
-		self visitStatements: part value.
-		self addIndent: -1.
-		isFirst := false.
-	].
-]
-
 { #category : 'accessing' }
 ZagToPythonVisitor >> resultStream [
 	"Gets my result stream."
@@ -281,7 +126,7 @@ ZagToPythonVisitor >> visit: anAST [
 	^returnValue.
 ]
 
-{ #category : 'visiting' }
+{ #category : 'printing helpers' }
 ZagToPythonVisitor >> visit: anObject withBrackets: enableBrackets [
 	"Prints an object, maybe with brackets around it."
 	enableBrackets ifTrue: [ resultStream nextPut: $( ].
@@ -294,38 +139,6 @@ ZagToPythonVisitor >> visitArray: anArray [
 	self outputCollection: anArray statements begin: '[' end: ']' separator: ', '
 ]
 
-{ #category : 'visiting - message sends' }
-ZagToPythonVisitor >> visitArrayAccess: arrayTree index: index isZeroIndexed: isZeroIndexed [
-	"Translates an array access operation to a subscript."
-	self visit: arrayTree.
-	resultStream nextPut: $[.
-	self visit: index.
-	isZeroIndexed ifFalse: [ resultStream nextPutAll: ' - 1' ].
-	resultStream nextPut: $].
-]
-
-{ #category : 'visiting - message sends' }
-ZagToPythonVisitor >> visitArraySet: arrayTree index: index value: value isZeroIndexed: isZeroIndexed [
-	"Translates an array access operation to a subscript."
-	self visitArrayAccess: arrayTree index: index isZeroIndexed: isZeroIndexed.
-	resultStream nextPutAll: ' = '.
-	self visit: value.
-]
-
-{ #category : 'visiting - message sends' }
-ZagToPythonVisitor >> visitAssert: aStatement [
-	self resultStream nextPutAll: 'assert '.
-	self visit: aStatement.
-]
-
-{ #category : 'visiting - message sends' }
-ZagToPythonVisitor >> visitAssert: aStatement withDescription: aDescription [
-	self resultStream nextPutAll: 'assert '.
-	self visit: aStatement.
-	self resultStream nextPutAll: ', '.
-	self visit: aDescription.
-]
-
 { #category : 'visiting' }
 ZagToPythonVisitor >> visitAssign: anAssign [
 	"Visits an ASAssign, adding its associated Python source to my stream."
@@ -334,69 +147,11 @@ ZagToPythonVisitor >> visitAssign: anAssign [
 	self visit: anAssign expression withBrackets: anAssign expression isASAssign.
 ]
 
-{ #category : 'visiting - message sends' }
-ZagToPythonVisitor >> visitBinaryOperation: aSend [
-	"Like visitSend, but the selector is in smalltalkToPythonBinaryOperations."
-	| arg |
-	self visit: aSend target withBrackets: (
-		self class needsBrackets: aSend forChild: aSend target isTarget: true).
-	resultStream nextPut: Character space.
-	resultStream nextPutAll: (self class smalltalkToPythonBinaryOperations at: aSend selector).
-	resultStream nextPut: Character space.
-	arg := aSend args first isASBlock
-		ifTrue: [ aSend args first body last ]
-		ifFalse: [ aSend args first ].
-	self visit: arg withBrackets: (
-		self class needsBrackets: aSend forChild: arg isTarget: false).
-	
-]
-
-{ #category : 'visiting - message sends' }
+{ #category : 'visiting' }
 ZagToPythonVisitor >> visitCascade: aCascade [
 	"Visits an ASCascade, adding its associated Python source to my stream."
 	(self class isPrint: aCascade) ifTrue: [ ^self outputCall: #print args: { aCascade sends first args first } ].
 	aCascade sends collect: [ :send | send target: aCascade target ] thenDo: [ :each | self visit: each ]
-]
-
-{ #category : 'visiting - message sends' }
-ZagToPythonVisitor >> visitDatatypeConversion: aSend [
-	"Prints a datatype conversion to my stream."
-	| pythonSelector |
-	pythonSelector := self class smalltalkToPythonDatatypeConversions at: aSend selector.
-	self outputCall: pythonSelector args: { aSend target }.
-]
-
-{ #category : 'visiting - message sends' }
-ZagToPythonVisitor >> visitForEach: aSend [
-	"Visits and outputs a do: send as a for-in loop."
-	self resultStream nextPutAll: 'for '.
-	self visitRef: aSend args first arguments first.
-	self resultStream nextPutAll: ' in '.
-	self visit: aSend target.
-	self resultStream nextPut: $:; nextPut: Character cr.
-	self addIndent: 1.
-	self visitStatements: aSend args first.
-	self addIndent: -1.
-]
-
-{ #category : 'visiting - message sends' }
-ZagToPythonVisitor >> visitIfElse: aSend [
-	"Prepares aSend for outputFormattedIfElse: and outputs it."
-	aSend selector = #ifTrue: ifTrue: [ ^self outputFormattedIfElse: { aSend target -> aSend args first } ].
-	aSend selector = #ifFalse: ifTrue: [ ^self outputFormattedIfElse: {
-		aSend target -> nil. true -> aSend args first.
-	} ].
-	aSend selector = #ifFalse:ifTrue: ifTrue: [ ^self outputFormattedIfElse: { 
-		aSend target -> aSend args last. true -> aSend args first.
-	} ].
-	aSend selector = #ifTrue:ifFalse: ifTrue: [ ^self outputFormattedIfElse: { 
-		aSend target -> aSend args first. true -> aSend args last.
-	} ].
-	aSend selector = #switch ifTrue: [ ^self outputFormattedIfElse: (
-		aSend target statements collect: [ :each | each selector = #->
-			ifTrue: [ each target -> each args first ]
-			ifFalse: [ self error: 'Invalid selector for switch statement part.' ] ]
-	) ].
 ]
 
 { #category : 'visiting' }
@@ -430,23 +185,6 @@ ZagToPythonVisitor >> visitMethod: aMethod [
 	
 ]
 
-{ #category : 'visiting - message sends' }
-ZagToPythonVisitor >> visitRange: aSend exclusive: exclusive [
-	| hasStep |
-	hasStep := aSend selector asString includesSubstring: 'by:'.
-	self resultStream nextPutAll: 'range('.
-	self visit: aSend target.
-	self resultStream nextPutAll: ', '.
-	exclusive ifFalse: [ self resultStream nextPut: $( ].
-	self visit: aSend args first.
-	exclusive ifFalse: [ self resultStream nextPutAll: ') + 1' ].
-	hasStep ifTrue: [
-		self resultStream nextPutAll: ', '.
-		self visit: aSend args last.
-	].
-	self resultStream nextPut: $).
-]
-
 { #category : 'visiting' }
 ZagToPythonVisitor >> visitRef: aRef [
 	"Visits an ASRef, adding its associated Python source to my stream."
@@ -460,70 +198,13 @@ ZagToPythonVisitor >> visitReturn: aReturn [
 	self visit: aReturn expression.
 ]
 
-{ #category : 'visiting - message sends' }
+{ #category : 'visiting' }
 ZagToPythonVisitor >> visitSend: aSend [
 	"Prints a send operation to my stream."
-	(self class smalltalkToPythonBinaryOperations includesKey: aSend selector) ifTrue:
-		[ ^self visitBinaryOperation: aSend ].
-	(self class smalltalkToPythonUnaryOperations includesKey: aSend selector) ifTrue:
-		[ ^self visitUnaryOperation: aSend ].
-	(self class smalltalkToPythonDatatypeConversions includesKey: aSend selector) ifTrue:
-		[ ^self visitDatatypeConversion: aSend ].
-	(aSend selector = #fromNumberOrString: and: [ aSend target = (ASRef variable: #ByteArray) ]) ifTrue:
-		[ ^self outputCall: #bytearray args: aSend args ].
-	(aSend selector = #asSet) ifTrue: [
-		(aSend target isKindOf: ASLiteral) ifTrue: [
-			"can't use outputCollection because literal elements are not ASLiterals."
-			self resultStream nextPut: ${.
-			aSend target literal
-				do: [ :each | self resultStream nextPutAll: each asString ]
-				separatedBy: [ self resultStream nextPutAll: ', ' ].
-			^self resultStream nextPut: $}. ].
-		(aSend target isKindOf: ASArray) ifTrue: [ 
-			^self outputCollection: aSend target statements begin: '{' end: '}' separator: ', ' ].
-		^self outputCall: #set args: { aSend target }.
-	].
-	(aSend selector = #asDictionary) ifTrue: [
-		self resultStream nextPut: ${.
-		aSend target statements
-			do: [ :each |
-				self visit: each target.
-				self resultStream nextPutAll: ': '.
-				self visit: each args first.
-			] separatedBy: [ self resultStream nextPutAll: ', ' ].
-		^self resultStream nextPut: $}.
-	].
-	(self class isInput: aSend) ifTrue: [ ^self outputCall: #input args: { aSend args first } ].
-	(aSend selector = #at:) ifTrue:
-		[ ^self visitArrayAccess: aSend target index: aSend args first isZeroIndexed: false ].
-	(aSend selector = #zwAt:) ifTrue:
-		[ ^self visitArrayAccess: aSend target index: aSend args first isZeroIndexed: true ].
-	(aSend selector = #at:put:) ifTrue:
-		[ ^self visitArraySet: aSend target index: aSend args first value: aSend args last isZeroIndexed: false ].
-	(aSend selector = #zwAt:put:) ifTrue:
-		[ ^self visitArraySet: aSend target index: aSend args first value: aSend args last isZeroIndexed: true ].
-	(#(#ifTrue: #ifFalse: #ifFalse:ifTrue: #ifTrue:ifFalse: #switch) includes: aSend selector) ifTrue:
-		[ ^self visitIfElse: aSend ].
-	(#(#to: #to:by:) includes: aSend selector) ifTrue: [ ^self visitRange: aSend exclusive: false ].
-	(#(#toExclusive: #toExclusive:by:) includes: aSend selector) ifTrue: [ ^self visitRange: aSend exclusive: true ].
-	(aSend selector = #do:) ifTrue: [ ^self visitForEach: aSend ].
-	(aSend selector = #whileTrue:) ifTrue: [ ^self visitWhile: aSend ].
-	(aSend selector = #whileFalse:) ifTrue: [ ^self visitWhile: (
-		ASSend target: aSend target negateLastStatement selector: aSend selector args: aSend args) ].
-	(aSend selector = #i and: [ aSend target isASLiteral ]) ifTrue: [
-		self visitLiteral: aSend target.
-		^self resultStream nextPut: $j.
-	].
-	(aSend target isASBlock and: [ aSend target body size = 1 ]) ifTrue: [
-		aSend selector = #assert ifTrue: [ ^self visitAssert: aSend target body first ].
-		aSend selector = #assertWithDescription: ifTrue: [ 
-			^self visitAssert: aSend target body first withDescription: aSend args first	 
-		].
-	].
-	self error: 'Unrecognized selector'
+	ZagSendConverter visit: aSend asVisitor: self
 ]
 
-{ #category : 'visiting' }
+{ #category : 'printing helpers' }
 ZagToPythonVisitor >> visitStatements: aCollectionOrNil [
 	"Outputs the statements in aCollection, calling their accept: method."
 	"The argument can be nil or empty, in which case 'pass' will be outputted."
@@ -545,30 +226,7 @@ ZagToPythonVisitor >> visitStatements: aCollectionOrNil [
 	self nestingLevel: oldNestingLevel.
 ]
 
-{ #category : 'visiting - message sends' }
-ZagToPythonVisitor >> visitUnaryOperation: aSend [
-	"Like visitSend, but the selector is in smalltalkToPythonUnaryOperations."
-	resultStream nextPutAll: (self class smalltalkToPythonUnaryOperations at: aSend selector).
-	aSend selector = #not ifTrue: [ self resultStream nextPut: Character space ].
-	self visit: aSend target withBrackets: (
-		self class needsBrackets: aSend forChild: aSend target isTarget: true).
-	
-]
-
-{ #category : 'visiting - message sends' }
-ZagToPythonVisitor >> visitWhile: aSend [
-	"Translate a while loop to Python."
-	aSend target isASBlock ifFalse: [ self error: 'While condition must be a block.' ].
-	aSend target body size = 1 ifFalse: [ self notYetImplemented ].
-	self resultStream nextPutAll: 'while '.
-	self visit: aSend target body first.
-	self resultStream nextPut: $:; nextPut: Character cr.
-	self addIndent: 1.
-	self visitStatements: aSend args first.
-	self addIndent: -1.
-]
-
-{ #category : 'visiting' }
+{ #category : 'printing helpers' }
 ZagToPythonVisitor >> withIndentAndNewline: aBlock [
 	"Indents, then runs aBlock, then outputs a newline."
 	self indentLevel timesRepeat: [

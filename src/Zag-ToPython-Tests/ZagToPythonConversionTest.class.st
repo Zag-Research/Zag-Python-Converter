@@ -22,6 +22,15 @@ ZagToPythonConversionTest >> assert: ast convertsToAnyOf: sources [
 	self assert: (sources includes: actual).
 ]
 
+{ #category : 'running' }
+ZagToPythonConversionTest >> setUp [
+	super setUp.
+	"Put here a common initialization logic for tests"
+	
+	"Reset the ZagSendConverter dictionary, in case I added new converters."
+	ZagSendConverter initialize.
+]
+
 { #category : 'tests - arrays' }
 ZagToPythonConversionTest >> testASArray [
 	self assert: (ASArray statements: {
@@ -151,7 +160,7 @@ ZagToPythonConversionTest >> testAssociativeAddition2 [
 	self assert: ast convertsTo: expected.
 ]
 
-{ #category : 'tests - basic expressions' }
+{ #category : 'tests - literals' }
 ZagToPythonConversionTest >> testBooleanLiterals [
 	"Test that true/false literals convert properly."
 	self assert: (ASLiteral literal: true) convertsTo: 'True'.
@@ -167,7 +176,7 @@ ZagToPythonConversionTest >> testBytearray [
 	) convertsTo: 'bytearray(10)'
 ]
 
-{ #category : 'tests - basic expressions' }
+{ #category : 'tests - literals' }
 ZagToPythonConversionTest >> testComplexNumberLiteral [
 	"Test that complex number literals convert properly."
 	| ast expected |
@@ -185,7 +194,7 @@ ZagToPythonConversionTest >> testDatatypeConversion [
 	self assert: ast convertsTo: expected.
 ]
 
-{ #category : 'tests - basic expressions' }
+{ #category : 'tests - literals' }
 ZagToPythonConversionTest >> testDictionaryLiteral [
 	"Tests that (literal array) asSet converts to a set literal."
 	| source expected |
@@ -196,7 +205,7 @@ ZagToPythonConversionTest >> testDictionaryLiteral [
 	self assert: source convertsTo: expected.
 ]
 
-{ #category : 'tests - basic expressions' }
+{ #category : 'tests - literals' }
 ZagToPythonConversionTest >> testEllipsis [
 	self assert: (ASLiteral literal: Ellipsis) convertsTo: 'Ellipsis'.
 ]
@@ -425,7 +434,7 @@ ZagToPythonConversionTest >> testNegatedAddition [
 	self assert: ast convertsTo: expected.
 ]
 
-{ #category : 'tests - basic expressions' }
+{ #category : 'tests - literals' }
 ZagToPythonConversionTest >> testNilLiteral [
 	"Test that nil literals convert properly."
 	| ast expected |
@@ -434,7 +443,7 @@ ZagToPythonConversionTest >> testNilLiteral [
 	self assert: ast convertsTo: expected.
 ]
 
-{ #category : 'tests - basic expressions' }
+{ #category : 'tests - literals' }
 ZagToPythonConversionTest >> testNotImplemented [
 	self assert: (ASLiteral literal: NotImplemented) convertsTo: 'NotImplemented'.
 ]
@@ -451,7 +460,7 @@ ZagToPythonConversionTest >> testPrint [
 	self assert: ast convertsTo: expected.
 ]
 
-{ #category : 'tests - basic expressions' }
+{ #category : 'tests - literals' }
 ZagToPythonConversionTest >> testSetLiteral [
 	"Tests that (literal array) asSet converts to a set literal."
 	| source1 source2 expecteds |
@@ -462,7 +471,7 @@ ZagToPythonConversionTest >> testSetLiteral [
 	self assert: source2 convertsToAnyOf: expecteds.
 ]
 
-{ #category : 'tests - basic expressions' }
+{ #category : 'tests - literals' }
 ZagToPythonConversionTest >> testStringLiteral [
 	"Test that string literals convert properly."
 	| ast expected |
@@ -506,7 +515,10 @@ ZagToPythonConversionTest >> testSwitchOutput [
 			-> (ASBlockNode arguments: #() locals: #() body: {ASReturn expression: (ASLiteral literal: 2)}).
 		true -> (ASBlockNode arguments: #() locals: #() body: {ASReturn expression: (ASLiteral literal: 3)}).
 	}.
-	actual := String streamContents: [ :stream | ZagToPythonVisitor new resultStream: stream; outputFormattedIfElse: switch ].
+	actual := String streamContents: [ :stream | | visitor |
+		visitor := ZagToPythonVisitor new resultStream: stream.
+		ZagIfElseConverter new acceptStatement: switch asVisitor: visitor.
+	].
 	expected := 'if 0:
 	return 1
 elif x >= 0:
