@@ -60,7 +60,7 @@ Each entry in the below list refers to a section in this reference, denoted by t
 
 This phase of development is mostly oriented around things that I missed in versions 0.1.0 and 0.2.0, where I was mostly making ad-hoc decisions without relying on any feature list.  I intend for future phases to be oriented around specific major features, like functions or exceptions.
 
-- [ ] §2.1.3 Comments
+- [X] §2.1.3 Comments
 - [ ] §2.3 Names (identifiers and keywords)
 - [ ] §2.3.1 Keywords
 - [ ] §2.3.2 Soft keywords
