@@ -194,6 +194,17 @@ ZagToPythonConversionTest >> testDatatypeConversion [
 	self assert: ast convertsTo: expected.
 ]
 
+{ #category : 'tests - basic expressions' }
+ZagToPythonConversionTest >> testDeleteSubscript [
+	"Tests that removeAt: & removeKey: convert into del statements."
+	| ast1 ast2 expected |
+	ast1 := ASSend target: (ASRef variable: #a) selector: #removeAt: args: { ASRef variable: #b }.
+	ast2 := ASSend target: (ASRef variable: #a) selector: #removeKey: args: { ASRef variable: #b }.
+	expected := 'del a[b]'.
+	self assert: ast1 convertsTo: expected.
+	self assert: ast2 convertsTo: expected.
+]
+
 { #category : 'tests - literals' }
 ZagToPythonConversionTest >> testDictionaryLiteral [
 	"Tests that (literal array) asSet converts to a set literal."

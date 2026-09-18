@@ -240,6 +240,13 @@ PythonConversionTest >> testComplexNumberNode [
 	self assertExpression: '0.5j' convertsTo: (ASSend target: (ASLiteral literal: 0.5) selector: #i).
 ]
 
+{ #category : 'tests - assignment' }
+PythonConversionTest >> testDeleteSubscript [
+	"tests using the del statement on collections"
+	self assertExpression: 'del a[b]' convertsTo: (
+		ASSend target: (ASRef variable: #a) selector: #removeAt: args: { ASRef variable: #b })
+]
+
 { #category : 'tests - literals' }
 PythonConversionTest >> testDictionaryLiteralNode [
 	self assertExpression: '{"a": b}' convertsTo: (

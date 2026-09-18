@@ -54,6 +54,7 @@ ZagTSNode class >> converter: type [
 	type = #'pass_statement' ifTrue: [
 		self error: 'Pass statements convert to nothing, so they should be handled outside the converter system.'
 	].
+	type = #'delete_statement' ifTrue: [ ^#delToZagAST ].
 	^(type asString,'ToZagAST') asSymbol
 ]
 
@@ -279,6 +280,15 @@ ZagTSNode >> childrenCount [
 ZagTSNode >> childrenDo: aBlock [
 	"Runs aBlock once for each of my children."
 	1 to: self childrenCount do: [ :i | aBlock value: (self >> i) ].
+]
+
+{ #category : 'converting - by node type' }
+ZagTSNode >> delToZagAST [
+	(self >> 1) tsNodeType = #subscript ifFalse: [ ^self notYetImplemented ].
+	^ASSend
+		target: (self >> 1 >> 1) asZagASTNode
+		selector: #removeAt:
+		args: { (self >> 1 >> 2) asZagASTNode }.
 ]
 
 { #category : 'converting - literals' }

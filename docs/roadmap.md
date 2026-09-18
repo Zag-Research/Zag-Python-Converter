@@ -91,7 +91,7 @@ This phase of development is mostly oriented around things that I missed in vers
 - [X] §6.13 Conditional expressions
 - [X] §7.3 The assert statement
 - [X] §7.4 The pass statement
-- [ ] §7.5 The del statement
+- [X] §7.5 The del statement (delete elements from collections)
 
 ## Unassigned Features
 
