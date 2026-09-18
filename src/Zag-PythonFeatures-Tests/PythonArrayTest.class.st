@@ -4,9 +4,9 @@ A test case ensuring that I've ported Python's array index semantics properly wi
 Class {
 	#name : 'PythonArrayTest',
 	#superclass : 'TestCase',
-	#category : 'Zag-FromPython-Tests-Tests',
-	#package : 'Zag-FromPython-Tests',
-	#tag : 'Tests'
+	#category : 'Zag-PythonFeatures-Tests-Collections',
+	#package : 'Zag-PythonFeatures-Tests',
+	#tag : 'Collections'
 }
 
 { #category : 'tests' }

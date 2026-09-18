@@ -4,9 +4,9 @@ I am a set of tests that ensures the special methods handling Python's truthy se
 Class {
 	#name : 'PythonTruthyTest',
 	#superclass : 'TestCase',
-	#category : 'Zag-FromPython-Tests-Tests',
-	#package : 'Zag-FromPython-Tests',
-	#tag : 'Tests'
+	#category : 'Zag-PythonFeatures-Tests-Basic Types',
+	#package : 'Zag-PythonFeatures-Tests',
+	#tag : 'Basic Types'
 }
 
 { #category : 'tests' }

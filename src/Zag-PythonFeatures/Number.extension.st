@@ -6,3 +6,8 @@ Number >> i [
 	"This is useful for creating complex literals like 1 + 2 i."
 	^ComplexNumber real: 0 imag: self
 ]
+
+{ #category : '*Zag-PythonFeatures' }
+Number >> toPythonBoolean [
+	^self isZero not.
+]

@@ -4,9 +4,9 @@ I represent Python's built-in Ellipsis object.
 Class {
 	#name : 'Ellipsis',
 	#superclass : 'Object',
-	#category : 'Zag-PythonFeatures-Basic-Types',
+	#category : 'Zag-PythonFeatures-Basic Types',
 	#package : 'Zag-PythonFeatures',
-	#tag : 'Basic-Types'
+	#tag : 'Basic Types'
 }
 
 { #category : 'instance creation' }

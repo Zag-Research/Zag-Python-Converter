@@ -1,6 +1,6 @@
 Extension { #name : 'False' }
 
-{ #category : '*Zag-FromPython' }
+{ #category : '*Zag-PythonFeatures' }
 False >> toPythonBoolean [
 	^self.
 ]
