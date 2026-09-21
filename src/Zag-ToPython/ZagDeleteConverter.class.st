@@ -1,3 +1,6 @@
+"
+I am the ZagSendConverter for the del statement.  Currently I only do statements of the form del a[b].
+"
 Class {
 	#name : 'ZagDeleteConverter',
 	#superclass : 'ZagSendConverter',
