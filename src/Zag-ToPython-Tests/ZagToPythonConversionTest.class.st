@@ -424,6 +424,19 @@ ZagToPythonConversionTest >> testInput [
 	self assert: ast convertsTo: expected.
 ]
 
+{ #category : 'tests - literals' }
+ZagToPythonConversionTest >> testMultilineStringLiteral [
+	"Test that string literals convert properly."
+	| ast expected |
+	ast := ASLiteral literal: 'test
+multiline
+literal'.
+	expected := '"""test
+multiline
+literal"""'.
+	self assert: ast convertsTo: expected.
+]
+
 { #category : 'tests - operations' }
 ZagToPythonConversionTest >> testMultiplicationAddition [
 	"Tests converting a simple addition-multiplication expression, which requires brackets."

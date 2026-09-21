@@ -42,6 +42,16 @@ ZagToPythonVisitor class >> new [
 	^self basicNew indentLevel: 0; nestingLevel: 0; yourself.
 ]
 
+{ #category : 'constants' }
+ZagToPythonVisitor class >> specialLiterals [
+	"The literals that have different names in Python from their Smalltalk string representation."
+	^{
+		nil -> 'None'.
+		true -> 'True'.
+		false -> 'False'.
+	} asDictionary
+]
+
 { #category : 'setting' }
 ZagToPythonVisitor >> addIndent: anInteger [
 	"Changes my indent level by the amount provided."
@@ -104,6 +114,16 @@ ZagToPythonVisitor >> outputCollection: aCollection begin: startDelimiter end: e
 	self resultStream nextPutAll: endDelimiter.
 ]
 
+{ #category : 'printing helpers' }
+ZagToPythonVisitor >> printStringLiteral: aString [
+	"Prints a Python string literal, including the proper quotes"
+	| multiline |
+	multiline := aString includes: Character cr.
+	self resultStream nextPutAll: (multiline ifTrue: [ '"""' ] ifFalse: [ '"' ]).
+	self resultStream nextPutAll: aString.
+	self resultStream nextPutAll: (multiline ifTrue: [ '"""' ] ifFalse: [ '"' ]).
+]
+
 { #category : 'accessing' }
 ZagToPythonVisitor >> resultStream [
 	"Gets my result stream."
@@ -157,22 +177,15 @@ ZagToPythonVisitor >> visitCascade: aCascade [
 { #category : 'visiting' }
 ZagToPythonVisitor >> visitLiteral: aLiteral [
 	"Visits an ASLiteral, adding its associated Python source to my stream."
-	{ 
-		aLiteral literal isString -> [
-			resultStream nextPut: $".
-			resultStream nextPutAll: aLiteral literal.
-			resultStream nextPut: $".
-		].
-		aLiteral literal isCollection -> [ | literals |
-			literals := aLiteral literal collect: [ :each | ASLiteral literal: each ].
-			self visitArray: (ASArray statements: literals)
-		].
-		aLiteral literal isNil -> [ resultStream nextPutAll: 'None' ].
-		"using == true/false as the literal can be any type"
-		aLiteral literal == true -> [ resultStream nextPutAll: 'True' ].
-		aLiteral literal == false -> [ resultStream nextPutAll: 'False' ].
-		true -> [ resultStream nextPutAll: aLiteral literal asString ]
-	} switch
+	aLiteral literal isString ifTrue: [ ^self printStringLiteral: aLiteral literal ].
+	aLiteral literal isCollection ifTrue: [ | literals |
+		literals := aLiteral literal collect: [ :each | ASLiteral literal: each ].
+		^self visitArray: (ASArray statements: literals)
+	].
+	self class specialLiterals
+		at: aLiteral literal
+		ifPresent: [ :asString | ^self resultStream nextPutAll: asString ].
+	self resultStream nextPutAll: aLiteral literal asString.
 ]
 
 { #category : 'visiting' }

@@ -61,10 +61,13 @@ ZagTSNode class >> converter: type [
 { #category : 'formatting' }
 ZagTSNode class >> formatCode: code [
 	"Formats code for handling by tree-sitter."
+	| inString |
+	inString := false.
 	^String streamContents: [ :stream |
 		code linesDo: [ :line |
+			(line allRangesOfSubstring: '"""') size odd ifTrue: [ inString := inString not ].
 			stream nextPutAll: line.
-			(':;' includes: line last) ifFalse: [
+			(':;' includes: line last) | inString ifFalse: [
 				stream nextPut: $;
 			].
 			stream nextPut: Character cr.

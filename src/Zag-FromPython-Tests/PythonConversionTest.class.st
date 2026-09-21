@@ -559,6 +559,16 @@ PythonConversionTest >> testMultiOperators [
 	self assertExpression: source convertsTo: expected.
 ]
 
+{ #category : 'tests - literals' }
+PythonConversionTest >> testMultilineStringNode [
+	"Ensure a string literal can be converted to Zag properly."
+	self assertExpression: '"""test
+multi-line
+string"""' convertsTo: (ASLiteral literal: 'test
+multi-line
+string').
+]
+
 { #category : 'tests - operators' }
 PythonConversionTest >> testNegation [
 	"Ensure an addition expression can be converted to Zag properly."
