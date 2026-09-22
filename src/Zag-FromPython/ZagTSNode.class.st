@@ -130,19 +130,13 @@ ZagTSNode >> asTSNode [
 { #category : 'converting' }
 ZagTSNode >> asZagASTNode [
 	"Returns me as a Zag AST node."
-	| converter |
-	converter := self class converter: self tsNodeType.
-	^converter value: self.
-]
-
-{ #category : 'converting - control flow' }
-ZagTSNode >> assertToZagAST [
-	| assertBlock |
-	assertBlock := ASBlockNode locals: #() body: { (self >> 1) asZagASTNode }.
-	^self childrenCount = 1
-		ifTrue: [ ASSend target: assertBlock selector: #assert ]
-		ifFalse: [ ASSend target: assertBlock selector: #assertWithDescription: args: {
-			(self >> 2) asZagASTNode } ].
+	^[
+		ZagTSConverter convertToZagAST: self.
+	] onErrorDo: [ :err | | converter |
+		Transcript show: 'Error converting node type '; show: self tsNodeType; show: ': '; show: err; cr.
+		converter := self class converter: self tsNodeType.
+		converter value: self.
+	]
 ]
 
 { #category : 'converting - operators' }
@@ -262,12 +256,6 @@ ZagTSNode >> callToZagAST [
 		ifFalse: [ self notYetImplemented ].
 ]
 
-{ #category : 'converting - by node type' }
-ZagTSNode >> childToZagAST [
-	"Returns my first child as a Zag AST."
-	^(self >> 1) asZagASTNode.
-]
-
 { #category : 'accessing' }
 ZagTSNode >> children [
 	"Returns my children as a collection."
@@ -283,31 +271,6 @@ ZagTSNode >> childrenCount [
 ZagTSNode >> childrenDo: aBlock [
 	"Runs aBlock once for each of my children."
 	1 to: self childrenCount do: [ :i | aBlock value: (self >> i) ].
-]
-
-{ #category : 'converting - by node type' }
-ZagTSNode >> delToZagAST [
-	(self >> 1) tsNodeType = #subscript ifFalse: [ ^self notYetImplemented ].
-	^ASSend
-		target: (self >> 1 >> 1) asZagASTNode
-		selector: #removeAt:
-		args: { (self >> 1 >> 2) asZagASTNode }.
-]
-
-{ #category : 'converting - literals' }
-ZagTSNode >> dictionaryToZagAST [
-	^ASSend
-		target: (self children collect: [ :each | 
-			ASSend
-				target: (each >> 1) asZagASTNode
-				selector: #->
-				args: { (each >> 2) asZagASTNode } ] as: ASArray)
-		selector: #asDictionary
-]
-
-{ #category : 'converting - literals' }
-ZagTSNode >> falseToZagAST [
-	^ASLiteral literal: false.
 ]
 
 { #category : 'converting - functions' }
@@ -340,14 +303,6 @@ ZagTSNode >> getUnaryOperator [
 	start := self asTSNode startPositionFromSourceText: source.
 	end := ((self >> 1) asTSNode startPositionFromSourceText: source) - 1.
 	^(source copyFrom: start to: end) trimBoth asSymbol.
-]
-
-{ #category : 'converting - by node type' }
-ZagTSNode >> identifierToZagAST [
-	"Converts me to a Zag AST, assuming I am an identifier."
-	self sourcePart asSymbol = #NotImplemented ifTrue: [ ^ASLiteral literal: NotImplemented ].
-	self sourcePart asSymbol = #Ellipsis ifTrue: [ ^ASLiteral literal: Ellipsis ].
-	^ASRef variable: self sourcePart asSymbol.
 ]
 
 { #category : 'converting - control flow' }
@@ -418,39 +373,11 @@ ZagTSNode >> lambdaToZagAST [
 	^ASBlockNode arguments: arguments locals: locals body: children.
 ]
 
-{ #category : 'converting - by node type' }
-ZagTSNode >> listToZagAST [
-	^self children collect: #asZagASTNode as: ASArray
-]
-
-{ #category : 'converting - by node type' }
-ZagTSNode >> moduleToZagAST [
-	"Converts a module to a #main method."
-	| children locals |
-	children := (1 to: node namedChildCount)
-		collect: [ :i | (self >> i) asZagASTNode ].
-	locals := self class computeLocals: children.
-	^ASMethodNode selector: self class mainMethodSelector locals: locals body: children.
-]
-
-{ #category : 'converting - literals' }
-ZagTSNode >> noneToZagAST [
-	^ASLiteral literal: nil.
-]
-
 { #category : 'converting - operators' }
 ZagTSNode >> notToZagAST [
 	"comment stating purpose of instance-side method"
 	"scope: class-variables  &  instance-variables"
 	^ASSend target: (self >> 1) asZagASTNode selector: #pythonNot.
-]
-
-{ #category : 'converting - literals' }
-ZagTSNode >> numberToZagAST [
-	"Converts a number to a Zag AST."
-	(self sourcePart endsWith: 'j') ifTrue: [ ^ASSend target: (
-		ASLiteral literal: self sourcePart allButLast asNumber) selector: #i ].
-	^ASLiteral literal: self sourcePart asNumber.
 ]
 
 { #category : 'converting - functions' }
@@ -486,11 +413,6 @@ ZagTSNode >> setNode: aNode source: aString [
 	source := aString.
 ]
 
-{ #category : 'initialization' }
-ZagTSNode >> setToZagAST [
-	^ASSend target: (self children collect: #asZagASTNode as: ASArray) selector: #asSet
-]
-
 { #category : 'accessing' }
 ZagTSNode >> sourceFull [
 	"Returns the complete source code of the tree this node was created with."
@@ -501,25 +423,6 @@ ZagTSNode >> sourceFull [
 ZagTSNode >> sourcePart [
 	"Returns the part of the source code associated with this node."
 	^node textFromSourceText: source.
-]
-
-{ #category : 'converting - literals' }
-ZagTSNode >> stringToZagAST [
-	"Converts a string to a Zag AST."
-	^ASLiteral literal: (self >> 2) sourcePart.
-]
-
-{ #category : 'converting - by node type' }
-ZagTSNode >> subscriptToZagAST [
-	^ASSend
-		target: (self >> 1) asZagASTNode
-		selector: #zwAt:
-		args: { (self >> 2) asZagASTNode }.
-]
-
-{ #category : 'converting - literals' }
-ZagTSNode >> trueToZagAST [
-	^ASLiteral literal: true.
 ]
 
 { #category : 'accessing' }

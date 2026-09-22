@@ -36,6 +36,15 @@ PythonConversionTest >> assertExpression: source convertsToAnyOf: trees [
 	self assert: (expecteds includes: actual).
 ]
 
+{ #category : 'running' }
+PythonConversionTest >> setUp [
+	super setUp.
+	"Put here a common initialization logic for tests"
+	
+	"Reset the ZagTSConverter dictionary, in case I added new converters."
+	ZagTSConverter initialize.
+]
+
 { #category : 'tests - operators' }
 PythonConversionTest >> testAddition [
 	"Ensure an addition expression can be converted to Zag properly."
