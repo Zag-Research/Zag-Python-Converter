@@ -111,6 +111,21 @@ ZagTSNode class >> pythonToZagAST: source [
 	^(self newRoot: source) asZagASTNode.
 ]
 
+{ #category : 'converting - literals' }
+ZagTSNode class >> stringType: prefix [
+	"Determines the type of a string literal based on its prefix.  Returns a set of type symbols."
+	| aZagTSNode |
+	aZagTSNode := self new.
+	(#( 'bf' 'bt' 'ft' ) anySatisfy: [ :str | prefix asLowercase sorted includesSubstring: str ])
+		ifTrue: [ aZagTSNode error: 'Invalid string prefix' ].
+	^(prefix asLowercase reject: [ :char | char = $u ]) collect: [ :char | {
+		char = $b -> #Bytes.
+		char = $r -> #Raw.
+		char = $f -> #Formatted.
+		char = $t -> #Template.
+		true -> [ self error: 'Unrecognized character' ] } switch ] as: Set
+]
+
 { #category : 'accessing' }
 ZagTSNode >> >> n [
 	"Returns the nth child of this node, as a ZagTSNode."
@@ -507,6 +522,11 @@ ZagTSNode >> sourcePart [
 ZagTSNode >> stringToZagAST [
 	"Converts a string to a Zag AST."
 	^ASLiteral literal: (self >> 2) sourcePart.
+]
+
+{ #category : 'converting - literals' }
+ZagTSNode >> stringType: prefix [ 
+	^ self class stringType: prefix 
 ]
 
 { #category : 'converting - by node type' }
