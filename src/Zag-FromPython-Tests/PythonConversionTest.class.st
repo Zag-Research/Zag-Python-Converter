@@ -619,7 +619,7 @@ PythonConversionTest >> testNotOperator [
 	"Ensure a 'not' expression can be converted properly."
 	| expected source |
 	source := 'not a'.
-	expected := ASSend target: (ASRef variable: #a) selector: #pythonNot.
+	expected := ASSend target: (ASRef variable: #a) selector: #pythonNot args: #().
 	self assertExpression: source convertsTo: expected.
 ]
 
