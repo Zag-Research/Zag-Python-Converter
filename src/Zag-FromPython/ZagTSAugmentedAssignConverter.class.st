@@ -21,13 +21,13 @@ ZagTSAugmentedAssignConverter >> arrayAssignToZagAST: aZagTSNode op: op [
 	^ASSend
 		target: (aZagTSNode >> 1 >> 1) asZagASTNode 
 		selector: #zwAt:put:
-		args: { (aZagTSNode >> 1 >> 2) asZagASTNode . ASSend
-			target: (ASSend
+		args: { (aZagTSNode >> 1 >> 2) asZagASTNode . ZagTSBinaryOperatorConverter
+			convertToZagASTSelector: op
+			left: (MockZagTSNode new zagAST: (ASSend
 				target: (aZagTSNode >> 1 >> 1) asZagASTNode 
 				selector: #zwAt:
-				args: { (aZagTSNode >> 1 >> 2) asZagASTNode })
-			selector: op
-			args: { (aZagTSNode >> 2) asZagASTNode } }.
+				args: { (aZagTSNode >> 1 >> 2) asZagASTNode }))
+			right: aZagTSNode >> 2 }.
 ]
 
 { #category : 'converting' }

@@ -117,6 +117,26 @@ PythonConversionTest >> testArrayAssignPlus [
 	self assertExpression: source convertsTo: expected.
 ]
 
+{ #category : 'tests - assignment' }
+PythonConversionTest >> testArrayAssignRS [
+	"Ensure a special case augmented assignment expression (>>=) can be converted to Zag properly."
+	| expected source |
+	source := 'a[b] >>= c'.
+	expected := ASSend
+		target: (ASRef variable: #a)
+		selector: #zwAt:put:
+		args: { ASRef variable: #b . ASSend
+			target: (ASSend
+				target: (ASRef variable: #a)
+				selector: #zwAt:
+				args: { ASRef variable: #b }
+			)
+			selector: #bitShift:
+			args: { ASSend target: (ASRef variable: #c) selector: #negated args: #() }
+		}.
+	self assertExpression: source convertsTo: expected.
+]
+
 { #category : 'tests - literals' }
 PythonConversionTest >> testArrayLiteralNode [
 	"Tests converting array/list literals"
@@ -168,6 +188,20 @@ PythonConversionTest >> testAssignPlus [
 			target: (ASRef variable: #a)
 			selector: #+
 			args: { ASRef variable: #b }).
+	self assertExpression: source convertsTo: expected withLocals: #(#a).
+]
+
+{ #category : 'tests - assignment' }
+PythonConversionTest >> testAssignRS [
+	"Ensure a special case augmented assignment expression (>>=) can be converted to Zag properly."
+	| expected source |
+	source := 'a >>= b'.
+	expected := ASAssign
+		variable: (ASRef variable: #a)
+		expression: (ASSend
+			target: (ASRef variable: #a)
+			selector: #bitShift:
+			args: { ASSend target: (ASRef variable: #b) selector: #negated args: #() }).
 	self assertExpression: source convertsTo: expected withLocals: #(#a).
 ]
 
