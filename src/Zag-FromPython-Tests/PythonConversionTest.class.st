@@ -728,13 +728,13 @@ PythonConversionTest >> testStringType [
 		'f' -> #(#Formatted). 'fr' -> #(#Formatted #Raw). 'rf' -> #(#Formatted #Raw).
 		't' -> #(#Template). 'tr' -> #(#Template #Raw). 'rt' -> #(#Template #Raw).
 	} asDictionary keysAndValuesDo: [ :k :v |
-		self assert: (ZagTSNode stringType: k) equals: v asSet ].
+		self assert: (ZagTSStringConverter stringType: k) equals: v asSet ].
 ]
 
 { #category : 'tests - literals' }
 PythonConversionTest >> testStringTypeErrors [
 	#('a' '"hello"' 'invalid' 'ft' 'fb' 'tb')
-		do: [ :each | self should: [ ZagTSNode stringType: each ] raise: Error ].
+		do: [ :each | self should: [ ZagTSStringConverter stringType: each ] raise: Error ].
 ]
 
 { #category : 'tests' }
