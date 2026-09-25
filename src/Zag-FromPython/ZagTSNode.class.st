@@ -13,34 +13,10 @@ Class {
 	#tag : 'AST'
 }
 
-{ #category : 'constants' }
-ZagTSNode class >> builtinMap [
-	"Return a dictionary mapping Python builtin function names to methods that should be called to convert them.  Functions outside this map are not yet supported."
-	^{
-		#print -> #printToZagAST.
-		#input -> #inputToZagAST.
-		#float -> #floatToZagAST.
-		#int -> #intToZagAST.
-		#range -> #rangeToZagAST.
-		#bytearray -> #byteArrayToZagAST.
-		#set -> #setCallToZagAST. "setToZagAST is taken by the set literal"
-	} asDictionary
-]
-
 { #category : 'computing' }
 ZagTSNode class >> computeLocals: body [
 	"Gets the set of local variables in a collection of statements."
 	^body select: [ :each | each isKindOf: ASAssign ] thenCollect: #variable
-]
-
-{ #category : 'accessing' }
-ZagTSNode class >> converter: type [
-	"Returns the conversion function for a node of the given type (symbol)."
-	"This function should accept the ZagTSNode and return a Zag AST object."
-	type = #'pass_statement' ifTrue: [
-		self error: 'Pass statements convert to nothing, so they should be handled outside the converter system.'
-	].
-	^(type asString,'ToZagAST') asSymbol
 ]
 
 { #category : 'formatting' }
@@ -115,13 +91,7 @@ ZagTSNode >> asTSNode [
 { #category : 'converting' }
 ZagTSNode >> asZagASTNode [
 	"Returns me as a Zag AST node."
-	^[
-		ZagTSConverter convertToZagAST: self.
-	] onErrorDo: [ :err | | converter |
-		Transcript show: 'Error converting node type '; show: self tsNodeType; show: ': '; show: err; cr.
-		converter := self class converter: self tsNodeType.
-		converter value: self.
-	]
+	^ZagTSConverter convertToZagAST: self.
 ]
 
 { #category : 'accessing' }
