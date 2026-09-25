@@ -124,29 +124,6 @@ ZagTSNode >> asZagASTNode [
 	]
 ]
 
-{ #category : 'converting - functions' }
-ZagTSNode >> builtinToZagAST [
-	"Converts a builtin method to a Zag AST."
-	^self class builtinMap
-		at: (self >> 1) sourcePart asSymbol
-		ifPresent: [ :func | func value: self ]
-		ifAbsent: [ self notYetImplemented ]
-]
-
-{ #category : 'converting - functions' }
-ZagTSNode >> byteArrayToZagAST [
-	^ASSend target: (ASRef variable: #ByteArray) selector: #fromNumberOrString: args: {
-		(self >> 2 >> 1) asZagASTNode }
-]
-
-{ #category : 'converting - functions' }
-ZagTSNode >> callToZagAST [
-	"Converts a function call to a Zag AST."
-	(self class builtinMap includesKey: (self >> 1) sourcePart asSymbol)
-		ifTrue: [ ^self builtinToZagAST ]
-		ifFalse: [ self notYetImplemented ].
-]
-
 { #category : 'accessing' }
 ZagTSNode >> children [
 	"Returns my children as a collection."
@@ -162,13 +139,6 @@ ZagTSNode >> childrenCount [
 ZagTSNode >> childrenDo: aBlock [
 	"Runs aBlock once for each of my children."
 	1 to: self childrenCount do: [ :i | aBlock value: (self >> i) ].
-]
-
-{ #category : 'converting - functions' }
-ZagTSNode >> floatToZagAST [
-	^ASSend
-		target: (self >> 2 >> 1) asZagASTNode
-		selector: #asNumber.
 ]
 
 { #category : 'computing' }
@@ -187,61 +157,6 @@ ZagTSNode >> getUnaryOperator [
 	start := self asTSNode startPositionFromSourceText: source.
 	end := ((self >> 1) asTSNode startPositionFromSourceText: source) - 1.
 	^(source copyFrom: start to: end) trimBoth asSymbol.
-]
-
-{ #category : 'converting - functions' }
-ZagTSNode >> inputToZagAST [
-	^ASSend
-		target: (ASSend target: (ASRef variable: #UIManager) selector: #default args: #())
-		selector: #request:
-		args: { (self >> 2 >> 1) asZagASTNode }.
-]
-
-{ #category : 'converting - functions' }
-ZagTSNode >> intToZagAST [
-	^ASSend
-		target: (self >> 2 >> 1) asZagASTNode
-		selector: #asInteger.
-]
-
-{ #category : 'converting - functions' }
-ZagTSNode >> lambdaToZagAST [
-	"Converts me to a Zag AST, assuming I am a lambda."
-	| hasArguments arguments bodyStart children locals |
-	self childrenCount < 1 ifTrue: [ self error: 'invalid lambda w/o children' ].
-	hasArguments := (self >> 1) tsNodeType = #lambda_parameters.
-	arguments := hasArguments ifTrue: [ (self >> 1) children collect: #asZagASTNode ] ifFalse: [ #() ].
-	bodyStart := hasArguments ifTrue: [ 2 ] ifFalse: [ 1 ].
-	children := (bodyStart to: self childrenCount) collect: [:i | (self >> i) asZagASTNode ].
-	locals := self class computeLocals: children.
-	^ASBlockNode arguments: arguments locals: locals body: children.
-]
-
-{ #category : 'converting - functions' }
-ZagTSNode >> printToZagAST [
-	| calls |
-	calls := (self >> 2) children collect: [ :each |
-		ASSend selector: #show: args: { each asZagASTNode } ].
-	^ASCascade target: (ASRef variable: #Transcript) sends: (calls copyWith: (
-		ASSend selector: #cr args: #())).
-]
-
-{ #category : 'converting - functions' }
-ZagTSNode >> rangeToZagAST [
-	^(self >> 2) children size = 2
-		ifTrue: [ ASSend
-			target: (self >> 2 >> 1) asZagASTNode
-			selector: #toExclusive:
-			args: { (self >> 2 >> 2) asZagASTNode } ]
-		ifFalse: [ ASSend
-			target: (self >> 2 >> 1) asZagASTNode
-			selector: #toExclusive:by: 
-			args: { (self >> 2 >> 2) asZagASTNode . (self >> 2 >> 3) asZagASTNode } ]
-]
-
-{ #category : 'converting - functions' }
-ZagTSNode >> setCallToZagAST [
-	^ASSend target: (self >> 2 >> 1) asZagASTNode selector: #asSet
 ]
 
 { #category : 'initialization' }
