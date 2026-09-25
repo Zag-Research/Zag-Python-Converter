@@ -13,7 +13,7 @@ Class {
 ManifestZagFromPython class >> ruleBadMessageRule2V1FalsePositive [
 
 	<ignoreForCoverage>
-	^ #(#(#(#RGMethodDefinition #(#'ZagTSNode class' #computeLocals: #true)) #'2026-05-07T15:40:21.053-05:00') )
+	^ #(#(#(#RGMethodDefinition #(#'ZagTSNode class' #computeLocals: #true)) #'2026-05-07T15:40:21.053-05:00') #(#(#RGMethodDefinition #(#'ZagTSBinaryOperatorConverter class' #convertToZagASTSelector:left:right: #true)) #'2026-09-23T10:48:00.36-05:00') )
 ]
 
 { #category : 'code-critics' }

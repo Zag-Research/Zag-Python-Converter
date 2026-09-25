@@ -36,6 +36,15 @@ PythonConversionTest >> assertExpression: source convertsToAnyOf: trees [
 	self assert: (expecteds includes: actual).
 ]
 
+{ #category : 'running' }
+PythonConversionTest >> setUp [
+	super setUp.
+	"Put here a common initialization logic for tests"
+	
+	"Reset the ZagTSConverter dictionary, in case I added new converters."
+	ZagTSConverter initialize.
+]
+
 { #category : 'tests - operators' }
 PythonConversionTest >> testAddition [
 	"Ensure an addition expression can be converted to Zag properly."
@@ -108,6 +117,26 @@ PythonConversionTest >> testArrayAssignPlus [
 	self assertExpression: source convertsTo: expected.
 ]
 
+{ #category : 'tests - assignment' }
+PythonConversionTest >> testArrayAssignRS [
+	"Ensure a special case augmented assignment expression (>>=) can be converted to Zag properly."
+	| expected source |
+	source := 'a[b] >>= c'.
+	expected := ASSend
+		target: (ASRef variable: #a)
+		selector: #zwAt:put:
+		args: { ASRef variable: #b . ASSend
+			target: (ASSend
+				target: (ASRef variable: #a)
+				selector: #zwAt:
+				args: { ASRef variable: #b }
+			)
+			selector: #bitShift:
+			args: { ASSend target: (ASRef variable: #c) selector: #negated args: #() }
+		}.
+	self assertExpression: source convertsTo: expected.
+]
+
 { #category : 'tests - literals' }
 PythonConversionTest >> testArrayLiteralNode [
 	"Tests converting array/list literals"
@@ -159,6 +188,20 @@ PythonConversionTest >> testAssignPlus [
 			target: (ASRef variable: #a)
 			selector: #+
 			args: { ASRef variable: #b }).
+	self assertExpression: source convertsTo: expected withLocals: #(#a).
+]
+
+{ #category : 'tests - assignment' }
+PythonConversionTest >> testAssignRS [
+	"Ensure a special case augmented assignment expression (>>=) can be converted to Zag properly."
+	| expected source |
+	source := 'a >>= b'.
+	expected := ASAssign
+		variable: (ASRef variable: #a)
+		expression: (ASSend
+			target: (ASRef variable: #a)
+			selector: #bitShift:
+			args: { ASSend target: (ASRef variable: #b) selector: #negated args: #() }).
 	self assertExpression: source convertsTo: expected withLocals: #(#a).
 ]
 
@@ -610,7 +653,7 @@ PythonConversionTest >> testNotOperator [
 	"Ensure a 'not' expression can be converted properly."
 	| expected source |
 	source := 'not a'.
-	expected := ASSend target: (ASRef variable: #a) selector: #pythonNot.
+	expected := ASSend target: (ASRef variable: #a) selector: #pythonNot args: #().
 	self assertExpression: source convertsTo: expected.
 ]
 
