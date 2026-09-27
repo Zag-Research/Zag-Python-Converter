@@ -63,19 +63,19 @@ This phase of development is mostly oriented around things that I missed in vers
 - [ ] §2.3 Names (identifiers and keywords)
 - [ ] §2.3.1 Keywords
 - [ ] §2.3.2 Soft keywords
-- [ ] §2.5.1 Triple-quoted strings
-- [ ] §2.5.2 String prefixes
+- [X] §2.5.1 Triple-quoted strings
+- [X] §2.5.2 String prefixes
 - [ ] §2.5.3 Formal grammar
 - [ ] §2.5.4 Escape sequences
-- [ ] §2.5.4.1 Ignored end of line
-- [ ] §2.5.4.2 Escaped characters
+- [X] §2.5.4.1 Ignored end of line
+- [X] §2.5.4.2 Escaped characters
 - [ ] §2.5.4.3 Octal character
 - [ ] §2.5.4.4 Hexadecimal character
 - [ ] §2.5.4.5 Named Unicode character
 - [ ] §2.5.4.6 Hexadecimal Unicode characters
 - [ ] §2.5.4.7 Unrecognized escape sequences
-- [ ] §2.5.5 Bytes literals
-- [ ] §2.5.6 Raw string literals
+- [X] §2.5.5 Bytes literals
+- [X] §2.5.6 Raw string literals
 - [X] §2.6 Numeric literals
 - [X] §2.6.3 Imaginary literals
 - [X] §3.2.1 None
