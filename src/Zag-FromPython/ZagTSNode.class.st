@@ -50,7 +50,7 @@ ZagTSNode class >> formatCode: code [
 	inString := false.
 	^String streamContents: [ :stream |
 		code linesDo: [ :line |
-			(line allRangesOfSubstring: '"""') size odd ifTrue: [ inString := inString not ].
+			(line allRangesOfSubstring: '"') size odd ifTrue: [ inString := inString not ].
 			stream nextPutAll: line.
 			(':;' includes: line last) | inString ifFalse: [
 				stream nextPut: $;
@@ -115,13 +115,7 @@ ZagTSNode >> asTSNode [
 { #category : 'converting' }
 ZagTSNode >> asZagASTNode [
 	"Returns me as a Zag AST node."
-	^[
-		ZagTSConverter convertToZagAST: self.
-	] onErrorDo: [ :err | | converter |
-		Transcript show: 'Error converting node type '; show: self tsNodeType; show: ': '; show: err; cr.
-		converter := self class converter: self tsNodeType.
-		converter value: self.
-	]
+	^ZagTSConverter convertToZagAST: self
 ]
 
 { #category : 'accessing' }

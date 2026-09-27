@@ -703,6 +703,12 @@ PythonConversionTest >> testRangeCall3Arg [
 ]
 
 { #category : 'tests - literals' }
+PythonConversionTest >> testRawStrings [
+	"Ensures that escapes in raw strings are not parsed."
+	self assertExpression: 'r"\''"' convertsTo: (ASLiteral literal: '\''') 
+]
+
+{ #category : 'tests - literals' }
 PythonConversionTest >> testSetLiteralNode [
 	"Tests that set literals and the set() call both produce Smalltalk set literals."
 	| expecteds |
@@ -712,6 +718,19 @@ PythonConversionTest >> testSetLiteralNode [
 			ASSend target: statements selector: #asSet ].
 	self assertExpression: '{1, 2, 3}' convertsToAnyOf: expecteds.
 	self assertExpression: 'set([1, 2, 3])' convertsToAnyOf: expecteds.
+]
+
+{ #category : 'tests - literals' }
+PythonConversionTest >> testStringEscapes [
+	"Test that string literals with escapes are converted properly."
+	{
+		'hello' -> 'hello'.
+		'\"hello\"' -> '"hello"'.
+		'skip\
+newline' -> 'skipnewline'.
+		'tab:\t,newline:\n' -> ('tab:',Character tab asString,',newline:',Character lf asString)
+	} asDictionary keysAndValuesDo: [ :k :v |
+		self assertExpression: '"',k,'"' convertsTo: (ASLiteral literal: v) ]
 ]
 
 { #category : 'tests - literals' }
