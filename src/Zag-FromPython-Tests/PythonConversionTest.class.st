@@ -261,6 +261,16 @@ PythonConversionTest >> testBytearrayCall [
 			ASLiteral literal: 10 }).
 ]
 
+{ #category : 'tests - literals' }
+PythonConversionTest >> testBytesLiteral [
+	"Tests that bytes literals convert to asByteArray sends."
+	| ast |
+	ast := ASSend target: (ASLiteral literal: 'hello') selector: #asByteArray args: #(). 
+	self assertExpression: 'b"hello"' convertsTo: ast.
+	self assertExpression: 'br"hello"' convertsTo: ast.
+	self assertExpression: 'rb"hello"' convertsTo: ast.
+]
+
 { #category : 'tests - comparison & membership operators' }
 PythonConversionTest >> testComparison [
 	"Ensure a comparison expression can be converted to Zag properly."

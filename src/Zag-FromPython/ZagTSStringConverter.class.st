@@ -63,12 +63,15 @@ ZagTSStringConverter class >> stringType: prefix [
 
 { #category : 'converting' }
 ZagTSStringConverter >> convertToZagAST: aZagTSNode [
-	| pythonString pythonPrefix stringType smalltalkString |
+	| pythonString pythonPrefix stringType smalltalkString literal |
 	pythonString := (aZagTSNode >> 2) sourcePart.
 	pythonPrefix := (aZagTSNode >> 1) sourcePart trimRight: [ :c | '''"' includes: c ].
 	stringType := self class stringType: pythonPrefix.
 	smalltalkString := (stringType includes: #Raw)
 		ifTrue: [ pythonString replaceAll: '''' with: '''''' ]
 		ifFalse: [ self class parseLiteral: pythonString ].
-	^ASLiteral literal: smalltalkString.
+	literal := ASLiteral literal: smalltalkString.
+	^(stringType includes: #Bytes)
+		ifTrue: [ ASSend target: literal selector: #asByteArray args: #() ]
+		ifFalse: [ literal ].
 ]

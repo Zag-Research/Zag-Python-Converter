@@ -177,6 +177,13 @@ ZagToPythonConversionTest >> testBytearray [
 ]
 
 { #category : 'tests - literals' }
+ZagToPythonConversionTest >> testBytesLiteral [
+	"Tests that the asByteArray converts into a bytes literal."
+	self assert: (ASSend target: (ASLiteral literal: 'hello') selector: #asByteArray) convertsTo: 'b"hello"'.
+	self assert: (ASSend target: (ASRef variable: #s) selector: #asByteArray) convertsTo: 'bytearray(s)'.
+]
+
+{ #category : 'tests - literals' }
 ZagToPythonConversionTest >> testComplexNumberLiteral [
 	"Test that complex number literals convert properly."
 	| ast expected |
