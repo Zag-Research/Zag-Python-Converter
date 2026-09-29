@@ -59,23 +59,23 @@ Each entry in the below list refers to a section in this reference, denoted by t
 
 This phase of development is mostly oriented around things that I missed in versions 0.1.0 and 0.2.0, where I was mostly making ad-hoc decisions without relying on any feature list.  I intend for future phases to be oriented around specific major features, like functions or exceptions.
 
-- [ ] §2.1.3 Comments
-- [ ] §2.3 Names (identifiers and keywords)
-- [ ] §2.3.1 Keywords
-- [ ] §2.3.2 Soft keywords
-- [ ] §2.5.1 Triple-quoted strings
-- [ ] §2.5.2 String prefixes
-- [ ] §2.5.3 Formal grammar
-- [ ] §2.5.4 Escape sequences
-- [ ] §2.5.4.1 Ignored end of line
-- [ ] §2.5.4.2 Escaped characters
-- [ ] §2.5.4.3 Octal character
-- [ ] §2.5.4.4 Hexadecimal character
-- [ ] §2.5.4.5 Named Unicode character
-- [ ] §2.5.4.6 Hexadecimal Unicode characters
-- [ ] §2.5.4.7 Unrecognized escape sequences
-- [ ] §2.5.5 Bytes literals
-- [ ] §2.5.6 Raw string literals
+- [-] §2.1.3 Comments
+- [X] §2.3 Names (identifiers and keywords)
+- [X] §2.3.1 Keywords
+- [X] §2.3.2 Soft keywords
+- [X] §2.5.1 Triple-quoted strings
+- [X] §2.5.2 String prefixes
+- [X] §2.5.3 Formal grammar
+- [X] §2.5.4 Escape sequences
+- [X] §2.5.4.1 Ignored end of line
+- [X] §2.5.4.2 Escaped characters
+- [X] §2.5.4.3 Octal character
+- [X] §2.5.4.4 Hexadecimal character
+- [X] §2.5.4.5 Named Unicode character
+- [X] §2.5.4.6 Hexadecimal Unicode characters
+- [X] §2.5.4.7 Unrecognized escape sequences
+- [X] §2.5.5 Bytes literals
+- [X] §2.5.6 Raw string literals
 - [X] §2.6 Numeric literals
 - [X] §2.6.3 Imaginary literals
 - [X] §3.2.1 None

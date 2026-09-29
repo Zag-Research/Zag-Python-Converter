@@ -15,3 +15,10 @@ ManifestZagPythonFeatures class >> ruleBadMessageRule2V1FalsePositive [
 	<ignoreForCoverage>
 	^ #(#(#(#RGMethodDefinition #(#ComplexNumber #adaptToNumber:andSend: #false)) #'2026-08-20T10:42:26.286-05:00') )
 ]
+
+{ #category : 'code-critics' }
+ManifestZagPythonFeatures class >> ruleTempsReadBeforeWrittenRuleV1FalsePositive [
+
+	<ignoreForCoverage>
+	^ #(#(#(#RGMethodDefinition #(#'UnicodeLookup class' #initialize #true)) #'2026-09-29T11:51:07.747-05:00') )
+]

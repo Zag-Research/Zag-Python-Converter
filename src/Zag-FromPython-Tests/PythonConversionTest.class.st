@@ -219,6 +219,19 @@ PythonConversionTest >> testBasicIf [
 	self assertExpression: source convertsTo: expected "withLocals: #(#x)".
 ]
 
+{ #category : 'tests - literals' }
+PythonConversionTest >> testBasicStringEscapes [
+	"Test that string literals with escapes are converted properly."
+	{
+		'hello' -> 'hello'.
+		'\"hello\"' -> '"hello"'.
+		'skip\
+newline' -> 'skipnewline'.
+		'tab:\t,newline:\n' -> ('tab:',Character tab asString,',newline:',Character lf asString)
+	} asDictionary keysAndValuesDo: [ :k :v |
+		self assertExpression: '"',k,'"' convertsTo: (ASLiteral literal: v) ]
+]
+
 { #category : 'tests - operators' }
 PythonConversionTest >> testBitShiftLeft [
 	"Ensure a left bit shift expression can be converted to Zag properly."
@@ -259,6 +272,16 @@ PythonConversionTest >> testBytearrayCall [
 	self assertExpression: 'bytearray(10)' convertsTo: (
 		ASSend target: (ASRef variable: #ByteArray) selector: #fromNumberOrString: args: {
 			ASLiteral literal: 10 }).
+]
+
+{ #category : 'tests - literals' }
+PythonConversionTest >> testBytesLiteral [
+	"Tests that bytes literals convert to asByteArray sends."
+	| ast |
+	ast := ASSend target: (ASLiteral literal: 'hello') selector: #asByteArray args: #(). 
+	self assertExpression: 'b"hello"' convertsTo: ast.
+	self assertExpression: 'br"hello"' convertsTo: ast.
+	self assertExpression: 'rb"hello"' convertsTo: ast.
 ]
 
 { #category : 'tests - comparison & membership operators' }
@@ -522,6 +545,12 @@ PythonConversionTest >> testIntegerNode [
 	self assertExpression: '2' convertsTo: (ASLiteral literal: 2).
 ]
 
+{ #category : 'tests - literals' }
+PythonConversionTest >> testInvalidBytesLiteral [
+	"Ensure that bytes literals with non-byte characters raise an error."
+	self should: [ ZagTSNode pythonToZagAST: 'b"\u1234"' ] raise: Error
+]
+
 { #category : 'tests - full programs' }
 PythonConversionTest >> testInvalidProgram [
 	"Test that parsing an invalid program raises an error."
@@ -612,6 +641,12 @@ multi-line
 string').
 ]
 
+{ #category : 'tests - literals' }
+PythonConversionTest >> testNamedEscape [
+	self assertExpression: '"\N{LATIN CAPITAL LETTER A}"' convertsTo: (ASLiteral literal: 'A').
+	self assertExpression: '"\N{MULTIPLICATION SIGN}"' convertsTo: (ASLiteral literal: '×').
+]
+
 { #category : 'tests - operators' }
 PythonConversionTest >> testNegation [
 	"Ensure an addition expression can be converted to Zag properly."
@@ -655,6 +690,15 @@ PythonConversionTest >> testNotOperator [
 	source := 'not a'.
 	expected := ASSend target: (ASRef variable: #a) selector: #pythonNot args: #().
 	self assertExpression: source convertsTo: expected.
+]
+
+{ #category : 'tests - literals' }
+PythonConversionTest >> testNumericStringEscapes [
+	"Tests the octal and hexadecimal escapes."
+	self assertExpression: '"\062\053\062\075\064"' convertsTo: (ASLiteral literal: '2+2=4').
+	self assertExpression: '"\x32\x2B\x32\x3D\x34"' convertsTo: (ASLiteral literal: '2+2=4').
+	self assertExpression: '"\u26A7"' convertsTo: (ASLiteral literal: '⚧').
+	self assertExpression: '"\U0001F60A"' convertsTo: (ASLiteral literal: '😊').
 ]
 
 { #category : 'tests - operators' }
@@ -703,6 +747,12 @@ PythonConversionTest >> testRangeCall3Arg [
 ]
 
 { #category : 'tests - literals' }
+PythonConversionTest >> testRawStrings [
+	"Ensures that escapes in raw strings are not parsed."
+	self assertExpression: 'r"\''"' convertsTo: (ASLiteral literal: '\''') 
+]
+
+{ #category : 'tests - literals' }
 PythonConversionTest >> testSetLiteralNode [
 	"Tests that set literals and the set() call both produce Smalltalk set literals."
 	| expecteds |
@@ -718,6 +768,23 @@ PythonConversionTest >> testSetLiteralNode [
 PythonConversionTest >> testStringNode [
 	"Ensure a string literal can be converted to Zag properly."
 	self assertExpression: '"a"' convertsTo: (ASLiteral literal: 'a').
+]
+
+{ #category : 'tests - literals' }
+PythonConversionTest >> testStringType [
+	{
+		'' -> #(). 'u' -> #().
+		'b' -> #(#Bytes). 'br' -> #(#Bytes #Raw). 'rb' -> #(#Bytes #Raw).
+		'f' -> #(#Formatted). 'fr' -> #(#Formatted #Raw). 'rf' -> #(#Formatted #Raw).
+		't' -> #(#Template). 'tr' -> #(#Template #Raw). 'rt' -> #(#Template #Raw).
+	} asDictionary keysAndValuesDo: [ :k :v |
+		self assert: (ZagTSStringConverter stringType: k) equals: v asSet ].
+]
+
+{ #category : 'tests - literals' }
+PythonConversionTest >> testStringTypeErrors [
+	#('a' '"hello"' 'invalid' 'ft' 'fb' 'tb')
+		do: [ :each | self should: [ ZagTSStringConverter stringType: each ] raise: Error ].
 ]
 
 { #category : 'tests' }

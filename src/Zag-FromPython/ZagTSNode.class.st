@@ -26,7 +26,7 @@ ZagTSNode class >> formatCode: code [
 	inString := false.
 	^String streamContents: [ :stream |
 		code linesDo: [ :line |
-			(line allRangesOfSubstring: '"""') size odd ifTrue: [ inString := inString not ].
+			(line allRangesOfSubstring: '"') size odd ifTrue: [ inString := inString not ].
 			stream nextPutAll: line.
 			(':;' includes: line last) | inString ifFalse: [
 				stream nextPut: $;

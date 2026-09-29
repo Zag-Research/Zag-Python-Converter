@@ -177,6 +177,13 @@ ZagToPythonConversionTest >> testBytearray [
 ]
 
 { #category : 'tests - literals' }
+ZagToPythonConversionTest >> testBytesLiteral [
+	"Tests that the asByteArray converts into a bytes literal."
+	self assert: (ASSend target: (ASLiteral literal: 'hello') selector: #asByteArray) convertsTo: 'b"hello"'.
+	self assert: (ASSend target: (ASRef variable: #s) selector: #asByteArray) convertsTo: 'bytearray(s)'.
+]
+
+{ #category : 'tests - literals' }
 ZagToPythonConversionTest >> testComplexNumberLiteral [
 	"Test that complex number literals convert properly."
 	| ast expected |
@@ -415,12 +422,12 @@ ZagToPythonConversionTest >> testIndent [
 ZagToPythonConversionTest >> testInput [
 	"Ensures the input statement can be converted to."
 	| ast expected |
-	ast := ASAssign variable: (ASRef variable: #in) expression: (
+	ast := ASAssign variable: (ASRef variable: #result) expression: (
 		ASSend target: (ASSend target: (ASRef variable: #UIManager) selector: #default) selector: #request: args: { 
 			ASLiteral literal: '[input prompt]'
 		}
 	).
-	expected := 'in = input("[input prompt]")'.
+	expected := 'result = input("[input prompt]")'.
 	self assert: ast convertsTo: expected.
 ]
 
@@ -482,6 +489,16 @@ ZagToPythonConversionTest >> testPrint [
 	}.
 	expected := 'print(out)'.
 	self assert: ast convertsTo: expected.
+]
+
+{ #category : 'tests - basic expressions' }
+ZagToPythonConversionTest >> testReservedRef [
+	"Test that ASRef does not lead to printing a reserved word."
+	| ast actual |
+	ast := ASRef variable: #if.
+	actual := ZagToPythonVisitor astToPythonSource: ast.
+	self deny: actual = 'if' description:
+		'"if" is a reserved word & can''t be a variable name.  Another name must be used.'.
 ]
 
 { #category : 'tests - literals' }
