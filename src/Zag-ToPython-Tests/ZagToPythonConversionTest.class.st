@@ -422,12 +422,12 @@ ZagToPythonConversionTest >> testIndent [
 ZagToPythonConversionTest >> testInput [
 	"Ensures the input statement can be converted to."
 	| ast expected |
-	ast := ASAssign variable: (ASRef variable: #in) expression: (
+	ast := ASAssign variable: (ASRef variable: #result) expression: (
 		ASSend target: (ASSend target: (ASRef variable: #UIManager) selector: #default) selector: #request: args: { 
 			ASLiteral literal: '[input prompt]'
 		}
 	).
-	expected := 'in = input("[input prompt]")'.
+	expected := 'result = input("[input prompt]")'.
 	self assert: ast convertsTo: expected.
 ]
 
@@ -489,6 +489,16 @@ ZagToPythonConversionTest >> testPrint [
 	}.
 	expected := 'print(out)'.
 	self assert: ast convertsTo: expected.
+]
+
+{ #category : 'tests - basic expressions' }
+ZagToPythonConversionTest >> testReservedRef [
+	"Test that ASRef does not lead to printing a reserved word."
+	| ast actual |
+	ast := ASRef variable: #if.
+	actual := ZagToPythonVisitor astToPythonSource: ast.
+	self deny: actual = 'if' description:
+		'"if" is a reserved word & can''t be a variable name.  Another name must be used.'.
 ]
 
 { #category : 'tests - literals' }

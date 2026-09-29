@@ -43,6 +43,19 @@ ZagToPythonVisitor class >> new [
 ]
 
 { #category : 'constants' }
+ZagToPythonVisitor class >> pythonReservedKeywords [
+	"Returns a set of all names that are reserved keywords in Python, as symbols."
+	"Note that soft keywords (match/case/_ in match statements; type in type statements) are not in this list, as they need to be specially handled by their statements."
+	^#(
+		#False #None #True #and #as #assert async
+		#await #break #class #continue #def #del #elif
+		#else #except #finally #for #from #global #if
+		#import #in #is #lambda #nonlocal #not #or
+		#pass #raise #return #try #while #with #yield 
+	) asSet
+]
+
+{ #category : 'constants' }
 ZagToPythonVisitor class >> specialLiterals [
 	"The literals that have different names in Python from their Smalltalk string representation."
 	^{
@@ -201,7 +214,9 @@ ZagToPythonVisitor >> visitMethod: aMethod [
 { #category : 'visiting' }
 ZagToPythonVisitor >> visitRef: aRef [
 	"Visits an ASRef, adding its associated Python source to my stream."
-	resultStream nextPutAll: aRef variable asString
+	self resultStream nextPutAll: aRef variable asString.
+	(self class pythonReservedKeywords includes: aRef variable)
+		ifTrue: [ self resultStream nextPut: $_ ].
 ]
 
 { #category : 'visiting' }
