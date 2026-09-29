@@ -34,10 +34,8 @@ ZagTSStringConverter class >> parseEscape: escape [
 	self hexEscapeSizes at: escape first ifPresent: [ :size |
 		(escape allButFirstDo: [ :c | c hexDigitValue ifNil: [ self error: 'Invalid hex escape' ] ]).
 		^self parseEscape: escape allButFirst expectedLength: size base: 16 ].
-	self basicEscapes
-		at: escape first
-		ifPresent: [ :unescaped | ^unescaped ]
-		ifAbsent: [ self error: 'Invalid or unimplemented escape sequence.' ]
+	escape first = $N ifTrue: [ ^self parseNamed: escape ].
+	^self basicEscapes at: escape first ifAbsent: [ self error: 'Invalid or unimplemented escape sequence.' ]
 ]
 
 { #category : 'parsing' }
@@ -64,6 +62,16 @@ ZagTSStringConverter class >> parseLiteral: aString [
 				ifFalse: [ stream nextPut: char. char = $' ifTrue: [ stream nextPut: $' ] ]
 		]
 	] ].
+]
+
+{ #category : 'parsing' }
+ZagTSStringConverter class >> parseNamed: escape [
+	"Parse a Unicode named character (\N{...}) escape sequence."
+	| unicodeName |
+	escape size < 3 ifTrue: [ ^nil ].
+	((escape at: 2) = ${ and: [ escape last = $} ]) ifFalse: [ ^nil ].
+	unicodeName := escape copyFrom: 3 to: escape size - 1.
+	self notYetImplemented "TODO: Get character from Unicode name"
 ]
 
 { #category : 'class initialization' }
