@@ -20,20 +20,47 @@ ZagTSStringConverter class >> basicEscapes [
 	} asDictionary
 ]
 
+{ #category : 'constants' }
+ZagTSStringConverter class >> hexEscapeSizes [
+	^{ $x -> 2. $u -> 4. $U -> 8 } asDictionary
+]
+
+{ #category : 'parsing' }
+ZagTSStringConverter class >> parseEscape: escape [
+	"Parses a Python escape sequence (excluding the backslash), returning the Smalltalk equivalent."
+	"If the sequence is incomplete, return nil.  If it is invalid, raise an error."
+	(escape allSatisfy: [ :c | '01234567' includes: c ])
+		ifTrue: [ ^self parseEscape: escape expectedLength: 3 base: 8 ].
+	self hexEscapeSizes at: escape first ifPresent: [ :size |
+		(escape allButFirstDo: [ :c | c hexDigitValue ifNil: [ self error: 'Invalid hex escape' ] ]).
+		^self parseEscape: escape allButFirst expectedLength: size base: 16 ].
+	self basicEscapes
+		at: escape first
+		ifPresent: [ :unescaped | ^unescaped ]
+		ifAbsent: [ self error: 'Invalid or unimplemented escape sequence.' ]
+]
+
+{ #category : 'parsing' }
+ZagTSStringConverter class >> parseEscape: escape expectedLength: length base: base [
+	^escape size = length ifTrue: [ | unicodeValue |
+		unicodeValue := Integer readFrom: escape base: base.
+		Character value: unicodeValue
+	] ifFalse: [ nil ].
+]
+
 { #category : 'parsing' }
 ZagTSStringConverter class >> parseLiteral: aString [
 	"Parses a Python string literal, converting all escape sequences into Unicode characters."
-	| isEscape |
-	isEscape := false.
+	| escape unescaped |
+	escape := WriteStream on: OrderedCollection new.
 	^String streamContents: [ :stream | aString do: [ :char |
-		isEscape ifTrue: [
-			self basicEscapes
-				at: char
-				ifPresent: [ :unescaped | stream << unescaped. isEscape := false. ]
-				ifAbsent: [ self error: 'Invalid or unimplemented escape sequence.' ]
-		] ifFalse: [
+		escape isEmpty ifFalse: [
+			escape nextPut: char.
+			unescaped := self parseEscape: (String newFrom: escape contents) allButFirst.
+			unescaped ifNotNil: [ stream << unescaped. escape := WriteStream on: OrderedCollection new ]
+		] ifTrue: [
 			char = $\
-				ifTrue: [ isEscape := true ]
+				ifTrue: [ escape nextPut: $\ ]
 				ifFalse: [ stream nextPut: char. char = $' ifTrue: [ stream nextPut: $' ] ]
 		]
 	] ].

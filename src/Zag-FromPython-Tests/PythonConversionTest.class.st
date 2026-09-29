@@ -219,6 +219,19 @@ PythonConversionTest >> testBasicIf [
 	self assertExpression: source convertsTo: expected "withLocals: #(#x)".
 ]
 
+{ #category : 'tests - literals' }
+PythonConversionTest >> testBasicStringEscapes [
+	"Test that string literals with escapes are converted properly."
+	{
+		'hello' -> 'hello'.
+		'\"hello\"' -> '"hello"'.
+		'skip\
+newline' -> 'skipnewline'.
+		'tab:\t,newline:\n' -> ('tab:',Character tab asString,',newline:',Character lf asString)
+	} asDictionary keysAndValuesDo: [ :k :v |
+		self assertExpression: '"',k,'"' convertsTo: (ASLiteral literal: v) ]
+]
+
 { #category : 'tests - operators' }
 PythonConversionTest >> testBitShiftLeft [
 	"Ensure a left bit shift expression can be converted to Zag properly."
@@ -667,6 +680,15 @@ PythonConversionTest >> testNotOperator [
 	self assertExpression: source convertsTo: expected.
 ]
 
+{ #category : 'tests - literals' }
+PythonConversionTest >> testNumericStringEscapes [
+	"Tests the octal and hexadecimal escapes."
+	self assertExpression: '"\062\053\062\075\064"' convertsTo: (ASLiteral literal: '2+2=4').
+	self assertExpression: '"\x32\x2B\x32\x3D\x34"' convertsTo: (ASLiteral literal: '2+2=4').
+	self assertExpression: '"\u26A7"' convertsTo: (ASLiteral literal: '⚧').
+	self assertExpression: '"\U0001F60A"' convertsTo: (ASLiteral literal: '😊').
+]
+
 { #category : 'tests - operators' }
 PythonConversionTest >> testPowers [
 	"Ensure an exponent can be converted to Zag properly."
@@ -728,19 +750,6 @@ PythonConversionTest >> testSetLiteralNode [
 			ASSend target: statements selector: #asSet ].
 	self assertExpression: '{1, 2, 3}' convertsToAnyOf: expecteds.
 	self assertExpression: 'set([1, 2, 3])' convertsToAnyOf: expecteds.
-]
-
-{ #category : 'tests - literals' }
-PythonConversionTest >> testStringEscapes [
-	"Test that string literals with escapes are converted properly."
-	{
-		'hello' -> 'hello'.
-		'\"hello\"' -> '"hello"'.
-		'skip\
-newline' -> 'skipnewline'.
-		'tab:\t,newline:\n' -> ('tab:',Character tab asString,',newline:',Character lf asString)
-	} asDictionary keysAndValuesDo: [ :k :v |
-		self assertExpression: '"',k,'"' convertsTo: (ASLiteral literal: v) ]
 ]
 
 { #category : 'tests - literals' }
