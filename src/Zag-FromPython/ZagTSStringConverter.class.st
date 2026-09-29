@@ -99,6 +99,9 @@ ZagTSStringConverter >> convertToZagAST: aZagTSNode [
 		ifFalse: [ self class parseLiteral: pythonString ].
 	literal := ASLiteral literal: smalltalkString.
 	^(stringType includes: #Bytes)
-		ifTrue: [ ASSend target: literal selector: #asByteArray args: #() ]
-		ifFalse: [ literal ].
+		ifTrue: [
+			(smalltalkString do: [ :c | c charCode >= 16r100
+				ifTrue: [ self error: ('Invalid character for bytes literal: $c' format: { c }) ] ]).
+			ASSend target: literal selector: #asByteArray args: #()
+		] ifFalse: [ literal ].
 ]

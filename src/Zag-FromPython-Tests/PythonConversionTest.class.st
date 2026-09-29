@@ -545,6 +545,12 @@ PythonConversionTest >> testIntegerNode [
 	self assertExpression: '2' convertsTo: (ASLiteral literal: 2).
 ]
 
+{ #category : 'tests - literals' }
+PythonConversionTest >> testInvalidBytesLiteral [
+	"Ensure that bytes literals with non-byte characters raise an error."
+	self should: [ ZagTSNode pythonToZagAST: 'b"\u1234"' ] raise: Error
+]
+
 { #category : 'tests - full programs' }
 PythonConversionTest >> testInvalidProgram [
 	"Test that parsing an invalid program raises an error."
