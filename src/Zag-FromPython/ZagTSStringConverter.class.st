@@ -71,7 +71,10 @@ ZagTSStringConverter class >> parseNamed: escape [
 	escape size < 3 ifTrue: [ ^nil ].
 	((escape at: 2) = ${ and: [ escape last = $} ]) ifFalse: [ ^nil ].
 	unicodeName := escape copyFrom: 3 to: escape size - 1.
-	self notYetImplemented "TODO: Get character from Unicode name"
+	^UnicodeLookup
+		characterNamed: unicodeName
+		ifPresent: #yourself
+		ifAbsent: [ self error: 'Invalid character name' ].
 ]
 
 { #category : 'class initialization' }

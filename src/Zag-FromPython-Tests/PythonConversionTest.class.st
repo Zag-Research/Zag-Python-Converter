@@ -641,6 +641,12 @@ multi-line
 string').
 ]
 
+{ #category : 'tests - literals' }
+PythonConversionTest >> testNamedEscape [
+	self assertExpression: '"\N{LATIN CAPITAL LETTER A}"' convertsTo: (ASLiteral literal: 'A').
+	self assertExpression: '"\N{MULTIPLICATION SIGN}"' convertsTo: (ASLiteral literal: '×').
+]
+
 { #category : 'tests - operators' }
 PythonConversionTest >> testNegation [
 	"Ensure an addition expression can be converted to Zag properly."

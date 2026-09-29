@@ -71,7 +71,7 @@ This phase of development is mostly oriented around things that I missed in vers
 - [X] §2.5.4.2 Escaped characters
 - [X] §2.5.4.3 Octal character
 - [X] §2.5.4.4 Hexadecimal character
-- [-] §2.5.4.5 Named Unicode character
+- [X] §2.5.4.5 Named Unicode character
 - [X] §2.5.4.6 Hexadecimal Unicode characters
 - [X] §2.5.4.7 Unrecognized escape sequences
 - [X] §2.5.5 Bytes literals
