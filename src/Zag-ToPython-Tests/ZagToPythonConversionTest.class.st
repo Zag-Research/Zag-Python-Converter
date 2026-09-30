@@ -14,6 +14,37 @@ ZagToPythonConversionTest >> assert: ast convertsTo: source [
 	self assert: actual equals: source.
 ]
 
+{ #category : 'asserting' }
+ZagToPythonConversionTest >> assert: ast convertsToAnyOf: sources [
+	"Assert the provided Zag AST converts to the provided Python source."
+	| actual |
+	actual := ZagToPythonVisitor astToPythonSource: ast.
+	self assert: (sources includes: actual).
+]
+
+{ #category : 'running' }
+ZagToPythonConversionTest >> setUp [
+	super setUp.
+	"Put here a common initialization logic for tests"
+
+	"Reset the ZagSendConverter dictionary, in case I added new converters."
+	ZagSendConverter initialize.
+]
+
+{ #category : 'tests - arrays' }
+ZagToPythonConversionTest >> testASArray [
+	self assert: (ASArray statements: {
+		ASRef variable: #a . ASRef variable: #b . ASRef variable: #c
+	}) convertsTo: '[a, b, c]'
+]
+
+{ #category : 'tests - arrays' }
+ZagToPythonConversionTest >> testASArrayTuple [
+	self assert: (ASSend target: (ASArray statements: {
+		ASRef variable: #a . ASRef variable: #b . ASRef variable: #c
+	}) selector: #immutableView) convertsTo: '(a, b, c)'
+]
+
 { #category : 'tests - operations' }
 ZagToPythonConversionTest >> testAddition [
 	"Tests converting a simple addition expression."
@@ -44,11 +75,40 @@ ZagToPythonConversionTest >> testArrayAccess [
 ]
 
 { #category : 'tests - arrays' }
+ZagToPythonConversionTest >> testArrayLiteral [
+	self assert: (ASLiteral literal: #('a' 'b' 'c')) convertsTo: '["a", "b", "c"]'
+]
+
+{ #category : 'tests - arrays' }
 ZagToPythonConversionTest >> testArrayPut [
 	"Test converting setting an array element using at:put:."
 	| ast expected |
 	ast := ASSend target: (ASRef variable: #a) selector: #at:put: args: { ASRef variable: #i . ASRef variable: #v }.
 	expected := 'a[i - 1] = v'.
+	self assert: ast convertsTo: expected.
+]
+
+{ #category : 'tests - control flow' }
+ZagToPythonConversionTest >> testAssert [
+	"Tests converting a basic assert statement"
+	| ast expected |
+	ast := ASSend target: (
+		ASBlockNode locals: #() body: {
+			ASSend target: (ASRef variable: #x) selector: #~= args: { ASRef variable: #y } }
+	) selector: #assert.
+	expected := 'assert x != y'.
+	self assert: ast convertsTo: expected.
+]
+
+{ #category : 'tests - control flow' }
+ZagToPythonConversionTest >> testAssertDescription [
+	"Tests converting an assert statement with a description"
+	| ast expected |
+	ast := ASSend target: (
+		ASBlockNode locals: #() body: {
+			ASSend target: (ASRef variable: #x) selector: #~= args: { ASRef variable: #y } }
+	) selector: #assertWithDescription: args: { ASLiteral literal: 'test error message' }.
+	expected := 'assert x != y, "test error message"'.
 	self assert: ast convertsTo: expected.
 ]
 
@@ -107,7 +167,7 @@ ZagToPythonConversionTest >> testAssociativeAddition2 [
 	self assert: ast convertsTo: expected.
 ]
 
-{ #category : 'tests - basic expressions' }
+{ #category : 'tests' }
 ZagToPythonConversionTest >> testComment [
 	| ast expected |
 	ast := ASComment text: 'test comment'.
@@ -115,7 +175,30 @@ ZagToPythonConversionTest >> testComment [
 	self assert: ast convertsTo: expected.
 ]
 
-{ #category : 'tests - basic expressions' }
+{ #category : 'tests - literals' }
+ZagToPythonConversionTest >> testBooleanLiterals [
+	"Test that true/false literals convert properly."
+	self assert: (ASLiteral literal: true) convertsTo: 'True'.
+	self assert: (ASLiteral literal: false) convertsTo: 'False'.
+]
+
+{ #category : 'tests - arrays' }
+ZagToPythonConversionTest >> testBytearray [
+	self assert: (ASSend
+		target: (ASRef variable: #ByteArray)
+		selector: #fromNumberOrString:
+		args: { ASLiteral literal: 10 }
+	) convertsTo: 'bytearray(10)'
+]
+
+{ #category : 'tests - literals' }
+ZagToPythonConversionTest >> testBytesLiteral [
+	"Tests that the asByteArray converts into a bytes literal."
+	self assert: (ASSend target: (ASLiteral literal: 'hello') selector: #asByteArray) convertsTo: 'b"hello"'.
+	self assert: (ASSend target: (ASRef variable: #s) selector: #asByteArray) convertsTo: 'bytearray(s)'.
+]
+
+{ #category : 'tests - literals' }
 ZagToPythonConversionTest >> testComplexNumberLiteral [
 	"Test that complex number literals convert properly."
 	| ast expected |
@@ -133,6 +216,33 @@ ZagToPythonConversionTest >> testDatatypeConversion [
 	self assert: ast convertsTo: expected.
 ]
 
+{ #category : 'tests - basic expressions' }
+ZagToPythonConversionTest >> testDeleteSubscript [
+	"Tests that removeAt: & removeKey: convert into del statements."
+	| ast1 ast2 expected |
+	ast1 := ASSend target: (ASRef variable: #a) selector: #removeAt: args: { ASRef variable: #b }.
+	ast2 := ASSend target: (ASRef variable: #a) selector: #removeKey: args: { ASRef variable: #b }.
+	expected := 'del a[b]'.
+	self assert: ast1 convertsTo: expected.
+	self assert: ast2 convertsTo: expected.
+]
+
+{ #category : 'tests - literals' }
+ZagToPythonConversionTest >> testDictionaryLiteral [
+	"Tests that (literal array) asSet converts to a set literal."
+	| source expected |
+	source := ASSend target: (ASArray statements: {
+		ASSend target: (ASLiteral literal: 'a') selector: #-> args: { ASRef variable: #b }
+	}) selector: #asDictionary.
+	expected := '{"a": b}'.
+	self assert: source convertsTo: expected.
+]
+
+{ #category : 'tests - literals' }
+ZagToPythonConversionTest >> testEllipsis [
+	self assert: (ASLiteral literal: Ellipsis) convertsTo: 'Ellipsis'.
+]
+
 { #category : 'tests - control flow' }
 ZagToPythonConversionTest >> testElse [
 	"Tests that an ifFalse: statement can be converted to if/else."
@@ -140,7 +250,7 @@ ZagToPythonConversionTest >> testElse [
 	ast := ASSend target: (
 		ASSend target: (ASRef variable: #x) selector: #> args: { ASRef variable: #y }
 	) selector: #ifFalse: args: {
-		ASBlockNode locals: #() body: { ASReturn expression: (ASLiteral literal: -1) } 
+		ASBlockNode locals: #() body: { ASReturn expression: (ASLiteral literal: -1) }
 	}.
 	expected := 'if x > y:
 	pass
@@ -164,7 +274,7 @@ ZagToPythonConversionTest >> testFToC [
 			ASSend target: (
 				ASSend target: (ASRef variable: #tempF) selector: #- args: { ASLiteral literal: 32 }
 			) selector: #/ args: { ASLiteral literal: 1.8 }).
-		ASCascade target: (ASRef variable: #Transcript) sends: { 
+		ASCascade target: (ASRef variable: #Transcript) sends: {
 			ASSend selector: #show: args: { ASRef variable: #tempC }.
 			ASSend selector: #cr args: #()
 		}
@@ -184,7 +294,7 @@ ZagToPythonConversionTest >> testForEach [
 		ASBlockNode arguments: { ASRef variable: #each } locals: #() body: {
 			ASCascade target: (ASRef variable: #Transcript) sends: {
 				ASSend selector: #show: args: { ASRef variable: #each }.
-				ASSend selector: #cr args: #(). 
+				ASSend selector: #cr args: #().
 			}
 		}
 	}.
@@ -239,7 +349,7 @@ ZagToPythonConversionTest >> testIf [
 	ast := ASSend target: (
 		ASSend target: (ASRef variable: #x) selector: #> args: { ASRef variable: #y }
 	) selector: #ifTrue: args: {
-		ASBlockNode locals: #() body: { ASReturn expression: (ASLiteral literal: 1) } 
+		ASBlockNode locals: #() body: { ASReturn expression: (ASLiteral literal: 1) }
 	}.
 	expected := 'if x > y:
 	return 1
@@ -255,7 +365,7 @@ ZagToPythonConversionTest >> testIfElse [
 		ASSend target: (ASRef variable: #x) selector: #> args: { ASRef variable: #y }
 	) selector: #ifTrue:ifFalse: args: {
 		ASBlockNode locals: #() body: { ASReturn expression: (ASLiteral literal: 1) }.
-		ASBlockNode locals: #() body: { ASReturn expression: (ASLiteral literal: -1) } 
+		ASBlockNode locals: #() body: { ASReturn expression: (ASLiteral literal: -1) }
 	}.
 	expected := 'if x > y:
 	return 1
@@ -273,12 +383,41 @@ ZagToPythonConversionTest >> testIfElseReversed [
 		ASSend target: (ASRef variable: #x) selector: #> args: { ASRef variable: #y }
 	) selector: #ifFalse:ifTrue: args: {
 		ASBlockNode locals: #() body: { ASReturn expression: (ASLiteral literal: -1) }.
-		ASBlockNode locals: #() body: { ASReturn expression: (ASLiteral literal: 1) } 
+		ASBlockNode locals: #() body: { ASReturn expression: (ASLiteral literal: 1) }
 	}.
 	expected := 'if x > y:
 	return 1
 else:
 	return -1
+'.
+	self assert: ast convertsTo: expected.
+]
+
+{ #category : 'tests - control flow' }
+ZagToPythonConversionTest >> testIfExpression [
+	"Tests that an ifTrue:ifFalse: expression can be converted to an if/else expression."
+	| ast expected |
+	ast := ASAssign variable: (ASRef variable: #z) expression: (ASSend target: (
+		ASSend target: (ASRef variable: #x) selector: #> args: { ASRef variable: #y }
+	) selector: #ifTrue:ifFalse: args: {
+		ASBlockNode locals: #() body: { ASLiteral literal: 1 }.
+		ASBlockNode locals: #() body: { ASLiteral literal: -1 }
+	}).
+	expected := 'z = 1 if x > y else -1'.
+	self assert: ast convertsTo: expected.
+]
+
+{ #category : 'tests - control flow' }
+ZagToPythonConversionTest >> testIfPass [
+	"Tests that an ifTrue: statement with an empty block can be converted to if/else, and that pass is outputted."
+	| ast expected |
+	ast := ASSend target: (
+		ASSend target: (ASRef variable: #x) selector: #> args: { ASRef variable: #y }
+	) selector: #ifTrue: args: {
+		ASBlockNode locals: #() body: { }
+	}.
+	expected := 'if x > y:
+	pass
 '.
 	self assert: ast convertsTo: expected.
 ]
@@ -298,12 +437,25 @@ ZagToPythonConversionTest >> testIndent [
 ZagToPythonConversionTest >> testInput [
 	"Ensures the input statement can be converted to."
 	| ast expected |
-	ast := ASAssign variable: (ASRef variable: #in) expression: (
-		ASSend target: (ASSend target: (ASRef variable: #UIManager) selector: #default) selector: #request: args: { 
+	ast := ASAssign variable: (ASRef variable: #result) expression: (
+		ASSend target: (ASSend target: (ASRef variable: #UIManager) selector: #default) selector: #request: args: {
 			ASLiteral literal: '[input prompt]'
 		}
 	).
-	expected := 'in = input("[input prompt]")'.
+	expected := 'result = input("[input prompt]")'.
+	self assert: ast convertsTo: expected.
+]
+
+{ #category : 'tests - literals' }
+ZagToPythonConversionTest >> testMultilineStringLiteral [
+	"Test that string literals convert properly."
+	| ast expected |
+	ast := ASLiteral literal: 'test
+multiline
+literal'.
+	expected := '"""test
+multiline
+literal"""'.
 	self assert: ast convertsTo: expected.
 ]
 
@@ -328,11 +480,25 @@ ZagToPythonConversionTest >> testNegatedAddition [
 	self assert: ast convertsTo: expected.
 ]
 
+{ #category : 'tests - literals' }
+ZagToPythonConversionTest >> testNilLiteral [
+	"Test that nil literals convert properly."
+	| ast expected |
+	ast := ASLiteral literal: nil.
+	expected := 'None'.
+	self assert: ast convertsTo: expected.
+]
+
+{ #category : 'tests - literals' }
+ZagToPythonConversionTest >> testNotImplemented [
+	self assert: (ASLiteral literal: NotImplemented) convertsTo: 'NotImplemented'.
+]
+
 { #category : 'tests - basic expressions' }
 ZagToPythonConversionTest >> testPrint [
 	"Ensures the print statement can be converted to."
 	| ast expected |
-	ast := ASCascade target: (ASRef variable: #Transcript) sends: { 
+	ast := ASCascade target: (ASRef variable: #Transcript) sends: {
 		ASSend selector: #show: args: { ASRef variable: #out }.
 		ASSend selector: #cr args: nil.
 	}.
@@ -341,6 +507,27 @@ ZagToPythonConversionTest >> testPrint [
 ]
 
 { #category : 'tests - basic expressions' }
+ZagToPythonConversionTest >> testReservedRef [
+	"Test that ASRef does not lead to printing a reserved word."
+	| ast actual |
+	ast := ASRef variable: #if.
+	actual := ZagToPythonVisitor astToPythonSource: ast.
+	self deny: actual = 'if' description:
+		'"if" is a reserved word & can''t be a variable name.  Another name must be used.'.
+]
+
+{ #category : 'tests - literals' }
+ZagToPythonConversionTest >> testSetLiteral [
+	"Tests that (literal array) asSet converts to a set literal."
+	| source1 source2 expecteds |
+	source1 := ASSend target: ((1 to: 3) collect: [ :each | ASLiteral literal: each ] as: ASArray) selector: #asSet.
+	source2 := ASSend target: (ASLiteral literal: #(1 2 3)) selector: #asSet.
+	expecteds := #('{1, 2, 3}' '{1, 3, 2}' '{2, 1, 3}' '{2, 3, 1}' '{3, 1, 2}' '{3, 2, 1}').
+	self assert: source1 convertsToAnyOf: expecteds.
+	self assert: source2 convertsToAnyOf: expecteds.
+]
+
+{ #category : 'tests - literals' }
 ZagToPythonConversionTest >> testStringLiteral [
 	"Test that string literals convert properly."
 	| ast expected |
@@ -384,7 +571,10 @@ ZagToPythonConversionTest >> testSwitchOutput [
 			-> (ASBlockNode arguments: #() locals: #() body: {ASReturn expression: (ASLiteral literal: 2)}).
 		true -> (ASBlockNode arguments: #() locals: #() body: {ASReturn expression: (ASLiteral literal: 3)}).
 	}.
-	actual := String streamContents: [ :stream | ZagToPythonVisitor new resultStream: stream; outputFormattedIfElse: switch ].
+	actual := String streamContents: [ :stream | | visitor |
+		visitor := ZagToPythonVisitor new resultStream: stream.
+		ZagIfElseConverter new acceptStatement: switch asVisitor: visitor.
+	].
 	expected := 'if 0:
 	return 1
 elif x >= 0:
@@ -462,6 +652,13 @@ ZagToPythonConversionTest >> testTripleSubtraction2 [
 	selector: #- args: { ASLiteral literal: 4 }.
 	expected := '2 - 3 - 4'.
 	self assert: ast convertsTo: expected.
+]
+
+{ #category : 'tests - arrays' }
+ZagToPythonConversionTest >> testTupleLiteral [
+	self assert:
+		(ASSend target: (ASLiteral literal: #('a' 'b' 'c')) selector: #immutableView)
+		convertsTo: '("a", "b", "c")'
 ]
 
 { #category : 'tests - control flow' }

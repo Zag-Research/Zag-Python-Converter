@@ -26,6 +26,25 @@ PythonConversionTest >> assertExpression: source convertsTo: tree withLocals: lo
 	self assert: actual equals: expected.
 ]
 
+{ #category : 'tests - helpers' }
+PythonConversionTest >> assertExpression: source convertsToAnyOf: trees [
+	"Asserts the provided Python code converts to any of the provided possibilities."
+	"Puts the provided AST in a main method."
+	| expecteds actual |
+	expecteds := trees collect: [ :tree | ASMethodNode selector: ZagTSNode mainMethodSelector body: {tree} ].
+	actual := ZagTSNode pythonToZagAST: source.
+	self assert: (expecteds includes: actual).
+]
+
+{ #category : 'running' }
+PythonConversionTest >> setUp [
+	super setUp.
+	"Put here a common initialization logic for tests"
+
+	"Reset the ZagTSConverter dictionary, in case I added new converters."
+	ZagTSConverter initialize.
+]
+
 { #category : 'tests - operators' }
 PythonConversionTest >> testAddition [
 	"Ensure an addition expression can be converted to Zag properly."
@@ -99,6 +118,55 @@ PythonConversionTest >> testArrayAssignPlus [
 ]
 
 { #category : 'tests - assignment' }
+PythonConversionTest >> testArrayAssignRS [
+	"Ensure a special case augmented assignment expression (>>=) can be converted to Zag properly."
+	| expected source |
+	source := 'a[b] >>= c'.
+	expected := ASSend
+		target: (ASRef variable: #a)
+		selector: #zwAt:put:
+		args: { ASRef variable: #b . ASSend
+			target: (ASSend
+				target: (ASRef variable: #a)
+				selector: #zwAt:
+				args: { ASRef variable: #b }
+			)
+			selector: #bitShift:
+			args: { ASSend target: (ASRef variable: #c) selector: #negated args: #() }
+		}.
+	self assertExpression: source convertsTo: expected.
+]
+
+{ #category : 'tests - literals' }
+PythonConversionTest >> testArrayLiteralNode [
+	"Tests converting array/list literals"
+	self assertExpression: '[a, b, c]' convertsTo: (ASArray statements: {
+		ASRef variable: #a . ASRef variable: #b . ASRef variable: #c })
+]
+
+{ #category : 'tests - control flow' }
+PythonConversionTest >> testAssert [
+	"Tests that basic assert statements can be translated properly."
+	self
+		assertExpression: 'assert a == b'
+		convertsTo: (ASSend target: (
+			ASBlockNode locals: #() body: {
+				ASSend target: (ASRef variable: #a) selector: #= args: { ASRef variable: #b } })
+			selector: #assert)
+]
+
+{ #category : 'tests - control flow' }
+PythonConversionTest >> testAssertDescription [
+	"Tests that assert statements with a description can be translated properly."
+	self
+		assertExpression: 'assert a == b, "test error message"'
+		convertsTo: (ASSend target: (
+			ASBlockNode locals: #() body: {
+				ASSend target: (ASRef variable: #a) selector: #= args: { ASRef variable: #b } })
+			selector: #assertWithDescription: args: { ASLiteral literal: 'test error message' })
+]
+
+{ #category : 'tests - assignment' }
 PythonConversionTest >> testAssign [
 	"Ensure an assignment expression can be converted to Zag properly."
 	| expected source |
@@ -123,6 +191,20 @@ PythonConversionTest >> testAssignPlus [
 	self assertExpression: source convertsTo: expected withLocals: #(#a).
 ]
 
+{ #category : 'tests - assignment' }
+PythonConversionTest >> testAssignRS [
+	"Ensure a special case augmented assignment expression (>>=) can be converted to Zag properly."
+	| expected source |
+	source := 'a >>= b'.
+	expected := ASAssign
+		variable: (ASRef variable: #a)
+		expression: (ASSend
+			target: (ASRef variable: #a)
+			selector: #bitShift:
+			args: { ASSend target: (ASRef variable: #b) selector: #negated args: #() }).
+	self assertExpression: source convertsTo: expected withLocals: #(#a).
+]
+
 { #category : 'tests - control flow' }
 PythonConversionTest >> testBasicIf [
 	"Tests converting an if statement without any elif or else blocks."
@@ -135,6 +217,19 @@ PythonConversionTest >> testBasicIf [
 		ASBlockNode arguments: #() locals: #() body: {
 			ASAssign variable: (ASRef variable: #x) expression: (ASLiteral literal: 0)}}.
 	self assertExpression: source convertsTo: expected "withLocals: #(#x)".
+]
+
+{ #category : 'tests - literals' }
+PythonConversionTest >> testBasicStringEscapes [
+	"Test that string literals with escapes are converted properly."
+	{
+		'hello' -> 'hello'.
+		'\"hello\"' -> '"hello"'.
+		'skip\
+newline' -> 'skipnewline'.
+		'tab:\t,newline:\n' -> ('tab:',Character tab asString,',newline:',Character lf asString)
+	} asDictionary keysAndValuesDo: [ :k :v |
+		self assertExpression: '"',k,'"' convertsTo: (ASLiteral literal: v) ]
 ]
 
 { #category : 'tests - operators' }
@@ -177,6 +272,26 @@ PythonConversionTest >> testComment [
 	self assertExpression: '# test comment' convertsTo: (ASComment text: 'test comment')
 ]
 
+{ #category : 'tests - functions' }
+PythonConversionTest >> testBytearrayCall [
+	"Ensures bytearray() converts properly."
+	self assertExpression: 'bytearray(10)' convertsTo: (
+		ASSend target: (ASRef variable: #ByteArray) selector: #fromNumberOrString: args: {
+			ASLiteral literal: 10 }).
+]
+
+{ #category : 'tests - literals' }
+PythonConversionTest >> testBytesLiteral [
+	"Tests that bytes literals convert to asByteArray sends."
+	| ast |
+	ast := ASSend target: (
+		ASSend target: (ASLiteral literal: 'hello') selector: #asByteArray args: #()
+	) selector: #immutableView args: #().
+	self assertExpression: 'b"hello"' convertsTo: ast.
+	self assertExpression: 'br"hello"' convertsTo: ast.
+	self assertExpression: 'rb"hello"' convertsTo: ast.
+]
+
 { #category : 'tests - comparison & membership operators' }
 PythonConversionTest >> testComparison [
 	"Ensure a comparison expression can be converted to Zag properly."
@@ -193,10 +308,33 @@ PythonConversionTest >> testComparison [
 PythonConversionTest >> testComplexNumberNode [
 	"Tests that complex literals convert properly."
 	self assertExpression: '10j' convertsTo: (ASSend target: (ASLiteral literal: 10) selector: #i).
-	
+
 	self assertExpression: '1j' convertsTo: (ASSend target: (ASLiteral literal: 1) selector: #i).
 	self assertExpression: '0j' convertsTo: (ASSend target: (ASLiteral literal: 0) selector: #i).
 	self assertExpression: '0.5j' convertsTo: (ASSend target: (ASLiteral literal: 0.5) selector: #i).
+]
+
+{ #category : 'tests - assignment' }
+PythonConversionTest >> testDeleteSubscript [
+	"tests using the del statement on collections"
+	self assertExpression: 'del a[b]' convertsTo: (
+		ASSend target: (ASRef variable: #a) selector: #removeAt: args: { ASRef variable: #b })
+]
+
+{ #category : 'tests - literals' }
+PythonConversionTest >> testDictionaryLiteralNode [
+	self assertExpression: '{"a": b}' convertsTo: (
+		ASSend
+			target: (ASArray statements: {
+				ASSend target: (ASLiteral literal: 'a') selector: #-> args: { ASRef variable: #b }
+			})
+			selector: #asDictionary
+	)
+]
+
+{ #category : 'tests - literals' }
+PythonConversionTest >> testEllipsisNode [
+	self assertExpression: 'Ellipsis' convertsTo: (ASLiteral literal: Ellipsis).
 ]
 
 { #category : 'tests - comparison & membership operators' }
@@ -228,7 +366,7 @@ print(tempC)'.
 			ASSend target: (
 				ASSend target: (ASRef variable: #tempF) selector: #- args: { ASLiteral literal: 32 }
 			) selector: #/ args: { ASLiteral literal: 1.8 }).
-		ASCascade target: (ASRef variable: #Transcript) sends: { 
+		ASCascade target: (ASRef variable: #Transcript) sends: {
 			ASSend selector: #show: args: { ASRef variable: #tempC }.
 			ASSend selector: #cr args: #()
 		}
@@ -253,6 +391,17 @@ PythonConversionTest >> testFor [
 		ASBlockNode arguments: { ASRef variable: #i } locals: #() body: {
 			ASAssign variable: (ASRef variable: #sum) expression: (
 				ASSend target: (ASRef variable: #sum) selector: #+ args: { ASRef variable: #i })}}.
+	self assertExpression: source convertsTo: expected.
+]
+
+{ #category : 'tests - control flow' }
+PythonConversionTest >> testForPass [
+	"Tests converting a basic for loop."
+	| source expected |
+	source := 'for i in c:
+	pass'.
+	expected := ASSend target: (ASRef variable: #c) selector: #do: args: {
+		ASBlockNode arguments: { ASRef variable: #i } locals: #() body: {}}.
 	self assertExpression: source convertsTo: expected.
 ]
 
@@ -354,6 +503,27 @@ else:
 	self assertExpression: source convertsTo: expected "withLocals: #(#x)".
 ]
 
+{ #category : 'tests - control flow' }
+PythonConversionTest >> testIfExpression [
+	self assertExpression: 'a if c else b' convertsTo: (
+		ASSend target: (ASRef variable: #c) selector: #ifTrue:ifFalse: args: {
+			ASBlockNode locals: #() body: { ASRef variable: #a }.
+			ASBlockNode locals: #() body: { ASRef variable: #b }
+		}).
+]
+
+{ #category : 'tests - control flow' }
+PythonConversionTest >> testIfPass [
+	"Tests converting an if statement without any elif or else blocks."
+	| source expected |
+	source := 'if condition:
+	pass'.
+	expected := ASSend
+		target: (ASSend target: (ASRef variable: #condition) selector: #asPythonBoolean)
+		selector: #ifTrue: args: { ASBlockNode locals: #() body: {} }.
+	self assertExpression: source convertsTo: expected "withLocals: #(#x)".
+]
+
 { #category : 'tests - comparison & membership operators' }
 PythonConversionTest >> testIn [
 	"Ensure a 'in' expression can be converted to Zag properly."
@@ -381,6 +551,12 @@ PythonConversionTest >> testInputCall [
 PythonConversionTest >> testIntegerNode [
 	"Ensure an integer literal can be converted to Zag properly."
 	self assertExpression: '2' convertsTo: (ASLiteral literal: 2).
+]
+
+{ #category : 'tests - literals' }
+PythonConversionTest >> testInvalidBytesLiteral [
+	"Ensure that bytes literals with non-byte characters raise an error."
+	self should: [ ZagTSNode pythonToZagAST: 'b"\u1234"' ] raise: Error
 ]
 
 { #category : 'tests - full programs' }
@@ -463,6 +639,22 @@ PythonConversionTest >> testMultiOperators [
 	self assertExpression: source convertsTo: expected.
 ]
 
+{ #category : 'tests - literals' }
+PythonConversionTest >> testMultilineStringNode [
+	"Ensure a string literal can be converted to Zag properly."
+	self assertExpression: '"""test
+multi-line
+string"""' convertsTo: (ASLiteral literal: 'test
+multi-line
+string').
+]
+
+{ #category : 'tests - literals' }
+PythonConversionTest >> testNamedEscape [
+	self assertExpression: '"\N{LATIN CAPITAL LETTER A}"' convertsTo: (ASLiteral literal: 'A').
+	self assertExpression: '"\N{MULTIPLICATION SIGN}"' convertsTo: (ASLiteral literal: '×').
+]
+
 { #category : 'tests - operators' }
 PythonConversionTest >> testNegation [
 	"Ensure an addition expression can be converted to Zag properly."
@@ -473,6 +665,16 @@ PythonConversionTest >> testNegation [
 		selector: #negated
 		args: #().
 	self assertExpression: source convertsTo: expected.
+]
+
+{ #category : 'tests - literals' }
+PythonConversionTest >> testNoneNode [
+	self assertExpression: 'None' convertsTo: (ASLiteral literal: nil).
+]
+
+{ #category : 'tests - literals' }
+PythonConversionTest >> testNotImplementedNode [
+	self assertExpression: 'NotImplemented' convertsTo: (ASLiteral literal: NotImplemented).
 ]
 
 { #category : 'tests - comparison & membership operators' }
@@ -494,8 +696,17 @@ PythonConversionTest >> testNotOperator [
 	"Ensure a 'not' expression can be converted properly."
 	| expected source |
 	source := 'not a'.
-	expected := ASSend target: (ASRef variable: #a) selector: #pythonNot.
+	expected := ASSend target: (ASRef variable: #a) selector: #pythonNot args: #().
 	self assertExpression: source convertsTo: expected.
+]
+
+{ #category : 'tests - literals' }
+PythonConversionTest >> testNumericStringEscapes [
+	"Tests the octal and hexadecimal escapes."
+	self assertExpression: '"\062\053\062\075\064"' convertsTo: (ASLiteral literal: '2+2=4').
+	self assertExpression: '"\x32\x2B\x32\x3D\x34"' convertsTo: (ASLiteral literal: '2+2=4').
+	self assertExpression: '"\u26A7"' convertsTo: (ASLiteral literal: '⚧').
+	self assertExpression: '"\U0001F60A"' convertsTo: (ASLiteral literal: '😊').
 ]
 
 { #category : 'tests - operators' }
@@ -544,9 +755,51 @@ PythonConversionTest >> testRangeCall3Arg [
 ]
 
 { #category : 'tests - literals' }
+PythonConversionTest >> testRawStrings [
+	"Ensures that escapes in raw strings are not parsed."
+	self assertExpression: 'r"\''"' convertsTo: (ASLiteral literal: '\''')
+]
+
+{ #category : 'tests - literals' }
+PythonConversionTest >> testSetLiteralNode [
+	"Tests that set literals and the set() call both produce Smalltalk set literals."
+	| expecteds |
+	expecteds := { #(1 2 3) . #(1 3 2) . #(2 1 3) . #(2 3 1) . #(3 1 2) . #(3 2 1)}
+		collect: [ :list | | statements |
+			statements := list collect: [ :each | ASLiteral literal: each ] as: ASArray.
+			ASSend target: statements selector: #asSet ].
+	self assertExpression: '{1, 2, 3}' convertsToAnyOf: expecteds.
+	self assertExpression: 'set([1, 2, 3])' convertsToAnyOf: expecteds.
+]
+
+{ #category : 'tests - literals' }
 PythonConversionTest >> testStringNode [
 	"Ensure a string literal can be converted to Zag properly."
 	self assertExpression: '"a"' convertsTo: (ASLiteral literal: 'a').
+]
+
+{ #category : 'tests - literals' }
+PythonConversionTest >> testStringType [
+	{
+		'' -> #(). 'u' -> #().
+		'b' -> #(#Bytes). 'br' -> #(#Bytes #Raw). 'rb' -> #(#Bytes #Raw).
+		'f' -> #(#Formatted). 'fr' -> #(#Formatted #Raw). 'rf' -> #(#Formatted #Raw).
+		't' -> #(#Template). 'tr' -> #(#Template #Raw). 'rt' -> #(#Template #Raw).
+	} asDictionary keysAndValuesDo: [ :k :v |
+		self assert: (ZagTSStringConverter stringType: k) equals: v asSet ].
+]
+
+{ #category : 'tests - literals' }
+PythonConversionTest >> testStringTypeErrors [
+	#('a' '"hello"' 'invalid' 'ft' 'fb' 'tb')
+		do: [ :each | self should: [ ZagTSStringConverter stringType: each ] raise: Error ].
+]
+
+{ #category : 'tests - literals' }
+PythonConversionTest >> testTupleLiteralNode [
+	"Tests converting tuple literals"
+	self assertExpression: '(a, b, c)' convertsTo: (ASSend target: (ASArray statements: {
+		ASRef variable: #a . ASRef variable: #b . ASRef variable: #c }) selector: #immutableView)
 ]
 
 { #category : 'tests' }
@@ -593,5 +846,17 @@ PythonConversionTest >> testWhile [
 	}) selector: #whileTrue: args: { ASBlockNode arguments: #() locals: #() body: {
 		ASAssign variable: (ASRef variable: #x) expression: (
 			ASSend target: (ASRef variable: #x) selector: #- args: { ASLiteral literal: 3 })}}.
+	self assertExpression: source convertsTo: expected.
+]
+
+{ #category : 'tests - control flow' }
+PythonConversionTest >> testWhilePass [
+	"Tests converting a while loop with a pass statement."
+	| source expected |
+	source := 'while x > 0:
+	pass'.
+	expected := ASSend target: (ASBlockNode arguments: #() locals: #() body: {
+		ASSend target: (ASRef variable: #x) selector: #> args: { ASLiteral literal: 0 }
+	}) selector: #whileTrue: args: { ASBlockNode arguments: #() locals: #() body: {}}.
 	self assertExpression: source convertsTo: expected.
 ]

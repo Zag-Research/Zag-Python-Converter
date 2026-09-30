@@ -1,6 +1,6 @@
 Extension { #name : 'Collection' }
 
-{ #category : '*Zag-FromPython' }
+{ #category : '*Zag-PythonFeatures' }
 Collection >> switch [
 	"Returns the value of the first element with a true key.  Returns nil if no key is true."
 	"Functions like a switch/case statement in other languages."
@@ -14,7 +14,7 @@ Collection >> switch [
 	^self detect: [ :each | each key value ] ifFound: [ :each | each value value ] ifNone: nil.
 ]
 
-{ #category : '*Zag-FromPython' }
+{ #category : '*Zag-PythonFeatures' }
 Collection >> toPythonBoolean [
 	^self isNotEmpty.
 ]

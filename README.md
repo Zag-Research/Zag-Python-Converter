@@ -38,6 +38,9 @@ This project implements a few extension messages in order to handle things as th
 - `toPythonBoolean` converts a value to a boolean based on Python truthiness.  Related messages like `pythonOr:` do boolean operations based on truthiness.
 - `zwAt:` and related messages allows indexing arrays according to Python conventions (initial index is 0, negative indices access elements at the end).
 - `switch` implements a switch/cond statement, used for translating if/elif statements.  `ifTrue:` and `ifTrue:ifFalse:` are used for if statements without elifs.
+- Complex numbers are implemented, with all the features they have in Python.
+
+All of these feature extensions can be found in the `Zag-PythonFeatures` package.
 
 ## Authors/Contact
 
