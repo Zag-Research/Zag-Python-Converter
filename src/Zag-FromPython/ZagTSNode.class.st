@@ -111,11 +111,6 @@ ZagTSNode >> childrenDo: aBlock [
 	1 to: self childrenCount do: [ :i | aBlock value: (self >> i) ].
 ]
 
-{ #category : 'converting - by node type' }
-ZagTSNode >> commentToZagAST [
-	^ASComment text: self sourcePart allButFirst trimBoth
-]
-
 { #category : 'computing' }
 ZagTSNode >> getBinaryOperator [
 	"If I represent a binary operator, return the operator I represent."
