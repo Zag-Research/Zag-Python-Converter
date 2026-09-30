@@ -38,6 +38,13 @@ ZagToPythonConversionTest >> testASArray [
 	}) convertsTo: '[a, b, c]'
 ]
 
+{ #category : 'tests - arrays' }
+ZagToPythonConversionTest >> testASArrayTuple [
+	self assert: (ASSend target: (ASArray statements: {
+		ASRef variable: #a . ASRef variable: #b . ASRef variable: #c
+	}) selector: #immutableView) convertsTo: '(a, b, c)'
+]
+
 { #category : 'tests - operations' }
 ZagToPythonConversionTest >> testAddition [
 	"Tests converting a simple addition expression."
@@ -637,6 +644,13 @@ ZagToPythonConversionTest >> testTripleSubtraction2 [
 	selector: #- args: { ASLiteral literal: 4 }.
 	expected := '2 - 3 - 4'.
 	self assert: ast convertsTo: expected.
+]
+
+{ #category : 'tests - arrays' }
+ZagToPythonConversionTest >> testTupleLiteral [
+	self assert:
+		(ASSend target: (ASLiteral literal: #('a' 'b' 'c')) selector: #immutableView)
+		convertsTo: '("a", "b", "c")'
 ]
 
 { #category : 'tests - control flow' }

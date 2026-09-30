@@ -113,6 +113,7 @@ ZagTSStringConverter >> convertToZagAST: aZagTSNode [
 		ifTrue: [
 			(smalltalkString do: [ :c | c charCode >= 16r100
 				ifTrue: [ self error: ('Invalid character for bytes literal: $c' format: { c }) ] ]).
-			ASSend target: literal selector: #asByteArray args: #()
+			ASSend target: (ASSend target: literal selector: #asByteArray args: #())
+				selector: #immutableView args: #()
 		] ifFalse: [ literal ].
 ]

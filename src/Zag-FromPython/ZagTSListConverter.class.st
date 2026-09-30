@@ -12,6 +12,7 @@ Class {
 { #category : 'class initialization' }
 ZagTSListConverter class >> putRules: aClass [
 	aClass at: #list putRule: (self new conversionSelector: nil).
+	aClass at: #tuple putRule: (self new conversionSelector: #immutableView).
 ]
 
 { #category : 'converting' }

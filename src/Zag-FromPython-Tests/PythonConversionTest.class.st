@@ -278,7 +278,9 @@ PythonConversionTest >> testBytearrayCall [
 PythonConversionTest >> testBytesLiteral [
 	"Tests that bytes literals convert to asByteArray sends."
 	| ast |
-	ast := ASSend target: (ASLiteral literal: 'hello') selector: #asByteArray args: #(). 
+	ast := ASSend target: (
+		ASSend target: (ASLiteral literal: 'hello') selector: #asByteArray args: #()
+	) selector: #immutableView args: #(). 
 	self assertExpression: 'b"hello"' convertsTo: ast.
 	self assertExpression: 'br"hello"' convertsTo: ast.
 	self assertExpression: 'rb"hello"' convertsTo: ast.
@@ -785,6 +787,13 @@ PythonConversionTest >> testStringType [
 PythonConversionTest >> testStringTypeErrors [
 	#('a' '"hello"' 'invalid' 'ft' 'fb' 'tb')
 		do: [ :each | self should: [ ZagTSStringConverter stringType: each ] raise: Error ].
+]
+
+{ #category : 'tests - literals' }
+PythonConversionTest >> testTupleLiteralNode [
+	"Tests converting tuple literals"
+	self assertExpression: '(a, b, c)' convertsTo: (ASSend target: (ASArray statements: {
+		ASRef variable: #a . ASRef variable: #b . ASRef variable: #c }) selector: #immutableView)
 ]
 
 { #category : 'tests' }
