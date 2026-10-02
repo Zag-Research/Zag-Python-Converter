@@ -93,15 +93,65 @@ This phase of development is mostly oriented around things that I missed in vers
 - [X] §7.4 The pass statement
 - [X] §7.5 The del statement (delete elements from collections)
 
+## Version 0.4 (cumulative 492‰)
+
+This version is mainly about functions, classes and exceptions, but like v0.3, also includes many smaller things.
+
+- [ ] §2 Lexical Analysis
+- [ ] §2.5.7 f-strings
+- [ ] §2.5.8 t-strings
+- [ ] §2.5.9 Formal grammar for f-strings
+- [ ] §4.3 Exceptions
+- [ ] §6.2.2 Identifiers (Names)
+- [ ] §6.2.2.1 Private name mangling
+- [ ] §6.2.3 Literals
+- [ ] §6.2.3.1 Literals and object identity
+- [ ] §6.2.3.2 String literal concatenation
+- [ ] §6.2.4 Parenthesized forms
+- [ ] §6.2.5 Displays for lists, sets and dictionaries
+- [ ] §6.2.6 List displays
+- [ ] §6.2.7 Set displays
+- [ ] §6.2.8 Dictionary displays
+- [ ] §6.3.2 Subscriptions and slicings
+- [ ] §6.3.2.1 Slicings
+- [ ] §6.3.2.2 Comma-separated subscripts
+- [ ] §6.3.2.3 “Starred” subscriptions
+- [ ] §6.3.2.4 Formal subscription grammar
+- [ ] §6.3.3 Calls
+- [ ] §7.2.2 Annotated assignment statements
+- [ ] §7.8 The raise statement
+- [ ] §7.9 The break statement
+- [ ] §7.10 The continue statement
+- [ ] §8.4 The try statement
+- [ ] §8.4.1 except clause
+- [ ] §8.4.2 except* clause
+- [ ] §8.4.3 else clause
+- [ ] §8.4.4 finally clause
+- [ ] §8.5 The with statement
+- [ ] §8.6 The match statement
+- [ ] §8.6.1 Overview
+- [ ] §8.6.2 Guards
+- [ ] §8.6.3 Irrefutable Case Blocks
+- [ ] §8.6.4 Patterns
+- [ ] §8.6.4.1 OR Patterns
+- [ ] §8.6.4.2 AS Patterns
+- [ ] §8.6.4.3 Literal Patterns
+- [ ] §8.6.4.4 Capture Patterns
+- [ ] §8.6.4.5 Wildcard Patterns
+- [ ] §8.6.4.6 Value Patterns
+- [ ] §8.6.4.7 Group Patterns
+- [ ] §8.6.4.8 Sequence Patterns
+- [ ] §8.6.4.9 Mapping Patterns
+- [ ] §8.6.4.10 Class Patterns
+- [ ] §8.7 Function definitions
+- [ ] §8.8 Class definitions
+
 ## Unassigned Features
 
 There are a total of 258 items to implement.  If the item is surrounded by brackets, this means the item itself is categorized but it is left here because some sub-items are not.
 
-- §2 Lexical Analysis
-	- (§2.5 String and Bytes literals)
-    - §2.5.7 f-strings
-    - §2.5.8 t-strings
-    - §2.5.9 Formal grammar for f-strings
+Most of the remaining items on this list are internal implementation details whose implementation is low priority, but it also notably includes generators and coroutines.
+
 - §3 Data model
   - (§3.2 The standard type hierarchy)
     - §3.2.8 Callable types
@@ -177,7 +227,6 @@ There are a total of 258 items to implement.  If the item is surrounded by brack
     - §4.2.4 Lazy evaluation
     - §4.2.5 Builtins and restricted execution
     - §4.2.6 Interaction with dynamic features
-  - §4.3 Exceptions
   - §4.4 Runtime Components
     - §4.4.1 General Computing Model
     - §4.4.2 Python Runtime Model
@@ -208,16 +257,6 @@ There are a total of 258 items to implement.  If the item is surrounded by brack
   - §5.9 References
 - §6 Expressions
   - §6.2 Atoms
-    - §6.2.2 Identifiers (Names)
-      - §6.2.2.1 Private name mangling
-    - §6.2.3 Literals
-      - §6.2.3.1 Literals and object identity
-      - §6.2.3.2 String literal concatenation
-    - §6.2.4 Parenthesized forms
-    - §6.2.5 Displays for lists, sets and dictionaries
-    - §6.2.6 List displays
-    - §6.2.7 Set displays
-    - §6.2.8 Dictionary displays
     - §6.2.9 Generator expressions
     - §6.2.10 Yield expressions
       - §6.2.10.1 Generator-iterator methods
@@ -226,50 +265,16 @@ There are a total of 258 items to implement.  If the item is surrounded by brack
       - §6.2.10.4 Asynchronous generator-iterator methods
   - §6.3 Primaries
     - §6.3.1 Attribute references
-    - §6.3.2 Subscriptions and slicings
-      - §6.3.2.1 Slicings
-      - §6.3.2.2 Comma-separated subscripts
-      - §6.3.2.3 “Starred” subscriptions
-      - §6.3.2.4 Formal subscription grammar
-    - §6.3.3 Calls
   - §6.4 Await expression
   - §6.15 Expression lists
 - §7 Simple statements
-  - (§7.2 Assignment statements)
-    - §7.2.2 Annotated assignment statements
   - §7.7 The yield statement
-  - §7.8 The raise statement
-  - §7.9 The break statement
-  - §7.10 The continue statement
   - §7.11 The import statement
     - §7.11.1 Future statements
   - §7.12 The global statement
   - §7.13 The nonlocal statement
   - §7.14 The type statement
 - §8 Compound statements
-  - §8.4 The try statement
-	  - §8.4.1 except clause
-    - §8.4.2 except* clause
-    - §8.4.3 else clause
-    - §8.4.4 finally clause
-  - §8.5 The with statement
-  - §8.6 The match statement
-    - §8.6.1 Overview
-    - §8.6.2 Guards
-    - §8.6.3 Irrefutable Case Blocks
-    - §8.6.4 Patterns
-      - §8.6.4.1 OR Patterns
-      - §8.6.4.2 AS Patterns
-      - §8.6.4.3 Literal Patterns
-      - §8.6.4.4 Capture Patterns
-      - §8.6.4.5 Wildcard Patterns
-      - §8.6.4.6 Value Patterns
-      - §8.6.4.7 Group Patterns
-      - §8.6.4.8 Sequence Patterns
-      - §8.6.4.9 Mapping Patterns
-      - §8.6.4.10 Class Patterns
-  - §8.7 Function definitions
-  - §8.8 Class definitions
   - §8.9 Coroutines
     - §8.9.1 Coroutine function definition
     - §8.9.2 The async for statement
