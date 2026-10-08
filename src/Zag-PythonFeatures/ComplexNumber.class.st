@@ -77,7 +77,11 @@ ComplexNumber >> / arg [
 
 { #category : 'comparing' }
 ComplexNumber >> = aComplex [
-	^aComplex isComplexNumber and: [ self realPart = aComplex realPart and: [ self imaginaryPart = aComplex imaginaryPart ] ]
+	aComplex isComplexNumber ifTrue: [
+		^self realPart = aComplex realPart and: [ self imaginaryPart = aComplex imaginaryPart ] ].
+	aComplex isNumber ifTrue: [ 
+		^self realPart = aComplex and: [ self imaginaryPart isZero ] ].
+	^false
 ]
 
 { #category : 'mathematical functions' }
@@ -125,6 +129,7 @@ ComplexNumber >> exp [
 
 { #category : 'comparing' }
 ComplexNumber >> hash [
+	self imaginaryPart isZero ifTrue: [ ^self realPart hash ]. "ensure my hash matches reals I am equal to"
 	^(self realPart hashMultiply + self imaginaryPart) hashMultiply
 ]
 
@@ -135,6 +140,11 @@ ComplexNumber >> imaginaryPart [
 
 { #category : 'testing' }
 ComplexNumber >> isComplexNumber [
+	^true
+]
+
+{ #category : 'testing' }
+ComplexNumber >> isNumber [
 	^true
 ]
 

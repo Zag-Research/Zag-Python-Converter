@@ -6,6 +6,12 @@ Object >> isComplexNumber [
 ]
 
 { #category : '*Zag-PythonFeatures' }
+Object >> isOrdered [
+	"Returns true iff I support the comparison operators (<, >, <=, >=).  Non-ordered objects can still implement = and ~=."
+	^false
+]
+
+{ #category : '*Zag-PythonFeatures' }
 Object >> pythonAnd: other [
 	"Like 'and:', but using Python's truthy/falsy semantics."
 	^self toPythonBoolean

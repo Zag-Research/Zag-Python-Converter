@@ -63,6 +63,17 @@ ComplexNumberTest >> testEqual [
 	self assert: c1 hash equals: c2 hash.
 ]
 
+{ #category : 'tests' }
+ComplexNumberTest >> testEqualBetweenTypes [
+	"Test that real ComplexNumber instances are equal to their int/float counterparts."
+	| c1 c2 |
+	c1 := ComplexNumber real: 1 imag: 0.
+	c2 := 1.
+	self assert: c1 equals: c2.
+	self assert: c2 equals: c1.
+	self assert: c1 hash equals: c2 hash.
+]
+
 { #category : 'tests - mathematical functions' }
 ComplexNumberTest >> testExp [
 	"x -> y means that exp(x tau i) should = y"
@@ -167,6 +178,8 @@ ComplexNumberTest >> testPlus [
 	self assert: (-1 + 1i) + (1 - 1i) equals: (0 + 0i).
 	self assert: (-1 + 0i) + (-2 + 1i) equals: (-3 + 1i).
 	self assert: (1 + 0.5i) + (6 - 4i) equals: (7 - 3.5i).
+	self assert: (1 + 1i) + 1 equals: (2 + 1i).
+	self assert: 1 + (1 + 1i) equals: (2 + 1i).
 ]
 
 { #category : 'tests - mathematical functions' }

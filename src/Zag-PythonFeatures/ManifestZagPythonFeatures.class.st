@@ -13,7 +13,7 @@ Class {
 ManifestZagPythonFeatures class >> ruleBadMessageRule2V1FalsePositive [
 
 	<ignoreForCoverage>
-	^ #(#(#(#RGMethodDefinition #(#ComplexNumber #adaptToNumber:andSend: #false)) #'2026-08-20T10:42:26.286-05:00') )
+	^ #(#(#(#RGMethodDefinition #(#ComplexNumber #adaptToNumber:andSend: #false)) #'2026-08-20T10:42:26.286-05:00') #(#(#RGMethodDefinition #(#ComplexNumber #adaptToFloat:andCompare: #false)) #'2026-10-08T12:28:05.306-05:00') )
 ]
 
 { #category : 'code-critics' }
