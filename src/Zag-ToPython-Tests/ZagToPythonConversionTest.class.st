@@ -167,14 +167,6 @@ ZagToPythonConversionTest >> testAssociativeAddition2 [
 	self assert: ast convertsTo: expected.
 ]
 
-{ #category : 'tests' }
-ZagToPythonConversionTest >> testComment [
-	| ast expected |
-	ast := ASComment text: 'test comment'.
-	expected := '# test comment'.
-	self assert: ast convertsTo: expected.
-]
-
 { #category : 'tests - literals' }
 ZagToPythonConversionTest >> testBooleanLiterals [
 	"Test that true/false literals convert properly."
@@ -196,6 +188,14 @@ ZagToPythonConversionTest >> testBytesLiteral [
 	"Tests that the asByteArray converts into a bytes literal."
 	self assert: (ASSend target: (ASLiteral literal: 'hello') selector: #asByteArray) convertsTo: 'b"hello"'.
 	self assert: (ASSend target: (ASRef variable: #s) selector: #asByteArray) convertsTo: 'bytearray(s)'.
+]
+
+{ #category : 'tests' }
+ZagToPythonConversionTest >> testComment [
+	| ast expected |
+	ast := ASComment text: 'test comment'.
+	expected := '# test comment'.
+	self assert: ast convertsTo: expected.
 ]
 
 { #category : 'tests - literals' }
@@ -229,7 +229,7 @@ ZagToPythonConversionTest >> testDeleteSubscript [
 
 { #category : 'tests - literals' }
 ZagToPythonConversionTest >> testDictionaryLiteral [
-	"Tests that (literal array) asSet converts to a set literal."
+	"Tests that (literal array) asDictionary converts to a dictionary literal."
 	| source expected |
 	source := ASSend target: (ASArray statements: {
 		ASSend target: (ASLiteral literal: 'a') selector: #-> args: { ASRef variable: #b }

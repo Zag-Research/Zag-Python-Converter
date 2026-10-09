@@ -107,11 +107,11 @@ This version is mainly about functions, classes and exceptions, but like v0.3, a
 - [ ] §6.2.3 Literals
 - [ ] §6.2.3.1 Literals and object identity
 - [ ] §6.2.3.2 String literal concatenation
-- [ ] §6.2.4 Parenthesized forms
-- [ ] §6.2.5 Displays for lists, sets and dictionaries
-- [ ] §6.2.6 List displays
-- [ ] §6.2.7 Set displays
-- [ ] §6.2.8 Dictionary displays
+- [X] §6.2.4 Parenthesized forms
+- [X] §6.2.5 Displays for lists, sets and dictionaries
+- [X] §6.2.6 List displays
+- [X] §6.2.7 Set displays
+- [X] §6.2.8 Dictionary displays
 - [ ] §6.3.2 Subscriptions and slicings
 - [ ] §6.3.2.1 Slicings
 - [ ] §6.3.2.2 Comma-separated subscripts
