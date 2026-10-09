@@ -266,12 +266,6 @@ PythonConversionTest >> testBooleanNodes [
 	self assertExpression: 'False' convertsTo: (ASLiteral literal: false).
 ]
 
-{ #category : 'tests' }
-PythonConversionTest >> testComment [
-	"Test converting a comment to Zag."
-	self assertExpression: '# test comment' convertsTo: (ASComment text: 'test comment')
-]
-
 { #category : 'tests - functions' }
 PythonConversionTest >> testBytearrayCall [
 	"Ensures bytearray() converts properly."
@@ -290,6 +284,12 @@ PythonConversionTest >> testBytesLiteral [
 	self assertExpression: 'b"hello"' convertsTo: ast.
 	self assertExpression: 'br"hello"' convertsTo: ast.
 	self assertExpression: 'rb"hello"' convertsTo: ast.
+]
+
+{ #category : 'tests' }
+PythonConversionTest >> testComment [
+	"Test converting a comment to Zag."
+	self assertExpression: '# test comment' convertsTo: (ASComment text: 'test comment')
 ]
 
 { #category : 'tests - comparison & membership operators' }

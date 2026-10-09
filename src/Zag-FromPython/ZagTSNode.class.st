@@ -22,13 +22,15 @@ ZagTSNode class >> computeLocals: body [
 { #category : 'formatting' }
 ZagTSNode class >> formatCode: code [
 	"Formats code for handling by tree-sitter."
-	| inString |
+	| inString nestingLevels |
 	inString := false.
+	nestingLevels := { '()' -> 0. '[]' -> 0. '{}' -> 0 } asDictionary.
 	^String streamContents: [ :stream |
 		code linesDo: [ :line |
-			(line allRangesOfSubstring: '"') size odd ifTrue: [ inString := inString not ].
+			(line allRangesOfRegexMatches: '''''''|"""') size odd ifTrue: [ inString := inString not ].
+			self updateLevels: nestingLevels fromLine: line.
 			stream nextPutAll: line.
-			((':;' includes: line last) | inString or: [ line includes: $# ]) ifFalse: [
+			((':;\' includes: line last) | inString | (nestingLevels allSatisfy: #isZero) not or: [ line includes: $# ]) ifFalse: [
 				stream nextPut: $;
 			].
 			stream nextPut: Character cr.
@@ -40,6 +42,11 @@ ZagTSNode class >> formatCode: code [
 ZagTSNode class >> mainMethodSelector [
 	"The selector used for the main method, where non-method code is put in."
 	^#main.
+]
+
+{ #category : 'constants' }
+ZagTSNode class >> multilineContainers [
+	"Returns a dictionary mapping symbol names to start and end strings."
 ]
 
 { #category : 'instance creation' }
@@ -70,6 +77,14 @@ ZagTSNode class >> parsePythonTS: source [
 ZagTSNode class >> pythonToZagAST: source [
 	"Converts the provided code to a Zag AST node."
 	^(self newRoot: source) asZagASTNode.
+]
+
+{ #category : 'formatting' }
+ZagTSNode class >> updateLevels: levelDictionary fromLine: line [
+	levelDictionary keysAndValuesDo: [ :key :value | | delta |
+		delta := (line count: [ :c | c = key first ]) - (line count: [ :c | c = key last ]).
+		levelDictionary at: key put: (value + delta).
+	].
 ]
 
 { #category : 'accessing' }
