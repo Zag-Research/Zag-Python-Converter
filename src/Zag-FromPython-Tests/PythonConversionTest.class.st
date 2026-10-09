@@ -733,6 +733,17 @@ PythonConversionTest >> testPrintCall [
 ]
 
 { #category : 'tests - functions' }
+PythonConversionTest >> testRangeCall1Arg [
+	| source expected |
+	source := 'range(b)'.
+	expected := ASSend
+		target: (ASLiteral literal: 0)
+		selector: #toExclusive:
+		args: { ASRef variable: #b }.
+	self assertExpression: source convertsTo: expected.
+]
+
+{ #category : 'tests - functions' }
 PythonConversionTest >> testRangeCall2Arg [
 	| source expected |
 	source := 'range(a, b)'.
