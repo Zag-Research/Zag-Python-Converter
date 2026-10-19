@@ -219,6 +219,16 @@ PythonConversionTest >> testBasicIf [
 	self assertExpression: source convertsTo: expected "withLocals: #(#x)".
 ]
 
+{ #category : 'tests - operators' }
+PythonConversionTest >> testBasicSlice [
+	"Test converting a basic slice operation"
+	self assertExpression: 'a[b:c]' convertsTo: (ASSend
+		target: (ASRef variable: #a)
+		selector: #zwCopyFrom:to:
+		args: { ASRef variable: #b . ASRef variable: #c } 
+	)
+]
+
 { #category : 'tests - literals' }
 PythonConversionTest >> testBasicStringEscapes [
 	"Test that string literals with escapes are converted properly."

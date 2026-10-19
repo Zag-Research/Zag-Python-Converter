@@ -720,3 +720,13 @@ ZagToPythonConversionTest >> testZWArrayPut [
 	expected := 'a[i] = v'.
 	self assert: ast convertsTo: expected.
 ]
+
+{ #category : 'tests - arrays' }
+ZagToPythonConversionTest >> testZWCopyFromTo [
+	"Tests converting the zwCopyFrom:To: message."
+	self assert: (ASSend
+		target: (ASRef variable: #a)
+		selector: #zwCopyFrom:to:
+		args: { ASRef variable: #b . ASRef variable: #c } 
+	) convertsTo: 'a[b:c]'.
+]
