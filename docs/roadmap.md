@@ -4,7 +4,7 @@ This roadmap is based on [The Python Language Reference](https://docs.python.org
 
 Each entry in the below list refers to a section in this reference, denoted by the section symbol §.
 
-## Versions 0.1.0 & 0.2.0 (178‰)
+## Versions 0.1.0 & 0.2.0 (174‰)
 
 *These two versions implemented the same features, but 0.1.0 implemented them in Python-to-Zag translation, while 0.2.0 implemented them in Zag-to-Python translation.*
 
@@ -48,14 +48,13 @@ Each entry in the below list refers to a section in this reference, denoted by t
 - §6.16 Evaluation order
 - §6.17 Operator precedence
 - §7.1 Expression statements
-- §7.2 Assignment statements
 - §7.2.1 Augmented assignment statements
 - §7.6 The return statement
 - §8.1 The if statement
 - §8.2 The while statement
 - §8.3 The for statement
 
-## Version 0.3 (cumulative 306‰)
+## Version 0.3 (cumulative 302‰)
 
 This phase of development is mostly oriented around things that I missed in versions 0.1.0 and 0.2.0, where I was mostly making ad-hoc decisions without relying on any feature list.  I intend for future phases to be oriented around specific major features, like functions or exceptions.
 
@@ -93,7 +92,7 @@ This phase of development is mostly oriented around things that I missed in vers
 - [X] §7.4 The pass statement
 - [X] §7.5 The del statement (delete elements from collections)
 
-## Version 0.4 (cumulative 492‰)
+## Version 0.4 (cumulative 488‰)
 
 This version is mainly about functions, classes and exceptions, but like v0.3, also includes many smaller things.
 
@@ -268,6 +267,7 @@ Most of the remaining items on this list are internal implementation details who
   - §6.4 Await expression
   - §6.15 Expression lists
 - §7 Simple statements
+	- §7.2 Assignment statements
   - §7.7 The yield statement
   - §7.11 The import statement
     - §7.11.1 Future statements
