@@ -207,6 +207,16 @@ ZagToPythonConversionTest >> testComplexNumberLiteral [
 	self assert: ast convertsTo: expected.
 ]
 
+{ #category : 'tests - arrays' }
+ZagToPythonConversionTest >> testCopyFromTo [
+	"Tests converting the copyFrom:To: message."
+	self assert: (ASSend
+		target: (ASRef variable: #a)
+		selector: #copyFrom:to:
+		args: { ASRef variable: #b . ASRef variable: #c } 
+	) convertsTo: 'a[b - 1:c]'.
+]
+
 { #category : 'tests - basic expressions' }
 ZagToPythonConversionTest >> testDatatypeConversion [
 	"Ensures datatype conversions can be converted."

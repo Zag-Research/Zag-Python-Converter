@@ -17,6 +17,7 @@ ZagToSliceConverter class >> putRules: aClass [
 	"Add all of my conversion rules to aClass using its at:putRule: message."
 	"This message will be called once for each subclass of ZagSendConverter on initialization."
 	aClass at: #zwCopyFrom:to: putRule: (self new isZeroIndexed: true; yourself).
+	aClass at: #copyFrom:to: putRule: (self new isZeroIndexed: false; yourself).
 ]
 
 { #category : 'accessing' }
