@@ -16,9 +16,11 @@ SequenceableCollection >> zwAt: index put: anObject [
 { #category : '*Zag-PythonFeatures' }
 SequenceableCollection >> zwCopyFrom: zwFrom to: zwTo [
 	"Like copyFrom:to:, but with the same index semantics as zwAt:"
+	"You may also make the second argument #end to copy to the end."
 	| stFrom stTo |
 	stFrom := zwFrom >= 0 ifTrue: [ zwFrom + 1 ] ifFalse: [ zwFrom + 1 + self size ].
-	stTo := zwTo >= 0 ifTrue: [ zwTo ] ifFalse: [ zwTo + self size ].
+	stTo := zwTo = #end ifTrue: [ self size ] ifFalse: [
+		zwTo >= 0 ifTrue: [ zwTo ] ifFalse: [ zwTo + self size ] ].
 	^stFrom >= stTo
 		ifTrue: [ self species new: 0 ]
 		ifFalse: [ self copyFrom: stFrom to: stTo ].

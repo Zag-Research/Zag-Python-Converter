@@ -793,6 +793,36 @@ PythonConversionTest >> testSetLiteralNode [
 	self assertExpression: 'set([1, 2, 3])' convertsToAnyOf: expecteds.
 ]
 
+{ #category : 'tests - operators' }
+PythonConversionTest >> testSliceEmpty [
+	"Test converting an empty slice operation"
+	self assertExpression: 'a[:]' convertsTo: (ASSend
+		target: (ASRef variable: #a)
+		selector: #zwCopyFrom:to:
+		args: { ASLiteral literal: 0 . ASLiteral literal: #end } 
+	)
+]
+
+{ #category : 'tests - operators' }
+PythonConversionTest >> testSliceNoEnd [
+	"Test converting a slice operation with a missing end"
+	self assertExpression: 'a[b:]' convertsTo: (ASSend
+		target: (ASRef variable: #a)
+		selector: #zwCopyFrom:to:
+		args: { ASRef variable: #b . ASLiteral literal: #end } 
+	)
+]
+
+{ #category : 'tests - operators' }
+PythonConversionTest >> testSliceNoStart [
+	"Test converting a slice operation with no start"
+	self assertExpression: 'a[:c]' convertsTo: (ASSend
+		target: (ASRef variable: #a)
+		selector: #zwCopyFrom:to:
+		args: { ASLiteral literal: 0 . ASRef variable: #c } 
+	)
+]
+
 { #category : 'tests - literals' }
 PythonConversionTest >> testStringNode [
 	"Ensure a string literal can be converted to Zag properly."

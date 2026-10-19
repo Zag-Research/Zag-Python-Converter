@@ -41,6 +41,6 @@ ZagToSliceConverter >> visit: aSend asVisitor: aVisitor [
 	aVisitor visit: aSend args first.
 	self isZeroIndexed ifFalse: [ aVisitor resultStream nextPutAll: ' - 1' ].
 	aVisitor resultStream nextPut: $:.
-	aVisitor visit: aSend args last.
+	aSend args last = (ASLiteral literal: #end) ifFalse: [ aVisitor visit: aSend args last ].
 	aVisitor resultStream nextPut: $].
 ]

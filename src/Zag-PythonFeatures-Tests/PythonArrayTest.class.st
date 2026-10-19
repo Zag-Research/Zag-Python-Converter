@@ -10,6 +10,15 @@ Class {
 }
 
 { #category : 'tests' }
+PythonArrayTest >> testEndCopy [
+	"Tests copying to the special #end symbol."
+	| arr result |
+	arr := #(#a #b #c #d #e #f).
+	result := arr zwCopyFrom: 2 to: #end.
+	self assert: result equals: #(#c #d #e #f).
+]
+
+{ #category : 'tests' }
 PythonArrayTest >> testMixedIndexCopy [
 	| arr result |
 	arr := #(#a #b #c #d #e #f).
