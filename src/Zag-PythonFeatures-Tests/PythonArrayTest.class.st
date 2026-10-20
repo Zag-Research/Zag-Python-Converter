@@ -73,3 +73,21 @@ PythonArrayTest >> testPositiveIndexSet [
 	arr zwAt: 2 put: #cc.
 	self assert: arr equals: #(#a #b #cc #d #e #f) asOrderedCollection.
 ]
+
+{ #category : 'tests' }
+PythonArrayTest >> testStepCopyEven [
+	"Tests copying to the special #end symbol."
+	| arr result |
+	arr := #(#a #b #c #d #e #f).
+	result := arr zwCopyFrom: 0 to: #end by: 2.
+	self assert: result equals: #(#a #c #e).
+]
+
+{ #category : 'tests' }
+PythonArrayTest >> testStepCopyOdd [
+	"Tests copying to the special #end symbol."
+	| arr result |
+	arr := #(#a #b #c #d #e #f #g).
+	result := arr zwCopyFrom: 0 to: #end by: 2.
+	self assert: result equals: #(#a #c #e #g).
+]

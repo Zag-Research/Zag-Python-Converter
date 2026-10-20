@@ -823,6 +823,16 @@ PythonConversionTest >> testSliceNoStart [
 	)
 ]
 
+{ #category : 'tests - operators' }
+PythonConversionTest >> testSliceStep [
+	"Test converting a slice operation with a step"
+	self assertExpression: 'a[1:2:3]' convertsTo: (ASSend
+		target: (ASRef variable: #a)
+		selector: #zwCopyFrom:to:by:
+		args: { ASLiteral literal: 1 . ASLiteral literal: 2 . ASLiteral literal: 3 } 
+	)
+]
+
 { #category : 'tests - literals' }
 PythonConversionTest >> testStringNode [
 	"Ensure a string literal can be converted to Zag properly."

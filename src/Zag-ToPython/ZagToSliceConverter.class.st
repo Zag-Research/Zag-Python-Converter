@@ -5,7 +5,8 @@ Class {
 	#name : 'ZagToSliceConverter',
 	#superclass : 'ZagSendConverter',
 	#instVars : [
-		'isZeroIndexed'
+		'isZeroIndexed',
+		'hasStep'
 	],
 	#category : 'Zag-ToPython-Manifest',
 	#package : 'Zag-ToPython',
@@ -16,8 +17,21 @@ Class {
 ZagToSliceConverter class >> putRules: aClass [
 	"Add all of my conversion rules to aClass using its at:putRule: message."
 	"This message will be called once for each subclass of ZagSendConverter on initialization."
-	aClass at: #zwCopyFrom:to: putRule: (self new isZeroIndexed: true; yourself).
-	aClass at: #copyFrom:to: putRule: (self new isZeroIndexed: false; yourself).
+	aClass at: #zwCopyFrom:to: putRule: (self new isZeroIndexed: true; hasStep: false; yourself).
+	aClass at: #copyFrom:to: putRule: (self new isZeroIndexed: false; hasStep: false; yourself).
+	aClass at: #zwCopyFrom:to:by: putRule: (self new isZeroIndexed: true; hasStep: true; yourself).
+]
+
+{ #category : 'accessing' }
+ZagToSliceConverter >> hasStep [
+
+	^ hasStep
+]
+
+{ #category : 'accessing' }
+ZagToSliceConverter >> hasStep: anObject [
+
+	hasStep := anObject
 ]
 
 { #category : 'accessing' }
@@ -41,6 +55,10 @@ ZagToSliceConverter >> visit: aSend asVisitor: aVisitor [
 	aVisitor visit: aSend args first.
 	self isZeroIndexed ifFalse: [ aVisitor resultStream nextPutAll: ' - 1' ].
 	aVisitor resultStream nextPut: $:.
-	aSend args last = (ASLiteral literal: #end) ifFalse: [ aVisitor visit: aSend args last ].
+	aSend args last = (ASLiteral literal: #end) ifFalse: [ aVisitor visit: aSend args second ].
+	self hasStep ifTrue: [
+		aVisitor resultStream nextPut: $:.
+		aVisitor visit: aSend args third. 
+	].
 	aVisitor resultStream nextPut: $].
 ]

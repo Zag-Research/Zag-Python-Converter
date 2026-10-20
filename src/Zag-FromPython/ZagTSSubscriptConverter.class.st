@@ -36,11 +36,12 @@ ZagTSSubscriptConverter class >> sliceIndices: aZagTSNode [
 { #category : 'converting' }
 ZagTSSubscriptConverter >> convertSlice: aZagTSNode [
 	"Convert a subscript containing a slice to a Zag AST node."
-	| argumentParts |
+	| argumentParts selector |
 	argumentParts := self class sliceIndices: aZagTSNode >> 2.
+	selector := argumentParts size = 2 ifTrue: [ #zwCopyFrom:to: ] ifFalse: [ #zwCopyFrom:to:by: ].
 	^ASSend
 		target: (aZagTSNode >> 1) asZagASTNode
-		selector: #zwCopyFrom:to:
+		selector: selector
 		args: argumentParts.
 ]
 

@@ -733,7 +733,7 @@ ZagToPythonConversionTest >> testZWArrayPut [
 
 { #category : 'tests - arrays' }
 ZagToPythonConversionTest >> testZWCopyFromTo [
-	"Tests converting the zwCopyFrom:To: message."
+	"Tests converting the zwCopyFrom:to: message."
 	self assert: (ASSend
 		target: (ASRef variable: #a)
 		selector: #zwCopyFrom:to:
@@ -742,8 +742,18 @@ ZagToPythonConversionTest >> testZWCopyFromTo [
 ]
 
 { #category : 'tests - arrays' }
+ZagToPythonConversionTest >> testZWCopyFromToBy [
+	"Tests converting the zwCopyFrom:to:by: message."
+	self assert: (ASSend
+		target: (ASRef variable: #a)
+		selector: #zwCopyFrom:to:by:
+		args: { ASRef variable: #b . ASRef variable: #c . ASRef variable: #d } 
+	) convertsTo: 'a[b:c:d]'.
+]
+
+{ #category : 'tests - arrays' }
 ZagToPythonConversionTest >> testZWCopyFromToEnd [
-	"Tests converting the zwCopyFrom:To: message with the special #end literal."
+	"Tests converting the zwCopyFrom:to: message with the special #end literal."
 	self assert: (ASSend
 		target: (ASRef variable: #a)
 		selector: #zwCopyFrom:to:

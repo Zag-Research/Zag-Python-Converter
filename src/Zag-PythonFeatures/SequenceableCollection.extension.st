@@ -25,3 +25,21 @@ SequenceableCollection >> zwCopyFrom: zwFrom to: zwTo [
 		ifTrue: [ self species new: 0 ]
 		ifFalse: [ self copyFrom: stFrom to: stTo ].
 ]
+
+{ #category : '*Zag-PythonFeatures' }
+SequenceableCollection >> zwCopyFrom: zwFrom to: zwTo by: by [
+	"Copy my elements from zwFrom to zwTo with the step by."
+	| stFrom stTo newSize copy j |
+	stFrom := zwFrom >= 0 ifTrue: [ zwFrom + 1 ] ifFalse: [ zwFrom + 1 + self size ].
+	stTo := zwTo = #end ifTrue: [ self size ] ifFalse: [
+		zwTo >= 0 ifTrue: [ zwTo ] ifFalse: [ zwTo + self size ] ].
+	newSize := ((stTo - stFrom + 1) / by) ceiling.
+	copy := self species new: newSize.
+	j := 1.
+	stFrom to: stTo by: by do: [ :i |
+		copy at: j put: (self at: i).
+		j := j + 1.
+	].
+	^copy.
+	
+]
