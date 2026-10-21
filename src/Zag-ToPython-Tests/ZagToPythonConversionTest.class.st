@@ -227,10 +227,34 @@ ZagToPythonConversionTest >> testDatatypeConversion [
 ]
 
 { #category : 'tests - basic expressions' }
+ZagToPythonConversionTest >> testDeleteSlice [
+	"Tests that zwRemoveFrom:to: and its by: version can be converted, without #end."
+	| ast1 ast2 |
+	ast1 := ASSend target: (ASRef variable: #a) selector: #zwRemoveFrom:to: args: { 
+		ASRef variable: #b . ASRef variable: #c }.
+	ast2 := ASSend target: (ASRef variable: #a) selector: #zwRemoveFrom:to:by: args: {
+		ASRef variable: #b . ASRef variable: #c . ASRef variable: #d }.
+	self assert: ast1 convertsTo: 'del a[b:c]'.
+	self assert: ast2 convertsTo: 'del a[b:c:d]'.
+]
+
+{ #category : 'tests - basic expressions' }
+ZagToPythonConversionTest >> testDeleteSliceEnd [
+	"Tests that zwRemoveFrom:to: and its by: version can be converted, with #end."
+	| ast1 ast2 |
+	ast1 := ASSend target: (ASRef variable: #a) selector: #zwRemoveFrom:to: args: { 
+		ASRef variable: #b . ASLiteral literal: #end }.
+	ast2 := ASSend target: (ASRef variable: #a) selector: #zwRemoveFrom:to:by: args: {
+		ASRef variable: #b . ASLiteral literal: #end . ASRef variable: #d }.
+	self assert: ast1 convertsTo: 'del a[b:]'.
+	self assert: ast2 convertsTo: 'del a[b::d]'.
+]
+
+{ #category : 'tests - basic expressions' }
 ZagToPythonConversionTest >> testDeleteSubscript [
-	"Tests that removeAt: & removeKey: convert into del statements."
+	"Tests that zwRemoveAt: & removeKey: convert into del statements."
 	| ast1 ast2 expected |
-	ast1 := ASSend target: (ASRef variable: #a) selector: #removeAt: args: { ASRef variable: #b }.
+	ast1 := ASSend target: (ASRef variable: #a) selector: #zwRemoveAt: args: { ASRef variable: #b }.
 	ast2 := ASSend target: (ASRef variable: #a) selector: #removeKey: args: { ASRef variable: #b }.
 	expected := 'del a[b]'.
 	self assert: ast1 convertsTo: expected.

@@ -16,11 +16,20 @@ ZagTSDeleteConverter class >> putRules: aClass [
 	aClass at: #delete_statement putRule: self new
 ]
 
+{ #category : 'constants' }
+ZagTSDeleteConverter class >> subscriptToDeleteSelectorMap [
+	^{
+		#zwAt: -> #zwRemoveAt:.
+		#zwCopyFrom:to: -> #zwRemoveFrom:to:.
+		#zwCopyFrom:to:by: -> #zwRemoveFrom:to:by:. 
+	} asDictionary
+]
+
 { #category : 'converting' }
 ZagTSDeleteConverter >> convertToZagAST: aZagTSNode [
+	| subscriptAST |
 	(aZagTSNode >> 1) tsNodeType = #subscript ifFalse: [ ^self notYetImplemented ].
-	^ASSend
-		target: (aZagTSNode >> 1 >> 1) asZagASTNode
-		selector: #removeAt:
-		args: { (aZagTSNode >> 1 >> 2) asZagASTNode }.
+	subscriptAST := ZagTSSubscriptConverter new convertToZagAST: aZagTSNode >> 1.
+	subscriptAST selector: (self class subscriptToDeleteSelectorMap at: subscriptAST selector).
+	^subscriptAST
 ]

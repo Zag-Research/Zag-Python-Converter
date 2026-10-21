@@ -13,8 +13,11 @@ Class {
 ZagDeleteConverter class >> putRules: aClass [
 	"Add all of my conversion rules to aClass using its at:putRule: message."
 	"This message will be called once for each subclass of ZagSendConverter on initialization."
-	aClass at: #removeAt: putRule: self new.
+	"aClass at: #removeAt: putRule: self new." "TODO figure out index differences for this one"
+	aClass at: #zwRemoveAt: putRule: self new.
 	aClass at: #removeKey: putRule: self new.
+	aClass at: #zwRemoveFrom:to: putRule: self new.
+	aClass at: #zwRemoveFrom:to:by: putRule: self new.
 ]
 
 { #category : 'visiting' }
@@ -24,6 +27,8 @@ ZagDeleteConverter >> visit: aSend asVisitor: aVisitor [
 	aVisitor resultStream nextPutAll: 'del '.
 	aVisitor visit: aSend target.
 	aVisitor resultStream nextPut: $[.
-	aVisitor visit: aSend args first.
+	aSend args
+		do: [ :arg | arg = (ASLiteral literal: #end) ifFalse: [ aVisitor visit: arg ] ]
+		separatedBy: [ aVisitor resultStream nextPut: $: ].
 	aVisitor resultStream nextPut: $].
 ]

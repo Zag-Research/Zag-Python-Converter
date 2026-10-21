@@ -325,10 +325,18 @@ PythonConversionTest >> testComplexNumberNode [
 ]
 
 { #category : 'tests - assignment' }
+PythonConversionTest >> testDeleteSlice [
+	"tests using the del statement on slices"
+	self assertExpression: 'del a[b:c:d]' convertsTo: (
+		ASSend target: (ASRef variable: #a) selector: #zwRemoveFrom:to:by: args: (
+			{ #b . #c . #d } collect: [ :s | ASRef variable: s ]))
+]
+
+{ #category : 'tests - assignment' }
 PythonConversionTest >> testDeleteSubscript [
 	"tests using the del statement on collections"
 	self assertExpression: 'del a[b]' convertsTo: (
-		ASSend target: (ASRef variable: #a) selector: #removeAt: args: { ASRef variable: #b })
+		ASSend target: (ASRef variable: #a) selector: #zwRemoveAt: args: { ASRef variable: #b })
 ]
 
 { #category : 'tests - literals' }

@@ -19,6 +19,15 @@ PythonArrayTest >> testEndCopy [
 ]
 
 { #category : 'tests' }
+PythonArrayTest >> testEndRemove [
+	"Tests removing to the special #end symbol."
+	| arr |
+	arr := #(#a #b #c #d #e #f) asOrderedCollection.
+	arr zwRemoveFrom: 2 to: #end.
+	self assert: arr equals: #(#a #b) asOrderedCollection.
+]
+
+{ #category : 'tests' }
 PythonArrayTest >> testMixedIndexCopy [
 	| arr result |
 	arr := #(#a #b #c #d #e #f).
@@ -72,6 +81,24 @@ PythonArrayTest >> testPositiveIndexSet [
 	arr := #(#a #b #c #d #e #f) asOrderedCollection.
 	arr zwAt: 2 put: #cc.
 	self assert: arr equals: #(#a #b #cc #d #e #f) asOrderedCollection.
+]
+
+{ #category : 'tests' }
+PythonArrayTest >> testRemove [
+	"Tests removing to an index."
+	| arr |
+	arr := #(#a #b #c #d #e #f) asOrderedCollection.
+	arr zwRemoveFrom: 2 to: 4.
+	self assert: arr equals: #(#a #b #e #f) asOrderedCollection.
+]
+
+{ #category : 'tests' }
+PythonArrayTest >> testRemoveBy [
+	"Tests removing to an index, with a step."
+	| arr |
+	arr := #(#a #b #c #d #e #f) asOrderedCollection.
+	arr zwRemoveFrom: 2 to: 5 by: 2.
+	self assert: arr equals: #(#a #b #d #f) asOrderedCollection.
 ]
 
 { #category : 'tests' }

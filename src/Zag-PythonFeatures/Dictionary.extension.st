@@ -5,3 +5,8 @@ Dictionary >> removeAt: key [
 
 	^ self removeKey: key
 ]
+
+{ #category : '*Zag-PythonFeatures' }
+Dictionary >> zwRemoveAt: anIndex [
+	^self removeKey: anIndex
+]
