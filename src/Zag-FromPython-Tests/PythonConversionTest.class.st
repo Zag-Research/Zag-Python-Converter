@@ -140,8 +140,8 @@ PythonConversionTest >> testArrayAssignRS [
 { #category : 'tests - literals' }
 PythonConversionTest >> testArrayLiteralNode [
 	"Tests converting array/list literals"
-	self assertExpression: '[a, b, c]' convertsTo: (ASArray statements: {
-		ASRef variable: #a . ASRef variable: #b . ASRef variable: #c })
+	self assertExpression: '[a, b, c]' convertsTo: (ASSend target: (ASArray statements: {
+		ASRef variable: #a . ASRef variable: #b . ASRef variable: #c }) selector: #asOrderedCollection) 
 ]
 
 { #category : 'tests - control flow' }
@@ -790,6 +790,17 @@ PythonConversionTest >> testRawStrings [
 ]
 
 { #category : 'tests - literals' }
+PythonConversionTest >> testSetFromListLiteral [
+	"Tests that set literals and the set() call both produce Smalltalk set literals."
+	| expecteds |
+	expecteds := { #(1 2 3) . #(1 3 2) . #(2 1 3) . #(2 3 1) . #(3 1 2) . #(3 2 1)}
+		collect: [ :list | | statements |
+			statements := list collect: [ :each | ASLiteral literal: each ] as: ASArray.
+			ASSend target: (ASSend target: statements selector: #asOrderedCollection) selector: #asSet ].
+	self assertExpression: 'set([1, 2, 3])' convertsToAnyOf: expecteds.
+]
+
+{ #category : 'tests - literals' }
 PythonConversionTest >> testSetLiteralNode [
 	"Tests that set literals and the set() call both produce Smalltalk set literals."
 	| expecteds |
@@ -798,7 +809,6 @@ PythonConversionTest >> testSetLiteralNode [
 			statements := list collect: [ :each | ASLiteral literal: each ] as: ASArray.
 			ASSend target: statements selector: #asSet ].
 	self assertExpression: '{1, 2, 3}' convertsToAnyOf: expecteds.
-	self assertExpression: 'set([1, 2, 3])' convertsToAnyOf: expecteds.
 ]
 
 { #category : 'tests - operators' }

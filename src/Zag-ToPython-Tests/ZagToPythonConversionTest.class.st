@@ -481,6 +481,16 @@ ZagToPythonConversionTest >> testInput [
 ]
 
 { #category : 'tests - literals' }
+ZagToPythonConversionTest >> testListLiteral [
+	"Tests that (literal array) asOrderedCollection converts to a list literal."
+	| source1 source2 |
+	source1 := ASSend target: ((1 to: 4) collect: [ :each | ASLiteral literal: each ] as: ASArray) selector: #asOrderedCollection.
+	source2 := ASSend target: (ASLiteral literal: #(1 2 3 4)) selector: #asOrderedCollection.
+	self assert: source1 convertsTo: '[1, 2, 3, 4]'.
+	self assert: source2 convertsTo: '[1, 2, 3, 4]'.
+]
+
+{ #category : 'tests - literals' }
 ZagToPythonConversionTest >> testMultilineStringLiteral [
 	"Test that string literals convert properly."
 	| ast expected |

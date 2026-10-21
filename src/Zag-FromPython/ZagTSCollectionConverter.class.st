@@ -16,6 +16,9 @@ Class {
 ZagTSCollectionConverter class >> putRules: aClass [
 	"Add all of my conversion rules to aClass using its at:putRule: message."
 	"This message will be called once for each subclass of ZagSendConverter on initialization."
+	aClass at: #list putRule: (self new conversionSelector: #asOrderedCollection).
+	aClass at: #tuple putRule: (self new conversionSelector: #immutableView).
+	aClass at: #set putRule: (self new conversionSelector: #asSet).
 	self subclassesDo: [ :subclass | subclass putRules: aClass ].
 ]
 
@@ -34,7 +37,7 @@ ZagTSCollectionConverter >> conversionSelector: anObject [
 { #category : 'converting' }
 ZagTSCollectionConverter >> convertChild: aChild [
 	"Convert one element of this collection to Zag"
-	self subclassResponsibility
+	^aChild asZagASTNode
 ]
 
 { #category : 'converting' }
