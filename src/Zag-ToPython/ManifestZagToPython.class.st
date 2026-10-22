@@ -38,6 +38,13 @@ ManifestZagToPython class >> ruleReCyclomaticComplexityRuleV1FalsePositive [
 ]
 
 { #category : 'code-critics' }
+ManifestZagToPython class >> ruleReGuardClauseRuleV1FalsePositive [
+
+	<ignoreForCoverage>
+	^ #(#(#(#RGMethodDefinition #(#ZagArrayAccessIntervalTargetConverter #visit:asVisitor: #false)) #'2026-10-22T16:15:57.217-05:00') )
+]
+
+{ #category : 'code-critics' }
 ManifestZagToPython class >> ruleRefersToClassRuleV1FalsePositive [
 
 	<ignoreForCoverage>

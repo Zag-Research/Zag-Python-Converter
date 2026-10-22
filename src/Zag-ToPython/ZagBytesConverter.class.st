@@ -6,9 +6,9 @@ If my target is a string literal, I return it as a bytes literal.  Otherwise, I 
 Class {
 	#name : 'ZagBytesConverter',
 	#superclass : 'ZagSendConverter',
-	#category : 'Zag-ToPython-Manifest',
+	#category : 'Zag-ToPython-Converter',
 	#package : 'Zag-ToPython',
-	#tag : 'Manifest'
+	#tag : 'Converter'
 }
 
 { #category : 'setting' }

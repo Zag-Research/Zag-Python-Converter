@@ -4,9 +4,9 @@ I am the ZagSendConverter for #immutableView.
 Class {
 	#name : 'ZagImmutableViewConverter',
 	#superclass : 'ZagSendConverter',
-	#category : 'Zag-ToPython-Manifest',
+	#category : 'Zag-ToPython-Converter',
 	#package : 'Zag-ToPython',
-	#tag : 'Manifest'
+	#tag : 'Converter'
 }
 
 { #category : 'setting' }

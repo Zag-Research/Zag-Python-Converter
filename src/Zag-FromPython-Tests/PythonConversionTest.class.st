@@ -224,8 +224,8 @@ PythonConversionTest >> testBasicSlice [
 	"Test converting a basic slice operation"
 	self assertExpression: 'a[b:c]' convertsTo: (ASSend
 		target: (ASRef variable: #a)
-		selector: #zwCopyFrom:to:
-		args: { ASRef variable: #b . ASRef variable: #c } 
+		selector: #zwAt:
+		args: { ASSend target: (ASRef variable: #b) selector: #toExclusive: args: { ASRef variable: #c } } 
 	)
 ]
 
@@ -328,8 +328,10 @@ PythonConversionTest >> testComplexNumberNode [
 PythonConversionTest >> testDeleteSlice [
 	"tests using the del statement on slices"
 	self assertExpression: 'del a[b:c:d]' convertsTo: (
-		ASSend target: (ASRef variable: #a) selector: #zwRemoveFrom:to:by: args: (
-			{ #b . #c . #d } collect: [ :s | ASRef variable: s ]))
+		ASSend target: (ASRef variable: #a) selector: #zwRemoveAt: args: { ASSend
+			target: (ASRef variable: #b)
+			selector: #toExclusive:by:
+			args: (#(#c #d) collect: [ :s | ASRef variable: s ]) })
 ]
 
 { #category : 'tests - assignment' }
@@ -816,8 +818,8 @@ PythonConversionTest >> testSliceEmpty [
 	"Test converting an empty slice operation"
 	self assertExpression: 'a[:]' convertsTo: (ASSend
 		target: (ASRef variable: #a)
-		selector: #zwCopyFrom:to:
-		args: { ASLiteral literal: 0 . ASLiteral literal: nil } 
+		selector: #zwAt:
+		args: { ASSend target: (ASLiteral literal: 0) selector: #toExclusive: args: { ASLiteral literal: nil } } 
 	)
 ]
 
@@ -826,8 +828,8 @@ PythonConversionTest >> testSliceNoEnd [
 	"Test converting a slice operation with a missing end"
 	self assertExpression: 'a[b:]' convertsTo: (ASSend
 		target: (ASRef variable: #a)
-		selector: #zwCopyFrom:to:
-		args: { ASRef variable: #b . ASLiteral literal: nil } 
+		selector: #zwAt:
+		args: { ASSend target: (ASRef variable: #b) selector: #toExclusive: args: { ASLiteral literal: nil } } 
 	)
 ]
 
@@ -836,8 +838,8 @@ PythonConversionTest >> testSliceNoStart [
 	"Test converting a slice operation with no start"
 	self assertExpression: 'a[:c]' convertsTo: (ASSend
 		target: (ASRef variable: #a)
-		selector: #zwCopyFrom:to:
-		args: { ASLiteral literal: 0 . ASRef variable: #c } 
+		selector: #zwAt:
+		args: { ASSend target: (ASLiteral literal: 0) selector: #toExclusive: args: { ASRef variable: #c } } 
 	)
 ]
 
@@ -846,8 +848,11 @@ PythonConversionTest >> testSliceStep [
 	"Test converting a slice operation with a step"
 	self assertExpression: 'a[1:2:3]' convertsTo: (ASSend
 		target: (ASRef variable: #a)
-		selector: #zwCopyFrom:to:by:
-		args: { ASLiteral literal: 1 . ASLiteral literal: 2 . ASLiteral literal: 3 } 
+		selector: #zwAt:
+		args: { ASSend
+			target: (ASLiteral literal: 1)
+			selector: #toExclusive:by:
+			args: (#(2 3) collect: [ :v | ASLiteral literal: v ]) } 
 	)
 ]
 

@@ -1,5 +1,5 @@
 "
-I am a ZagSendConverter that converts multiple types of calls to slices.
+I am a ZagSendConverter that converts multiple types of non-array access calls to slices.
 "
 Class {
 	#name : 'ZagToSliceConverter',
@@ -8,9 +8,9 @@ Class {
 		'isZeroIndexed',
 		'hasStep'
 	],
-	#category : 'Zag-ToPython-Manifest',
+	#category : 'Zag-ToPython-Converter',
 	#package : 'Zag-ToPython',
-	#tag : 'Manifest'
+	#tag : 'Converter'
 }
 
 { #category : 'setting' }
@@ -55,7 +55,7 @@ ZagToSliceConverter >> visit: aSend asVisitor: aVisitor [
 	aVisitor visit: aSend args first.
 	self isZeroIndexed ifFalse: [ aVisitor resultStream nextPutAll: ' - 1' ].
 	aVisitor resultStream nextPut: $:.
-	aSend args last = (ASLiteral literal: nil) ifFalse: [ aVisitor visit: aSend args second ].
+	aSend args second = (ASLiteral literal: nil) ifFalse: [ aVisitor visit: aSend args second ].
 	self hasStep ifTrue: [
 		aVisitor resultStream nextPut: $:.
 		aVisitor visit: aSend args third. 

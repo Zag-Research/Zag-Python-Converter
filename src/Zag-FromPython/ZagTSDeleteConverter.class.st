@@ -29,7 +29,7 @@ ZagTSDeleteConverter class >> subscriptToDeleteSelectorMap [
 ZagTSDeleteConverter >> convertToZagAST: aZagTSNode [
 	| subscriptAST |
 	(aZagTSNode >> 1) tsNodeType = #subscript ifFalse: [ ^self notYetImplemented ].
-	subscriptAST := ZagTSSubscriptConverter new convertToZagAST: aZagTSNode >> 1.
+	subscriptAST := (aZagTSNode >> 1) asZagASTNode.
 	subscriptAST selector: (self class subscriptToDeleteSelectorMap at: subscriptAST selector).
 	^subscriptAST
 ]

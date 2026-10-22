@@ -111,7 +111,7 @@ This version is mainly about functions, classes and exceptions, but like v0.3, a
 - [X] §6.2.6 List displays
 - [X] §6.2.7 Set displays
 - [X] §6.2.8 Dictionary displays
-- [ ] §6.3.2 Subscriptions and slicings
+- [X] §6.3.2 Subscriptions and slicings
 - [X] §6.3.2.1 Slicings
 - [ ] §6.3.2.2 Comma-separated subscripts
 - [ ] §6.3.2.3 “Starred” subscriptions

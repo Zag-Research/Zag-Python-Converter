@@ -766,6 +766,47 @@ ZagToPythonConversionTest >> testZWArrayPut [
 ]
 
 { #category : 'tests - arrays' }
+ZagToPythonConversionTest >> testZWAtInterval [
+	"Tests converting the zwAt: message with an interval argument."
+	self assert: (ASSend
+		target: (ASRef variable: #a)
+		selector: #zwAt:
+		args: { ASSend target: (ASRef variable: #b) selector: #toExclusive: args: { ASRef variable: #c } } 
+	) convertsTo: 'a[b:c]'.
+]
+
+{ #category : 'tests - arrays' }
+ZagToPythonConversionTest >> testZWAtIntervalEnd [
+	"Tests converting the zwAt: message with a nil-end interval argument."
+	self assert: (ASSend
+		target: (ASRef variable: #a)
+		selector: #zwAt:
+		args: { ASSend target: (ASRef variable: #b) selector: #to: args: { ASLiteral literal: nil } } 
+	) convertsTo: 'a[b:]'.
+]
+
+{ #category : 'tests - arrays' }
+ZagToPythonConversionTest >> testZWAtIntervalInclusive [
+	"Tests converting the zwAt: message with an inclusive interval argument."
+	self assert: (ASSend
+		target: (ASRef variable: #a)
+		selector: #zwAt:
+		args: { ASSend target: (ASRef variable: #b) selector: #to: args: { ASRef variable: #c } } 
+	) convertsTo: 'a[b:(c) + 1]'.
+]
+
+{ #category : 'tests - arrays' }
+ZagToPythonConversionTest >> testZWAtIntervalStep [
+	"Tests converting the zwAt: message with a interval argument with a step."
+	self assert: (ASSend
+		target: (ASRef variable: #a)
+		selector: #zwAt:
+		args: { ASSend target: (ASRef variable: #b) selector: #toExclusive:by: args: {
+			ASRef variable: #c . ASRef variable: #d } } 
+	) convertsTo: 'a[b:c:d]'.
+]
+
+{ #category : 'tests - arrays' }
 ZagToPythonConversionTest >> testZWCopyFromTo [
 	"Tests converting the zwCopyFrom:to: message."
 	self assert: (ASSend
