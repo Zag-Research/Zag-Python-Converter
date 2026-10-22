@@ -20,7 +20,7 @@ ZagTSSubscriptConverter class >> putRules: aClass [
 ZagTSSubscriptConverter class >> sliceIndices: aZagTSNode [
 	"Accepts a slice-type ZagTSNode, and returns its index parts as Zag AST nodes, with missing parts filled in."
 	| parts nextChildIndex nextPartIndex |
-	parts := { 0 . #end . 1 } collect: [ :each | ASLiteral literal: each ].
+	parts := { 0 . nil . 1 } collect: [ :each | ASLiteral literal: each ].
 	nextChildIndex := 1.
 	nextPartIndex := 1.
 	$: split: aZagTSNode sourcePart do: [ :part |

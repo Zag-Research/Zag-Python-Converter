@@ -817,7 +817,7 @@ PythonConversionTest >> testSliceEmpty [
 	self assertExpression: 'a[:]' convertsTo: (ASSend
 		target: (ASRef variable: #a)
 		selector: #zwCopyFrom:to:
-		args: { ASLiteral literal: 0 . ASLiteral literal: #end } 
+		args: { ASLiteral literal: 0 . ASLiteral literal: nil } 
 	)
 ]
 
@@ -827,7 +827,7 @@ PythonConversionTest >> testSliceNoEnd [
 	self assertExpression: 'a[b:]' convertsTo: (ASSend
 		target: (ASRef variable: #a)
 		selector: #zwCopyFrom:to:
-		args: { ASRef variable: #b . ASLiteral literal: #end } 
+		args: { ASRef variable: #b . ASLiteral literal: nil } 
 	)
 ]
 

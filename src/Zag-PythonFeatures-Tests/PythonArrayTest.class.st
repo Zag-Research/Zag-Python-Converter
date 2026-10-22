@@ -14,7 +14,7 @@ PythonArrayTest >> testEndCopy [
 	"Tests copying to the special #end symbol."
 	| arr result |
 	arr := #(#a #b #c #d #e #f).
-	result := arr zwCopyFrom: 2 to: #end.
+	result := arr zwCopyFrom: 2 to: nil.
 	self assert: result equals: #(#c #d #e #f).
 ]
 
@@ -25,6 +25,33 @@ PythonArrayTest >> testEndRemove [
 	arr := #(#a #b #c #d #e #f) asOrderedCollection.
 	arr zwRemoveFrom: 2 to: #end.
 	self assert: arr equals: #(#a #b) asOrderedCollection.
+]
+
+{ #category : 'tests' }
+PythonArrayTest >> testIntervalAccess [
+	"Tests copying from a list with an interval."
+	| arr result |
+	arr := #(#a #b #c #d #e #f).
+	result := arr zwAt: (2 toExclusive: 5).
+	self assert: result equals: #(#c #d #e).
+]
+
+{ #category : 'tests' }
+PythonArrayTest >> testIntervalAccessEnd [
+	"Tests copying to the end of a list with an interval."
+	| arr result |
+	arr := #(#a #b #c #d #e #f).
+	result := arr zwAt: (2 toExclusive: nil).
+	self assert: result equals: #(#c #d #e #f).
+]
+
+{ #category : 'tests' }
+PythonArrayTest >> testIntervalAccessStep [
+	"Tests copying from a list with an interval."
+	| arr result |
+	arr := #(#a #b #c #d #e #f).
+	result := arr zwAt: (2 toExclusive: 5 by: 2).
+	self assert: result equals: #(#c #e).
 ]
 
 { #category : 'tests' }
@@ -103,18 +130,18 @@ PythonArrayTest >> testRemoveBy [
 
 { #category : 'tests' }
 PythonArrayTest >> testStepCopyEven [
-	"Tests copying to the special #end symbol."
+	"Tests copying to the end (nil)."
 	| arr result |
 	arr := #(#a #b #c #d #e #f).
-	result := arr zwCopyFrom: 0 to: #end by: 2.
+	result := arr zwCopyFrom: 0 to: nil by: 2.
 	self assert: result equals: #(#a #c #e).
 ]
 
 { #category : 'tests' }
 PythonArrayTest >> testStepCopyOdd [
-	"Tests copying to the special #end symbol."
+	"Tests copying to the end (nil)."
 	| arr result |
 	arr := #(#a #b #c #d #e #f #g).
-	result := arr zwCopyFrom: 0 to: #end by: 2.
+	result := arr zwCopyFrom: 0 to: nil by: 2.
 	self assert: result equals: #(#a #c #e #g).
 ]

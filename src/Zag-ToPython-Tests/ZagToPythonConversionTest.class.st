@@ -787,10 +787,10 @@ ZagToPythonConversionTest >> testZWCopyFromToBy [
 
 { #category : 'tests - arrays' }
 ZagToPythonConversionTest >> testZWCopyFromToEnd [
-	"Tests converting the zwCopyFrom:to: message with the special #end literal."
+	"Tests converting the zwCopyFrom:to: with a nil argument."
 	self assert: (ASSend
 		target: (ASRef variable: #a)
 		selector: #zwCopyFrom:to:
-		args: { ASRef variable: #b . ASLiteral literal: #end } 
+		args: { ASRef variable: #b . ASLiteral literal: nil } 
 	) convertsTo: 'a[b:]'.
 ]

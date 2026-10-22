@@ -8,6 +8,16 @@ Number >> i [
 ]
 
 { #category : '*Zag-PythonFeatures' }
+Number >> toExclusive: anEnd [
+	^self to: (anEnd ifNotNil: [ :i | i - 1 ])
+]
+
+{ #category : '*Zag-PythonFeatures' }
+Number >> toExclusive: anEnd by: step [
+	^self to: (anEnd ifNotNil: [ :i | i - 1 ]) by: step
+]
+
+{ #category : '*Zag-PythonFeatures' }
 Number >> toPythonBoolean [
 	^self isZero not.
 ]
