@@ -18,15 +18,6 @@ ZagArrayAccessConverter class >> intervalSelectors [
 	^#(#to: #to:by: #toExclusive: #toExclusive:by:) asSet
 ]
 
-{ #category : 'testing' }
-ZagArrayAccessConverter class >> isIntervalSend: aSend [
-	"Returns true iff aSend is an array access with an interval argument."
-	aSend isASSend ifFalse: [ ^false ].
-	aSend args isEmpty ifTrue: [ ^false ].
-	aSend args first isASSend ifFalse: [ ^false ].
-	^self intervalSelectors includes: aSend args first selector.
-]
-
 { #category : 'setting' }
 ZagArrayAccessConverter class >> putRules: aClass [
 	"Add all of my conversion rules to aClass using its at:putRule: message."
@@ -64,10 +55,19 @@ ZagArrayAccessConverter >> visit: aSend asVisitor: aVisitor [
 	"This method assumes, and will only be called if, aSend's selector is appropriate for this object."
 	aVisitor visit: aSend target.
 	aVisitor resultStream nextPut: $[.
-	(self class isIntervalSend: aSend) ifTrue: [
-		(self intervalConverter: aSend args first) visit: aSend args first asVisitor: aVisitor.
-	] ifFalse: [
-		aVisitor visit: aSend args first.
-		self isZeroIndexed ifFalse: [ aVisitor resultStream nextPutAll: ' - 1' ]. ].
+	(aSend args first isKindOf: ASArray) ifTrue: [ "using isKindOf: because isASArray doesn't exist"
+		aSend args first statements
+			do: [ :statement | self visitInterior: statement asVisitor: aVisitor ]
+			separatedBy: [ aVisitor resultStream nextPutAll: ', ' ]
+	] ifFalse: [ self visitInterior: aSend args first asVisitor: aVisitor ].
 	aVisitor resultStream nextPut: $].
+]
+
+{ #category : 'visiting' }
+ZagArrayAccessConverter >> visitInterior: aSend asVisitor: aVisitor [
+	(aSend isASSend and: [ self class intervalSelectors includes: aSend selector ]) ifTrue: [
+		(self intervalConverter: aSend) visit: aSend asVisitor: aVisitor.
+	] ifFalse: [
+		aVisitor visit: aSend.
+		self isZeroIndexed ifFalse: [ aVisitor resultStream nextPutAll: ' - 1' ]. ].
 ]

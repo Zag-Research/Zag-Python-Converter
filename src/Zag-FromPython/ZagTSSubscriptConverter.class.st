@@ -30,8 +30,9 @@ ZagTSSubscriptConverter >> convertSlice: aZagTSNode [
 
 { #category : 'converting' }
 ZagTSSubscriptConverter >> convertToZagAST: aZagTSNode [
-	^ASSend
-		target: (aZagTSNode >> 1) asZagASTNode
-		selector: #zwAt:
-		args: ( aZagTSNode children allButFirst collect: #asZagASTNode ).
+	| args |
+	args := aZagTSNode childrenCount = 2
+		ifTrue: [ (aZagTSNode >> 2) asZagASTNode ]
+		ifFalse: [ aZagTSNode children allButFirst collect: #asZagASTNode as: ASArray ].
+	^ASSend target: (aZagTSNode >> 1) asZagASTNode selector: #zwAt: args: { args }.
 ]

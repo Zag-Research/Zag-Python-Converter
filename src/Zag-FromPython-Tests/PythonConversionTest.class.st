@@ -645,6 +645,18 @@ PythonConversionTest >> testLambda2Arg [
 ]
 
 { #category : 'tests - operators' }
+PythonConversionTest >> testMultiArrayAccess [
+	"Test converting a slice operation with a step"
+	self assertExpression: 'a[1:2, 3]' convertsTo: (ASSend
+		target: (ASRef variable: #a)
+		selector: #zwAt:
+		args: { ASArray statements: {
+			ASSend target: (ASLiteral literal: 1) selector: #toExclusive: args: { ASLiteral literal: 2 }.
+			ASLiteral literal: 3
+		} })
+]
+
+{ #category : 'tests - operators' }
 PythonConversionTest >> testMultiOperators [
 	"Ensure an expression with multiple operators can be converted to Zag properly."
 	| expected source |

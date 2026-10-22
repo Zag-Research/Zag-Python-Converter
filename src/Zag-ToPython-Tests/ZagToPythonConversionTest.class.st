@@ -807,6 +807,18 @@ ZagToPythonConversionTest >> testZWAtIntervalStep [
 ]
 
 { #category : 'tests - arrays' }
+ZagToPythonConversionTest >> testZWAtMultiple [
+	"Tests converting the zwAt: message with an interval argument."
+	self assert: (ASSend
+		target: (ASRef variable: #a)
+		selector: #zwAt:
+		args: { ASArray statements: {
+			ASSend target: (ASRef variable: #b) selector: #toExclusive: args: { ASRef variable: #c }.
+			ASRef variable: #d
+	} }) convertsTo: 'a[b:c, d]'.
+]
+
+{ #category : 'tests - arrays' }
 ZagToPythonConversionTest >> testZWCopyFromTo [
 	"Tests converting the zwCopyFrom:to: message."
 	self assert: (ASSend

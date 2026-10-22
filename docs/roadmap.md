@@ -113,7 +113,7 @@ This version is mainly about functions, classes and exceptions, but like v0.3, a
 - [X] §6.2.8 Dictionary displays
 - [X] §6.3.2 Subscriptions and slicings
 - [X] §6.3.2.1 Slicings
-- [ ] §6.3.2.2 Comma-separated subscripts
+- [X] §6.3.2.2 Comma-separated subscripts
 - [ ] §6.3.2.3 “Starred” subscriptions
 - [ ] §6.3.2.4 Formal subscription grammar
 - [ ] §6.3.3 Calls
