@@ -115,7 +115,7 @@ This version is mainly about functions, classes and exceptions, but like v0.3, a
 - [X] §6.3.2.1 Slicings
 - [X] §6.3.2.2 Comma-separated subscripts
 - [X] §6.3.2.3 “Starred” subscriptions
-- [ ] §6.3.2.4 Formal subscription grammar
+- [X] §6.3.2.4 Formal subscription grammar
 - [ ] §6.3.3 Calls
 - [ ] §7.2.2 Annotated assignment statements
 - [ ] §7.8 The raise statement

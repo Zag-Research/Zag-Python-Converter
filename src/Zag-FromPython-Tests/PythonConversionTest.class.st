@@ -646,7 +646,7 @@ PythonConversionTest >> testLambda2Arg [
 
 { #category : 'tests - operators' }
 PythonConversionTest >> testMultiArrayAccess [
-	"Test converting a slice operation with a step"
+	"Test converting a slice operation with multiple arguments"
 	self assertExpression: 'a[1:2, 3]' convertsTo: (ASSend
 		target: (ASRef variable: #a)
 		selector: #zwAt:
@@ -823,6 +823,17 @@ PythonConversionTest >> testSetLiteralNode [
 			statements := list collect: [ :each | ASLiteral literal: each ] as: ASArray.
 			ASSend target: statements selector: #asSet ].
 	self assertExpression: '{1, 2, 3}' convertsToAnyOf: expecteds.
+]
+
+{ #category : 'tests - operators' }
+PythonConversionTest >> testSingleTupleArrayAccess [
+	"Test converting a slice operation with a single-element tuple argument"
+	self assertExpression: 'a[1:2,]' convertsTo: (ASSend
+		target: (ASRef variable: #a)
+		selector: #zwAt:
+		args: { ASArray statements: {
+			ASSend target: (ASLiteral literal: 1) selector: #toExclusive: args: { ASLiteral literal: 2 }
+		} })
 ]
 
 { #category : 'tests - operators' }

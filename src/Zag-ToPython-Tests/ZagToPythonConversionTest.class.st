@@ -819,6 +819,17 @@ ZagToPythonConversionTest >> testZWAtMultiple [
 ]
 
 { #category : 'tests - arrays' }
+ZagToPythonConversionTest >> testZWAtSingleElementTuple [
+	"Tests converting the zwAt: message with an interval argument."
+	self assert: (ASSend
+		target: (ASRef variable: #a)
+		selector: #zwAt:
+		args: { ASArray statements: {
+			ASRef variable: #b
+	} }) convertsTo: 'a[b,]'.
+]
+
+{ #category : 'tests - arrays' }
 ZagToPythonConversionTest >> testZWAtSplat [
 	"Tests that the special zwAt: splat notation can be converted to Python."
 	self assert: (ASSend

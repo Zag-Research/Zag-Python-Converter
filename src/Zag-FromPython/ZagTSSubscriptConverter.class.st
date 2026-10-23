@@ -37,8 +37,9 @@ ZagTSSubscriptConverter >> convertSlice: aZagTSNode [
 
 { #category : 'converting' }
 ZagTSSubscriptConverter >> convertToZagAST: aZagTSNode [
-	| args |
-	args := aZagTSNode childrenCount = 2 ifTrue: [
+	| args hasSingleElementTuple |
+	hasSingleElementTuple := aZagTSNode sourcePart trimRight allButLast trimRight last = $,.
+	args := aZagTSNode childrenCount = 2 & hasSingleElementTuple not ifTrue: [
 		(aZagTSNode >> 2) asZagASTNode
 	] ifFalse: [
 		(aZagTSNode children anySatisfy: [ :c | c tsNodeType = #list_splat ]) ifTrue: [ | sends |

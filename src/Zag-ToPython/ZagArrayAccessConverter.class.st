@@ -66,13 +66,15 @@ ZagArrayAccessConverter >> visit: aSend asVisitor: aVisitor [
 	(aSend args first isKindOf: ASArray) ifTrue: [ "using isKindOf: because isASArray doesn't exist"
 		aSend args first statements
 			do: [ :statement | self visitInterior: statement asVisitor: aVisitor ]
-			separatedBy: [ aVisitor resultStream nextPutAll: ', ' ]
+			separatedBy: [ aVisitor resultStream nextPutAll: ', ' ].
+		aSend args first statements size = 1 ifTrue: [ aVisitor resultStream nextPut: $, ].
 	] ifFalse: [
 		(self class includesSplat: aSend args first)
 			ifTrue: [ aSend args first sends allButLast
 				do: [ :send | self visitSplatCascadePart: send asVisitor: aVisitor ]
-				separatedBy: [ aVisitor resultStream nextPutAll: ', ' ] ]
-			ifFalse: [ self visitInterior: aSend args first asVisitor: aVisitor ]
+				separatedBy: [ aVisitor resultStream nextPutAll: ', ' ].
+				aSend args first sends size = 2 ifTrue: [ aVisitor resultStream nextPut: $, ].
+			] ifFalse: [ self visitInterior: aSend args first asVisitor: aVisitor ]
 	].
 	aVisitor resultStream nextPut: $].
 ]
