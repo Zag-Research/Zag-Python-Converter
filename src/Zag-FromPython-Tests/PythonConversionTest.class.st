@@ -868,6 +868,19 @@ PythonConversionTest >> testSliceStep [
 	)
 ]
 
+{ #category : 'tests - operators' }
+PythonConversionTest >> testSplatArrayAccess [
+	"Test converting an array access with a splat"
+	self assertExpression: 'a[*b, c]' convertsTo: (ASSend
+		target: (ASRef variable: #a)
+		selector: #zwAt:
+		args: { ASCascade target: (ASSend target: (ASRef variable: #OrderedCollection) selector: #new) sends: {
+			ASSend selector: #addAll: args: { ASRef variable: #b }.
+			ASSend selector: #add: args: { ASRef variable: #c }.
+			ASSend selector: #yourself args: #()
+		} asOrderedCollection })
+]
+
 { #category : 'tests - literals' }
 PythonConversionTest >> testStringNode [
 	"Ensure a string literal can be converted to Zag properly."

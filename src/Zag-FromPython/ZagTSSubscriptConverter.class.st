@@ -17,6 +17,13 @@ ZagTSSubscriptConverter class >> putRules: aClass [
 ]
 
 { #category : 'converting' }
+ZagTSSubscriptConverter >> childToAddSend: aZagTSNode [
+	^aZagTSNode tsNodeType = #list_splat
+		ifTrue: [ ASSend selector: #addAll: args: { (aZagTSNode >> 1) asZagASTNode } ]
+		ifFalse: [ ASSend selector: #add: args: { aZagTSNode asZagASTNode } ]
+]
+
+{ #category : 'converting' }
 ZagTSSubscriptConverter >> convertSlice: aZagTSNode [
 	"Convert a subscript containing a slice to a Zag AST node."
 	| argumentParts selector |
@@ -31,8 +38,19 @@ ZagTSSubscriptConverter >> convertSlice: aZagTSNode [
 { #category : 'converting' }
 ZagTSSubscriptConverter >> convertToZagAST: aZagTSNode [
 	| args |
-	args := aZagTSNode childrenCount = 2
-		ifTrue: [ (aZagTSNode >> 2) asZagASTNode ]
-		ifFalse: [ aZagTSNode children allButFirst collect: #asZagASTNode as: ASArray ].
+	args := aZagTSNode childrenCount = 2 ifTrue: [
+		(aZagTSNode >> 2) asZagASTNode
+	] ifFalse: [
+		(aZagTSNode children anySatisfy: [ :c | c tsNodeType = #list_splat ]) ifTrue: [ | sends |
+			sends := aZagTSNode children allButFirst
+				collect: [ :c | self childToAddSend: c ] as: OrderedCollection.
+			sends add: (ASSend selector: #yourself args: #()).
+			ASCascade
+				target: (ASSend target: (ASRef variable: #OrderedCollection) selector: #new)
+				sends: sends.
+		] ifFalse: [
+			aZagTSNode children allButFirst collect: #asZagASTNode as: ASArray
+		]
+	].
 	^ASSend target: (aZagTSNode >> 1) asZagASTNode selector: #zwAt: args: { args }.
 ]

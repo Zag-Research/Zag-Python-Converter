@@ -12,6 +12,14 @@ Class {
 	#tag : 'Converter'
 }
 
+{ #category : 'testing' }
+ZagArrayAccessConverter class >> includesSplat: aZagAST [
+	"Returns true if the provided AST is an ASCascade that needs to be converted to a multi-access with a splat expression."
+	(aZagAST isKindOf: ASCascade) ifFalse: [ ^false ].
+	aZagAST target = (ASSend target: (ASRef variable: #OrderedCollection) selector: #new) ifFalse: [ ^false ].
+	^aZagAST sends allSatisfy: [ :send | #(#add: #addAll: #yourself) includes: send selector ].
+]
+
 { #category : 'constants' }
 ZagArrayAccessConverter class >> intervalSelectors [
 	"A set of selectors that create intervals, which should create slices if they are an access's argument."
@@ -59,7 +67,13 @@ ZagArrayAccessConverter >> visit: aSend asVisitor: aVisitor [
 		aSend args first statements
 			do: [ :statement | self visitInterior: statement asVisitor: aVisitor ]
 			separatedBy: [ aVisitor resultStream nextPutAll: ', ' ]
-	] ifFalse: [ self visitInterior: aSend args first asVisitor: aVisitor ].
+	] ifFalse: [
+		(self class includesSplat: aSend args first)
+			ifTrue: [ aSend args first sends allButLast
+				do: [ :send | self visitSplatCascadePart: send asVisitor: aVisitor ]
+				separatedBy: [ aVisitor resultStream nextPutAll: ', ' ] ]
+			ifFalse: [ self visitInterior: aSend args first asVisitor: aVisitor ]
+	].
 	aVisitor resultStream nextPut: $].
 ]
 
@@ -70,4 +84,11 @@ ZagArrayAccessConverter >> visitInterior: aSend asVisitor: aVisitor [
 	] ifFalse: [
 		aVisitor visit: aSend.
 		self isZeroIndexed ifFalse: [ aVisitor resultStream nextPutAll: ' - 1' ]. ].
+]
+
+{ #category : 'visiting' }
+ZagArrayAccessConverter >> visitSplatCascadePart: aSend asVisitor: aVisitor [
+	"Visit a part of a splattable cascade expression."
+	aSend selector = #addAll: ifTrue: [ aVisitor resultStream nextPut: $* ].
+	self visitInterior: aSend args first asVisitor: aVisitor.
 ]
