@@ -324,6 +324,16 @@ PythonConversionTest >> testComplexNumberNode [
 	self assertExpression: '0.5j' convertsTo: (ASSend target: (ASLiteral literal: 0.5) selector: #i).
 ]
 
+{ #category : 'tests - literals' }
+PythonConversionTest >> testConcatenatedStringLiterals [
+	"Test that concatenated string literals can be printed."
+	self assertExpression: '"a" "b" "c" "d"' convertsTo: (ASSend target: (
+		ASSend target: (
+			ASSend target: (ASLiteral literal: 'a') selector: #, args: { ASLiteral literal: 'b' }
+		) selector: #, args: { ASLiteral literal: 'c' })
+		selector: #, args: { ASLiteral literal: 'd' })
+]
+
 { #category : 'tests - assignment' }
 PythonConversionTest >> testDeleteSlice [
 	"tests using the del statement on slices"
