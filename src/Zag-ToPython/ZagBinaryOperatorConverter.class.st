@@ -47,6 +47,8 @@ ZagBinaryOperatorConverter class >> selectorMap [
 	"Returns a dictionary mapping Smalltalk operands to Python."
 	^{ 
 		#+ -> #+.
+		#+, -> #+.
+		#, -> #+.
 		#- -> #-.
 		#* -> #*.
 		#/ -> #/.

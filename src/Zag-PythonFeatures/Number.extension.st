@@ -1,6 +1,12 @@
 Extension { #name : 'Number' }
 
 { #category : '*Zag-PythonFeatures' }
+Number >> +, aNumber [
+	"Adds numbers and concatenates collections."
+	^self + aNumber
+]
+
+{ #category : '*Zag-PythonFeatures' }
 Number >> i [
 	"Returns me times i, as a complex number."
 	"This is useful for creating complex literals like 1 + 2 i."

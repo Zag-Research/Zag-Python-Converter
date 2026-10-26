@@ -56,6 +56,12 @@ ComplexNumber >> + arg [
 ]
 
 { #category : 'arithmetic' }
+ComplexNumber >> +, aNumber [
+	"Adds numbers and concatenates collections"
+	^self + aNumber
+]
+
+{ #category : 'arithmetic' }
 ComplexNumber >> - arg [
 	^arg isComplexNumber
 		ifTrue: [ self class real: self realPart - arg realPart imag: self imaginaryPart - arg imaginaryPart ]

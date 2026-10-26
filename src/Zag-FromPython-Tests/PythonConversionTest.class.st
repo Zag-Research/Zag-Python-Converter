@@ -52,7 +52,7 @@ PythonConversionTest >> testAddition [
 	source := 'a + b'.
 	expected := ASSend
 		target: (ASRef variable: #a)
-		selector: #+
+		selector: #+,
 		args: {ASRef variable: #b}.
 	self assertExpression: source convertsTo: expected.
 ]
@@ -111,7 +111,7 @@ PythonConversionTest >> testArrayAssignPlus [
 				selector: #zwAt:
 				args: { ASRef variable: #b }
 			)
-			selector: #+
+			selector: #+,
 			args: { ASRef variable: #c }
 		}.
 	self assertExpression: source convertsTo: expected.
@@ -186,7 +186,7 @@ PythonConversionTest >> testAssignPlus [
 		variable: (ASRef variable: #a)
 		expression: (ASSend
 			target: (ASRef variable: #a)
-			selector: #+
+			selector: #+,
 			args: { ASRef variable: #b }).
 	self assertExpression: source convertsTo: expected withLocals: #(#a).
 ]
@@ -420,7 +420,7 @@ PythonConversionTest >> testFor [
 	expected := ASSend target: (ASRef variable: #c) selector: #do: args: {
 		ASBlockNode arguments: { ASRef variable: #i } locals: #() body: {
 			ASAssign variable: (ASRef variable: #sum) expression: (
-				ASSend target: (ASRef variable: #sum) selector: #+ args: { ASRef variable: #i })}}.
+				ASSend target: (ASRef variable: #sum) selector: #+, args: { ASRef variable: #i })}}.
 	self assertExpression: source convertsTo: expected.
 ]
 
@@ -639,7 +639,7 @@ PythonConversionTest >> testLambda1Arg [
 	expected := ASBlockNode
 		arguments: { ASRef variable: #x }
 		locals: #()
-		body: { ASSend target: (ASRef variable: #x) selector: #+ args: { ASLiteral literal: 1 }}.
+		body: { ASSend target: (ASRef variable: #x) selector: #+, args: { ASLiteral literal: 1 }}.
 	self assertExpression: source convertsTo: expected.
 ]
 
@@ -673,7 +673,7 @@ PythonConversionTest >> testMultiOperators [
 	source := 'a + b * c'.
 	expected := ASSend
 		target: (ASRef variable: #a)
-		selector: #+
+		selector: #+,
 		args: {ASSend
 			target: (ASRef variable: #b)
 			selector: #*

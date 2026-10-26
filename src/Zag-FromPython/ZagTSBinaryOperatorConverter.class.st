@@ -51,10 +51,10 @@ ZagTSBinaryOperatorConverter class >> pythonToZagOperatorMap [
 	"Returns a dictionary mapping Python operators to Zag selectors.  Excludes special cases"
 	| map |
 	map := {
-		#** -> #raisedTo:. #'^' -> #bitXor:. #<< -> #bitShift:.
+		#+ -> #+,. #** -> #raisedTo:. #'^' -> #bitXor:. #<< -> #bitShift:.
 		#== -> #=. #!= -> #~=. #is -> #==. #'is not' -> #~~.
 	} asDictionary.
-	#(#+ #- #* #/ #// #% #& #| #< #<= #> #>=) do: [ :each | map at: each put: each ].
+	#(#- #* #/ #// #% #& #| #< #<= #> #>=) do: [ :each | map at: each put: each ].
 	^map
 ]
 

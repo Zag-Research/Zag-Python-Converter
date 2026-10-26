@@ -207,6 +207,14 @@ ZagToPythonConversionTest >> testComplexNumberLiteral [
 	self assert: ast convertsTo: expected.
 ]
 
+{ #category : 'tests - operations' }
+ZagToPythonConversionTest >> testConcatenation [
+	"Tests converting a simple string concatenation expression."
+	| ast |
+	ast := ASSend target: (ASLiteral literal: 'a') selector: #, args: { ASLiteral literal: 'b' }.
+	self assert: ast convertsToAnyOf: #('"a" + "b"' '"a" "b"').
+]
+
 { #category : 'tests - arrays' }
 ZagToPythonConversionTest >> testCopyFromTo [
 	"Tests converting the copyFrom:To: message."

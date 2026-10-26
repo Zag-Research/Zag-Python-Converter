@@ -103,9 +103,9 @@ This version is mainly about functions, classes and exceptions, but like v0.3, a
 - [ ] §4.3 Exceptions
 - [ ] §6.2.2 Identifiers (Names)
 - [ ] §6.2.2.1 Private name mangling
-- [ ] §6.2.3 Literals
-- [ ] §6.2.3.1 Literals and object identity
-- [ ] §6.2.3.2 String literal concatenation
+- [X] §6.2.3 Literals
+- [X] §6.2.3.1 Literals and object identity
+- [X] §6.2.3.2 String literal concatenation
 - [X] §6.2.4 Parenthesized forms
 - [X] §6.2.5 Displays for lists, sets and dictionaries
 - [X] §6.2.6 List displays

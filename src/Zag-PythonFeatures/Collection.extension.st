@@ -1,6 +1,12 @@
 Extension { #name : 'Collection' }
 
 { #category : '*Zag-PythonFeatures' }
+Collection >> +, aCollection [
+	"Adds numbers, and concatenates collections."
+	^self , aCollection
+]
+
+{ #category : '*Zag-PythonFeatures' }
 Collection >> switch [
 	"Returns the value of the first element with a true key.  Returns nil if no key is true."
 	"Functions like a switch/case statement in other languages."
