@@ -579,6 +579,11 @@ ZagToPythonConversionTest >> testSetLiteral [
 	self assert: source2 convertsToAnyOf: expecteds.
 ]
 
+{ #category : 'tests - control flow' }
+ZagToPythonConversionTest >> testSignal [
+	self assert: (ASSend target: (ASRef variable: #x) selector: #signal) convertsTo: 'raise x'
+]
+
 { #category : 'tests - literals' }
 ZagToPythonConversionTest >> testStringLiteral [
 	"Test that string literals convert properly."

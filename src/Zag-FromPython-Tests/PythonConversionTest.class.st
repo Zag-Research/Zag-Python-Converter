@@ -774,6 +774,12 @@ PythonConversionTest >> testPrintCall [
 	self assertExpression: source convertsTo: expected.
 ]
 
+{ #category : 'tests - control flow' }
+PythonConversionTest >> testRaise [
+	self assertExpression: 'raise x' convertsTo: (
+		ASSend target: (ASRef variable: #x) selector: #signal)
+]
+
 { #category : 'tests - functions' }
 PythonConversionTest >> testRangeCall1Arg [
 	| source expected |
