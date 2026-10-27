@@ -931,6 +931,20 @@ PythonConversionTest >> testStringTypeErrors [
 		do: [ :each | self should: [ ZagTSStringConverter stringType: each ] raise: Error ].
 ]
 
+{ #category : 'tests - control flow' }
+PythonConversionTest >> testTryExcept [
+	self assertExpression: 'try:
+	x = 1
+except:
+	x = 2' convertsTo: (ASSend
+		target: (ASBlockNode locals: #() body: {
+			ASAssign variable: (ASRef variable: #x) expression: (ASLiteral literal: 1)
+		}) selector: #onErrorDo: 
+		args: { (ASBlockNode locals: #() body: {
+			ASAssign variable: (ASRef variable: #x) expression: (ASLiteral literal: 2)
+		}) })
+]
+
 { #category : 'tests - literals' }
 PythonConversionTest >> testTupleLiteralNode [
 	"Tests converting tuple literals"

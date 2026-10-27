@@ -546,6 +546,21 @@ ZagToPythonConversionTest >> testNotImplemented [
 	self assert: (ASLiteral literal: NotImplemented) convertsTo: 'NotImplemented'.
 ]
 
+{ #category : 'tests - control flow' }
+ZagToPythonConversionTest >> testOnErrorDo [
+	self assert: (ASSend
+		target: (ASBlockNode locals: #() body: {
+			ASAssign variable: (ASRef variable: #x) expression: (ASLiteral literal: 1) })
+		selector: #onErrorDo:
+		args: { (ASBlockNode locals: #() body: {
+			ASAssign variable: (ASRef variable: #x) expression: (ASLiteral literal: 2) }) })
+	convertsTo: 'try:
+	x = 1
+except:
+	x = 2
+'
+]
+
 { #category : 'tests - basic expressions' }
 ZagToPythonConversionTest >> testPrint [
 	"Ensures the print statement can be converted to."

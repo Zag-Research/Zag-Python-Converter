@@ -118,10 +118,10 @@ This version is mainly about functions, classes and exceptions, but like v0.3, a
 - [X] §6.3.2.4 Formal subscription grammar
 - [ ] §6.3.3 Calls
 - [ ] §7.2.2 Annotated assignment statements
-- [ ] §7.8 The raise statement
+- [X] §7.8 The raise statement
 - [ ] §7.9 The break statement
 - [ ] §7.10 The continue statement
-- [ ] §8.4 The try statement
+- [X] §8.4 The try statement
 - [ ] §8.4.1 except clause
 - [ ] §8.4.2 except* clause
 - [ ] §8.4.3 else clause
