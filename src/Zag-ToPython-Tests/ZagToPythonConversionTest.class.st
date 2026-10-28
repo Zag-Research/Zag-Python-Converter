@@ -547,6 +547,21 @@ ZagToPythonConversionTest >> testNotImplemented [
 ]
 
 { #category : 'tests - control flow' }
+ZagToPythonConversionTest >> testOnDo [
+	self assert: (ASSend
+		target: (ASBlockNode locals: #() body: {
+			ASAssign variable: (ASRef variable: #x) expression: (ASLiteral literal: 1) })
+		selector: #on:do:
+		args: { ASRef variable: #Exception. ASBlockNode arguments: { ASRef variable: #e } locals: #() body: {
+			ASAssign variable: (ASRef variable: #x) expression: (ASLiteral literal: 2) } })
+	convertsTo: 'try:
+	x = 1
+except Exception as e:
+	x = 2
+'
+]
+
+{ #category : 'tests - control flow' }
 ZagToPythonConversionTest >> testOnErrorDo [
 	self assert: (ASSend
 		target: (ASBlockNode locals: #() body: {

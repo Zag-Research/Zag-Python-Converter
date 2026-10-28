@@ -945,6 +945,20 @@ except:
 		}) })
 ]
 
+{ #category : 'tests - control flow' }
+PythonConversionTest >> testTryExceptAs [
+	self assertExpression: 'try:
+	x = 1
+except Exception as e:
+	x = 2' convertsTo: (ASSend
+		target: (ASBlockNode locals: #() body: {
+			ASAssign variable: (ASRef variable: #x) expression: (ASLiteral literal: 1)
+		}) selector: #on:do:
+		args: { ASRef variable: #Exception. ASBlockNode arguments: { ASRef variable: #e } locals: #() body: {
+			ASAssign variable: (ASRef variable: #x) expression: (ASLiteral literal: 2)
+		} })
+]
+
 { #category : 'tests - literals' }
 PythonConversionTest >> testTupleLiteralNode [
 	"Tests converting tuple literals"

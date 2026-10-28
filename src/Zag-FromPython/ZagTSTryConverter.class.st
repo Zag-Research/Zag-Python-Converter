@@ -18,8 +18,16 @@ ZagTSTryConverter class >> putRules: aClass [
 
 { #category : 'converting' }
 ZagTSTryConverter >> convertToZagAST: aZagTSNode [
-	^ASSend
-		target: (aZagTSNode >> 1) asZagASTNode
-		selector: #onErrorDo:
-		args: { (aZagTSNode >> 2 >> 1) asZagASTNode }
+	(aZagTSNode >> 2) childrenCount > 1
+		ifFalse: [ ^ASSend
+			target: (aZagTSNode >> 1) asZagASTNode
+			selector: #onErrorDo:
+			args: { (aZagTSNode >> 2 >> 1) asZagASTNode } ]
+		ifTrue: [ ^ASSend
+			target: (aZagTSNode >> 1) asZagASTNode
+			selector: #on:do:
+			args: { (aZagTSNode >> 2 >> 1 >> 1) asZagASTNode.
+				ASBlockNode
+					arguments: { (aZagTSNode >> 2 >> 1 >> 2 >> 1) asZagASTNode } locals: #()
+					body: (aZagTSNode >> 2 >> 2) asZagASTNode body } ]
 ]
