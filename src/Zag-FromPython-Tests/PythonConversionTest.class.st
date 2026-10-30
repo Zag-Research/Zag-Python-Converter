@@ -959,6 +959,32 @@ except Exception as e:
 		} })
 ]
 
+{ #category : 'tests - control flow' }
+PythonConversionTest >> testTryMultipleExcept [
+	| source expected assign exceptionRef switchPart |
+	source := 'try:
+	x = 1
+except Exception as e:
+	x = 2
+except Error as e:
+	x = 3'.
+	assign := [ :val | ASAssign variable: (ASRef variable: #x) expression: (ASLiteral literal: val) ].
+	exceptionRef := ASRef variable: ZagTSTryConverter exceptSwitchVariableName.
+	switchPart := [ :class :val | ASSend
+		target: (ASSend target: exceptionRef selector: #isKindOf: args: { ASRef variable: class })
+		selector: #->
+		args: { ASBlockNode arguments: { ASRef variable: #e } locals: #() body: { assign value: val }} ].
+	expected := ASSend target: (
+		ASBlockNode locals: #() body: { assign value: 1 }
+	) selector: #onErrorDo: args: { ASBlockNode arguments: { exceptionRef } locals: #() body: { 
+		ASSend target: (ASArray statements: {
+			switchPart value: #Exception value: 2.
+			switchPart value: #Error value: 3.
+		}) selector: #switch
+	} }.
+	self assertExpression: source convertsTo: expected.
+]
+
 { #category : 'tests - literals' }
 PythonConversionTest >> testTupleLiteralNode [
 	"Tests converting tuple literals"

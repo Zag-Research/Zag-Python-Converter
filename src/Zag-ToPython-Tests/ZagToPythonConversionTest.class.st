@@ -741,6 +741,34 @@ ZagToPythonConversionTest >> testTripleSubtraction2 [
 	self assert: ast convertsTo: expected.
 ]
 
+{ #category : 'tests - control flow' }
+ZagToPythonConversionTest >> testTryMultipleExcept [
+	"Tests that an appropriate onErrorDo: message can be converted to try with multiple excepts"
+	| ast expected assign exceptionRef switchPart |
+	assign := [ :val | ASAssign variable: (ASRef variable: #x) expression: (ASLiteral literal: val) ].
+	exceptionRef := ASRef variable: ZagTSTryConverter exceptSwitchVariableName.
+	switchPart := [ :class :val | ASSend
+		target: (ASSend target: exceptionRef selector: #isKindOf: args: { ASRef variable: class })
+		selector: #->
+		args: { ASBlockNode arguments: { ASRef variable: #e } locals: #() body: { assign value: val }} ].
+	ast := ASSend target: (
+		ASBlockNode locals: #() body: { assign value: 1 }
+	) selector: #onErrorDo: args: { ASBlockNode arguments: { exceptionRef } locals: #() body: { 
+		ASSend target: (ASArray statements: {
+			switchPart value: #Exception value: 2.
+			switchPart value: #Error value: 3.
+		}) selector: #switch
+	} }.
+	expected := 'try:
+	x = 1
+except Exception as e:
+	x = 2
+except Error as e:
+	x = 3
+'.
+	self assert: ast convertsTo: expected.
+]
+
 { #category : 'tests - arrays' }
 ZagToPythonConversionTest >> testTupleLiteral [
 	self assert:

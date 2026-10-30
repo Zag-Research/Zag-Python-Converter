@@ -122,7 +122,7 @@ This version is mainly about functions, classes and exceptions, but like v0.3, a
 - [ ] §7.9 The break statement
 - [ ] §7.10 The continue statement
 - [X] §8.4 The try statement
-- [ ] §8.4.1 except clause
+- [X] §8.4.1 except clause
 - [ ] §8.4.2 except* clause
 - [ ] §8.4.3 else clause
 - [ ] §8.4.4 finally clause
