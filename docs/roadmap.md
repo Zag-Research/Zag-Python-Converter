@@ -100,7 +100,7 @@ This version is mainly about functions, classes and exceptions, but like v0.3, a
 - [ ] §2.5.7 f-strings
 - [ ] §2.5.8 t-strings
 - [ ] §2.5.9 Formal grammar for f-strings
-- [ ] §4.3 Exceptions
+- [X] §4.3 Exceptions
 - [ ] §6.2.2 Identifiers (Names)
 - [ ] §6.2.2.1 Private name mangling
 - [X] §6.2.3 Literals

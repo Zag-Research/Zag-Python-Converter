@@ -62,6 +62,8 @@ ZagToPythonVisitor class >> specialLiterals [
 		nil -> 'None'.
 		true -> 'True'.
 		false -> 'False'.
+		Exception -> 'BaseException'.
+		Error -> 'Exception'.
 	} asDictionary
 ]
 

@@ -16,9 +16,24 @@ ZagTSIdentifierConverter class >> putRules: aClass [
 	aClass at: #identifier putRule: self new
 ]
 
+{ #category : 'constants' }
+ZagTSIdentifierConverter class >> pythonBuiltinIdentifiers [
+	"A dictionary mapping symbols of Python builtin identifiers to their Zag equivalents."
+	^{
+		#Ellipsis -> Ellipsis.
+		#NotImplemented -> NotImplemented.
+		#BaseException -> Exception.
+		#Exception -> Error.
+		#ArithmeticError -> ArithmeticError.
+	} asDictionary
+]
+
 { #category : 'converting' }
 ZagTSIdentifierConverter >> convertToZagAST: aZagTSNode [
-	aZagTSNode sourcePart asSymbol = #NotImplemented ifTrue: [ ^ASLiteral literal: NotImplemented ].
-	aZagTSNode sourcePart asSymbol = #Ellipsis ifTrue: [ ^ASLiteral literal: Ellipsis ].
-	^ASRef variable: aZagTSNode sourcePart asSymbol.
+	| identifier |
+	identifier := aZagTSNode sourcePart asSymbol.
+	^self class pythonBuiltinIdentifiers
+		at: identifier
+		ifPresent: [ :object | ASLiteral literal: object ]
+		ifAbsent: [ ASRef variable: identifier ].
 ]

@@ -954,7 +954,7 @@ except Exception as e:
 		target: (ASBlockNode locals: #() body: {
 			ASAssign variable: (ASRef variable: #x) expression: (ASLiteral literal: 1)
 		}) selector: #on:do:
-		args: { ASRef variable: #Exception. ASBlockNode arguments: { ASRef variable: #e } locals: #() body: {
+		args: { ASLiteral literal: Error. ASBlockNode arguments: { ASRef variable: #e } locals: #() body: {
 			ASAssign variable: (ASRef variable: #x) expression: (ASLiteral literal: 2)
 		} })
 ]
@@ -966,20 +966,20 @@ PythonConversionTest >> testTryMultipleExcept [
 	x = 1
 except Exception as e:
 	x = 2
-except Error as e:
+except ArithmeticError as e:
 	x = 3'.
 	assign := [ :val | ASAssign variable: (ASRef variable: #x) expression: (ASLiteral literal: val) ].
 	exceptionRef := ASRef variable: ZagTSTryConverter exceptSwitchVariableName.
 	switchPart := [ :class :val | ASSend
-		target: (ASSend target: exceptionRef selector: #isKindOf: args: { ASRef variable: class })
+		target: (ASSend target: exceptionRef selector: #isKindOf: args: { ASLiteral literal: class })
 		selector: #->
 		args: { ASBlockNode arguments: { ASRef variable: #e } locals: #() body: { assign value: val }} ].
 	expected := ASSend target: (
 		ASBlockNode locals: #() body: { assign value: 1 }
 	) selector: #onErrorDo: args: { ASBlockNode arguments: { exceptionRef } locals: #() body: { 
 		ASSend target: (ASArray statements: {
-			switchPart value: #Exception value: 2.
-			switchPart value: #Error value: 3.
+			switchPart value: Error value: 2.
+			switchPart value: ArithmeticError value: 3.
 		}) selector: #switch
 	} }.
 	self assertExpression: source convertsTo: expected.
