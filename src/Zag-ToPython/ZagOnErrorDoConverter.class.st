@@ -5,7 +5,8 @@ Class {
 	#name : 'ZagOnErrorDoConverter',
 	#superclass : 'ZagSendConverter',
 	#instVars : [
-		'hasAs'
+		'hasAs',
+		'hasElse'
 	],
 	#category : 'Zag-ToPython-Manifest',
 	#package : 'Zag-ToPython',
@@ -37,8 +38,10 @@ ZagOnErrorDoConverter class >> isExceptSwitchClause: aSend [
 ZagOnErrorDoConverter class >> putRules: aClass [
 	"Add all of my conversion rules to aClass using its at:putRule: message."
 	"This message will be called once for each subclass of ZagSendConverter on initialization."
-	aClass at: #onErrorDo: putRule: (self new hasAs: false; yourself).
-	aClass at: #on:do: putRule: (self new hasAs: true; yourself).
+	aClass at: #onErrorDo: putRule: (self new hasAs: false; hasElse: false; yourself).
+	aClass at: #on:do: putRule: (self new hasAs: true; hasElse: false; yourself).
+	aClass at: #onErrorDo:else: putRule: (self new hasAs: false; hasElse: true; yourself).
+	aClass at: #on:do:else: putRule: (self new hasAs: true; hasElse: true; yourself).
 ]
 
 { #category : 'accessing' }
@@ -53,22 +56,48 @@ ZagOnErrorDoConverter >> hasAs: anObject [
 	hasAs := anObject
 ]
 
+{ #category : 'accessing' }
+ZagOnErrorDoConverter >> hasElse [
+
+	^ hasElse
+]
+
+{ #category : 'accessing' }
+ZagOnErrorDoConverter >> hasElse: anObject [
+
+	hasElse := anObject
+]
+
 { #category : 'visiting' }
 ZagOnErrorDoConverter >> visit: aSend asVisitor: aVisitor [
 	"Converts aSend to Python, outputting the code to aVisitor.  You may call its visiting helpers."
 	"This method assumes, and will only be called if, aSend's selector is appropriate for this object."
+	self hasElse ifTrue: [
+		self visit: aSend withArgs: aSend args allButLast asVisitor: aVisitor.
+		aVisitor resultStream nextPutAll: 'else:'; nextPut: Character cr.
+		aVisitor addIndent: 1.
+		aVisitor visitStatements: aSend args last.
+		aVisitor addIndent: -1.
+	] ifFalse: [ 
+		self visit: aSend withArgs: aSend args asVisitor: aVisitor.
+	]
+]
+
+{ #category : 'visiting' }
+ZagOnErrorDoConverter >> visit: aSend withArgs: args asVisitor: aVisitor [
+	"Like visit:asVisitor: but only uses the provided arguments for the send."
 	aVisitor resultStream nextPutAll: 'try:'; nextPut: Character cr.
 	aVisitor addIndent: 1; visitStatements: aSend target; addIndent: -1.
 	self hasAs ifTrue: [
 		self
-			visitExceptType: aSend args first
-			name: aSend args second arguments first
-			body: aSend args second
+			visitExceptType: args first
+			name: args second arguments first
+			body: args second
 			asVisitor: aVisitor
 	] ifFalse: [
-		(self class canConvertToMultipleExcept: aSend args first )
-			ifTrue: [ self visitMultiExcept: aSend args first asVisitor: aVisitor ]
-			ifFalse: [ self visitExceptType: nil name: nil body: aSend args first asVisitor: aVisitor ]
+		(self class canConvertToMultipleExcept: args first )
+			ifTrue: [ self visitMultiExcept: args first asVisitor: aVisitor ]
+			ifFalse: [ self visitExceptType: nil name: nil body: args first asVisitor: aVisitor ]
 	]
 ]
 

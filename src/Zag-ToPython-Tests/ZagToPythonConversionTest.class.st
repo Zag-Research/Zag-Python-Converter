@@ -562,6 +562,25 @@ except Exception as e:
 ]
 
 { #category : 'tests - control flow' }
+ZagToPythonConversionTest >> testOnDoElse [
+	self assert: (ASSend
+		target: (ASBlockNode locals: #() body: {
+			ASAssign variable: (ASRef variable: #x) expression: (ASLiteral literal: 1)
+		}) selector: #on:do:else:
+		args: { ASLiteral literal: Error. ASBlockNode arguments: { ASRef variable: #e } locals: #() body: {
+			ASAssign variable: (ASRef variable: #x) expression: (ASLiteral literal: 2)
+		}. ASBlockNode locals: #() body: {
+			ASAssign variable: (ASRef variable: #x) expression: (ASLiteral literal: 3)
+		}}) convertsTo: 'try:
+	x = 1
+except Exception as e:
+	x = 2
+else:
+	x = 3
+' 
+]
+
+{ #category : 'tests - control flow' }
 ZagToPythonConversionTest >> testOnErrorDo [
 	self assert: (ASSend
 		target: (ASBlockNode locals: #() body: {
@@ -574,6 +593,25 @@ ZagToPythonConversionTest >> testOnErrorDo [
 except:
 	x = 2
 '
+]
+
+{ #category : 'tests - control flow' }
+ZagToPythonConversionTest >> testOnErrorDoElse [
+	self assert: (ASSend
+		target: (ASBlockNode locals: #() body: {
+			ASAssign variable: (ASRef variable: #x) expression: (ASLiteral literal: 1)
+		}) selector: #onErrorDo:else:
+		args: { ASBlockNode locals: #() body: {
+			ASAssign variable: (ASRef variable: #x) expression: (ASLiteral literal: 2)
+		}. ASBlockNode locals: #() body: {
+			ASAssign variable: (ASRef variable: #x) expression: (ASLiteral literal: 3)
+		}}) convertsTo: 'try:
+	x = 1
+except:
+	x = 2
+else:
+	x = 3
+' 
 ]
 
 { #category : 'tests - basic expressions' }

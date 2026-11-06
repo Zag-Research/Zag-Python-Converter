@@ -960,6 +960,42 @@ except Exception as e:
 ]
 
 { #category : 'tests - control flow' }
+PythonConversionTest >> testTryExceptAsElse [
+	self assertExpression: 'try:
+	x = 1
+except Exception as e:
+	x = 2
+else:
+	x = 3' convertsTo: (ASSend
+		target: (ASBlockNode locals: #() body: {
+			ASAssign variable: (ASRef variable: #x) expression: (ASLiteral literal: 1)
+		}) selector: #on:do:else:
+		args: { ASLiteral literal: Error. ASBlockNode arguments: { ASRef variable: #e } locals: #() body: {
+			ASAssign variable: (ASRef variable: #x) expression: (ASLiteral literal: 2)
+		}. ASBlockNode arguments: #() locals: #() body: {
+			ASAssign variable: (ASRef variable: #x) expression: (ASLiteral literal: 3)
+		} })
+]
+
+{ #category : 'tests - control flow' }
+PythonConversionTest >> testTryExceptElse [
+	self assertExpression: 'try:
+	x = 1
+except:
+	x = 2
+else:
+	x = 3' convertsTo: (ASSend
+		target: (ASBlockNode locals: #() body: {
+			ASAssign variable: (ASRef variable: #x) expression: (ASLiteral literal: 1)
+		}) selector: #onErrorDo:else:
+		args: { ASBlockNode locals: #() body: {
+			ASAssign variable: (ASRef variable: #x) expression: (ASLiteral literal: 2)
+		}. ASBlockNode locals: #() body: {
+			ASAssign variable: (ASRef variable: #x) expression: (ASLiteral literal: 3)
+		}})
+]
+
+{ #category : 'tests - control flow' }
 PythonConversionTest >> testTryMultipleExcept [
 	| source expected assign exceptionRef switchPart |
 	source := 'try:

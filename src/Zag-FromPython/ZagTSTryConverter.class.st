@@ -24,10 +24,31 @@ ZagTSTryConverter class >> putRules: aClass [
 ]
 
 { #category : 'converting' }
+ZagTSTryConverter >> convertElse: aZagTSNode withChildren: children [
+	"Converts a try statement with an else clause at the end,"
+	"using the provided children instead of the ts node's."
+	| without_else |
+	without_else := self convertToZagAST: aZagTSNode withChildren: children allButLast.
+	^without_else
+		selector: (without_else selector asString,'else:') asSymbol
+		args: without_else args,{ (children last >> 1) asZagASTNode };
+		yourself.
+]
+
+{ #category : 'converting' }
 ZagTSTryConverter >> convertToZagAST: aZagTSNode [
-	(aZagTSNode childrenCount = 2 and: [ (aZagTSNode >> 2) tsNodeType = #except_clause ])
+	^self convertToZagAST: aZagTSNode withChildren: aZagTSNode children
+]
+
+{ #category : 'converting' }
+ZagTSTryConverter >> convertToZagAST: aZagTSNode withChildren: children [
+	"Convert a try statement, but using the provided children instead of the actual children."
+	"This is done so else and finally clauses can be handled recursively."
+	children last tsNodeType = #else_clause
+		ifTrue: [ ^self convertElse: aZagTSNode withChildren: children ].
+	(children size = 2 and: [ children second tsNodeType = #except_clause ])
 		ifTrue: [ ^self trySingleExceptToZagAST: aZagTSNode ].
-	(aZagTSNode children allButFirst allSatisfy: [ :c | c tsNodeType = #except_clause ])
+	(children allButFirst allSatisfy: [ :c | c tsNodeType = #except_clause ])
 		ifTrue: [ ^self tryExceptToZagSwitch: aZagTSNode ].
 	self notYetImplemented.
 ]

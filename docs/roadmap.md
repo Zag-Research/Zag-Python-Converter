@@ -124,7 +124,7 @@ This version is mainly about functions, classes and exceptions, but like v0.3, a
 - [X] §8.4 The try statement
 - [X] §8.4.1 except clause
 - [ ] §8.4.2 except* clause
-- [ ] §8.4.3 else clause
+- [X] §8.4.3 else clause
 - [ ] §8.4.4 finally clause
 - [ ] §8.5 The with statement
 - [ ] §8.6 The match statement
