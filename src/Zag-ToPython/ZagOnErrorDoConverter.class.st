@@ -68,6 +68,12 @@ ZagOnErrorDoConverter >> hasElse: anObject [
 	hasElse := anObject
 ]
 
+{ #category : 'testing' }
+ZagOnErrorDoConverter >> isTryConverter [
+	"Returns true if I convert to a try statement."
+	^true
+]
+
 { #category : 'visiting' }
 ZagOnErrorDoConverter >> visit: aSend asVisitor: aVisitor [
 	"Converts aSend to Python, outputting the code to aVisitor.  You may call its visiting helpers."

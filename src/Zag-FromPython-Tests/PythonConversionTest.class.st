@@ -996,6 +996,38 @@ else:
 ]
 
 { #category : 'tests - control flow' }
+PythonConversionTest >> testTryExceptFinally [
+	self assertExpression: 'try:
+	x = 1
+except:
+	x = 2
+finally:
+	x = 3' convertsTo: (ASSend target: (ASSend
+		target: (ASBlockNode locals: #() body: {
+			ASAssign variable: (ASRef variable: #x) expression: (ASLiteral literal: 1)
+		}) selector: #onErrorDo: 
+		args: { (ASBlockNode locals: #() body: {
+			ASAssign variable: (ASRef variable: #x) expression: (ASLiteral literal: 2)
+		}) }) selector: #ensure: args: { ASBlockNode locals: #() body: {
+			ASAssign variable: (ASRef variable: #x) expression: (ASLiteral literal: 3)
+		} })
+]
+
+{ #category : 'tests - control flow' }
+PythonConversionTest >> testTryFinally [
+	self assertExpression: 'try:
+	x = 1
+finally:
+	x = 2' convertsTo: (ASSend
+		target: (ASBlockNode locals: #() body: {
+			ASAssign variable: (ASRef variable: #x) expression: (ASLiteral literal: 1)
+		}) selector: #ensure: 
+		args: { (ASBlockNode locals: #() body: {
+			ASAssign variable: (ASRef variable: #x) expression: (ASLiteral literal: 2)
+		}) })
+]
+
+{ #category : 'tests - control flow' }
 PythonConversionTest >> testTryMultipleExcept [
 	| source expected assign exceptionRef switchPart |
 	source := 'try:

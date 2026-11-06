@@ -302,6 +302,21 @@ else:
 	self assert: ast convertsTo: expected.
 ]
 
+{ #category : 'tests - control flow' }
+ZagToPythonConversionTest >> testEnsure [
+	self assert: (ASSend
+		target: (ASBlockNode locals: #() body: {
+			ASAssign variable: (ASRef variable: #x) expression: (ASLiteral literal: 1) })
+		selector: #ensure:
+		args: { (ASBlockNode locals: #() body: {
+			ASAssign variable: (ASRef variable: #x) expression: (ASLiteral literal: 2) }) })
+	convertsTo: 'try:
+	x = 1
+finally:
+	x = 2
+'
+]
+
 { #category : 'tests - full programs' }
 ZagToPythonConversionTest >> testFToC [
 	"Tests converting a Fahrenheit-to-Celsius converter to Python."
@@ -612,6 +627,27 @@ except:
 else:
 	x = 3
 ' 
+]
+
+{ #category : 'tests - control flow' }
+ZagToPythonConversionTest >> testOnErrorDoEnsure [
+	self assert: (ASSend
+		target: (ASBlockNode locals: #() body: { ASSend
+			target: (ASBlockNode locals: #() body: {
+				ASAssign variable: (ASRef variable: #x) expression: (ASLiteral literal: 1) })
+			selector: #onErrorDo:
+			args: { (ASBlockNode locals: #() body: {
+				ASAssign variable: (ASRef variable: #x) expression: (ASLiteral literal: 2) }) } })
+		selector: #ensure: args: { ASBlockNode locals: #() body: {
+			ASAssign variable: (ASRef variable: #x) expression: (ASLiteral literal: 3) }
+		})
+	convertsTo: 'try:
+	x = 1
+except:
+	x = 2
+finally:
+	x = 3
+'
 ]
 
 { #category : 'tests - basic expressions' }

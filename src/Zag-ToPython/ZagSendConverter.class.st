@@ -59,6 +59,12 @@ ZagSendConverter class >> visit: aSend asVisitor: aVisitor [
 		ifAbsent: [ self error: 'No converter found for provided send' ].
 ]
 
+{ #category : 'testing' }
+ZagSendConverter >> isTryConverter [
+	"Returns true if I convert to a try statement."
+	^false
+]
+
 { #category : 'visiting' }
 ZagSendConverter >> visit: aSend asVisitor: aVisitor [
 	"Converts aSend to Python, outputting the code to aVisitor.  You may call its visiting helpers."

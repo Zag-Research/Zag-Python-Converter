@@ -36,6 +36,15 @@ ZagTSTryConverter >> convertElse: aZagTSNode withChildren: children [
 ]
 
 { #category : 'converting' }
+ZagTSTryConverter >> convertFinally: aZagTSNode withChildren: children [
+	"Converts a try statement with an finally clause at the end,"
+	"using the provided children instead of the ts node's."
+	| without_finally |
+	without_finally := self convertToZagAST: aZagTSNode withChildren: children allButLast.
+	^ASSend target: without_finally selector: #ensure: args: { (children last >> 1) asZagASTNode }
+]
+
+{ #category : 'converting' }
 ZagTSTryConverter >> convertToZagAST: aZagTSNode [
 	^self convertToZagAST: aZagTSNode withChildren: aZagTSNode children
 ]
@@ -44,10 +53,13 @@ ZagTSTryConverter >> convertToZagAST: aZagTSNode [
 ZagTSTryConverter >> convertToZagAST: aZagTSNode withChildren: children [
 	"Convert a try statement, but using the provided children instead of the actual children."
 	"This is done so else and finally clauses can be handled recursively."
+	children last tsNodeType = #finally_clause
+		ifTrue: [ ^self convertFinally: aZagTSNode withChildren: children ].
 	children last tsNodeType = #else_clause
 		ifTrue: [ ^self convertElse: aZagTSNode withChildren: children ].
 	(children size = 2 and: [ children second tsNodeType = #except_clause ])
 		ifTrue: [ ^self trySingleExceptToZagAST: aZagTSNode ].
+	children size = 1 ifTrue: [ ^(aZagTSNode >> 1) asZagASTNode ].
 	(children allButFirst allSatisfy: [ :c | c tsNodeType = #except_clause ])
 		ifTrue: [ ^self tryExceptToZagSwitch: aZagTSNode ].
 	self notYetImplemented.
