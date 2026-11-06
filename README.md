@@ -4,11 +4,25 @@ This is a project that converts Python code to and from [Zag Smalltalk](https://
 
 This project is currently in the early stages of development; don't expect every Python feature to work at the moment.
 
+## Progress
+
 [See the development roadmap here.](./docs/roadmap.md)
+
+More precise information about this system can be obtained using Smalltalk:
+```smalltalk
+"The set of tree-sitter node types that can be converted from"
+ZagTSConverter converterRules keys.
+
+"The set of Python builtin functions that can be converted from"
+ZagTSBuiltinConverter builtinConverterRules keys.
+
+"The set of Smalltalk send selectors that can be converted from, including custom ones"
+ZagSendConverter converterRules keys.
+```
 
 ## Installation
 
-```
+```smalltalk
 Metacello new
 	githubUser: 'Zag-Research' project: 'Zag-Python-Converter' commitish: 'main' path: 'src';
 	baseline: 'ZagPythonConverter';
@@ -18,12 +32,12 @@ Metacello new
 ## Use Instructions
 
 To convert Python code to a Zag AST:
-```
+```smalltalk
 ZagTSNode pythonToZagAST: '[PYTHON CODE]'
 ```
 
 To convert a Zag AST to Python:
-```
+```smalltalk
 myZagAST asPythonSource
 ```
 
