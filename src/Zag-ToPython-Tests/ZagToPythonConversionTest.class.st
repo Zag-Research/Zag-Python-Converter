@@ -317,6 +317,19 @@ finally:
 '
 ]
 
+{ #category : 'tests - control flow' }
+ZagToPythonConversionTest >> testEnsureClosesAfter [
+	"Ensure the ensureClosesAfter: message converts to a with statement."
+	self assert: (ASSend
+		target: (ASBlockNode locals: #() body: { ASRef variable: #a })
+		selector: #ensureClosesAfter: 
+		args: { ASBlockNode arguments: { ASRef variable: #b } locals: #() body: { 
+			ASAssign variable: (ASRef variable: #c) expression: (ASLiteral literal: 1) } })
+	convertsTo: 'with a as b:
+	c = 1
+'.
+]
+
 { #category : 'tests - full programs' }
 ZagToPythonConversionTest >> testFToC [
 	"Tests converting a Fahrenheit-to-Celsius converter to Python."

@@ -1118,3 +1118,14 @@ PythonConversionTest >> testWhilePass [
 	}) selector: #whileTrue: args: { ASBlockNode arguments: #() locals: #() body: {}}.
 	self assertExpression: source convertsTo: expected.
 ]
+
+{ #category : 'tests - control flow' }
+PythonConversionTest >> testWith [
+	self assertExpression: 'with a as b:
+	x = 1' convertsTo: (ASSend
+		target: (ASBlockNode locals: #() body: { ASRef variable: #a })
+		selector: #ensureClosesAfter: 
+		args: { (ASBlockNode arguments: { ASRef variable: #b } locals: #() body: {
+			ASAssign variable: (ASRef variable: #x) expression: (ASLiteral literal: 1)
+		}) })
+]

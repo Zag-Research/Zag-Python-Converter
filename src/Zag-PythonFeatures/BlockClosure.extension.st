@@ -1,6 +1,14 @@
 Extension { #name : 'BlockClosure' }
 
 { #category : '*Zag-PythonFeatures' }
+BlockClosure >> ensureClosesAfter: aBlock [
+	"Evaluate aBlock with my value as an argument, while ensuring that value is closed afterwards."
+	| resource |
+	resource := self value.
+	[ aBlock value: resource ] ensure: [ resource close ].
+]
+
+{ #category : '*Zag-PythonFeatures' }
 BlockClosure >> on: exception do: handlerAction else: otherAction [
 	"Like on:do: but execute otherAction if no error happened."
 	| hadException returnValue |
