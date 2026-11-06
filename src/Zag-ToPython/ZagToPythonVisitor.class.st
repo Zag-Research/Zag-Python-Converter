@@ -195,6 +195,12 @@ ZagToPythonVisitor >> visitComment: aComment [
 	self resultStream nextPutAll: aComment text.
 ]
 
+{ #category : 'printing helpers' }
+ZagToPythonVisitor >> visitIndentedBlock: aBlock [
+	"Output the provided block as an indented Python block."
+	self addIndent: 1; visitStatements: aBlock; addIndent: -1
+]
+
 { #category : 'visiting' }
 ZagToPythonVisitor >> visitLiteral: aLiteral [
 	"Visits an ASLiteral, adding its associated Python source to my stream."

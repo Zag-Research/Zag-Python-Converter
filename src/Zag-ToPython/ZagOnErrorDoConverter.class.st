@@ -81,9 +81,7 @@ ZagOnErrorDoConverter >> visit: aSend asVisitor: aVisitor [
 	self hasElse ifTrue: [
 		self visit: aSend withArgs: aSend args allButLast asVisitor: aVisitor.
 		aVisitor resultStream nextPutAll: 'else:'; nextPut: Character cr.
-		aVisitor addIndent: 1.
-		aVisitor visitStatements: aSend args last.
-		aVisitor addIndent: -1.
+		aVisitor visitIndentedBlock: aSend args last.
 	] ifFalse: [ 
 		self visit: aSend withArgs: aSend args asVisitor: aVisitor.
 	]
@@ -93,7 +91,7 @@ ZagOnErrorDoConverter >> visit: aSend asVisitor: aVisitor [
 ZagOnErrorDoConverter >> visit: aSend withArgs: args asVisitor: aVisitor [
 	"Like visit:asVisitor: but only uses the provided arguments for the send."
 	aVisitor resultStream nextPutAll: 'try:'; nextPut: Character cr.
-	aVisitor addIndent: 1; visitStatements: aSend target; addIndent: -1.
+	aVisitor visitIndentedBlock: aSend target.
 	self hasAs ifTrue: [
 		self
 			visitExceptType: args first
@@ -119,7 +117,7 @@ ZagOnErrorDoConverter >> visitExceptType: typeRef name: nameRef body: statements
 		].
 	].
 	aVisitor resultStream nextPut: $:; nextPut: Character cr.
-	aVisitor addIndent: 1; visitStatements: statements; addIndent: -1.
+	aVisitor visitIndentedBlock: statements.
 ]
 
 { #category : 'visiting' }

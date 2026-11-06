@@ -25,6 +25,6 @@ ZagEnsureClosesAfterConverter >> visit: aSend asVisitor: aVisitor [
 	aVisitor resultStream nextPutAll: ' as '.
 	aVisitor visit: aSend args first arguments first.
 	aVisitor resultStream nextPut: $:; nextPut: Character cr.
-	aVisitor addIndent: 1; visitStatements: aSend args first; addIndent: -1.
+	aVisitor visitIndentedBlock: aSend args first.
 	
 ]

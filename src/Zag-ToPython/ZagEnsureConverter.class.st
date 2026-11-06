@@ -39,5 +39,5 @@ ZagEnsureConverter >> visit: aSend asVisitor: aVisitor [
 		ifFalse: [ aVisitor addIndent: -1 ]
 		ifTrue: [ aVisitor resultStream skip: -1 ].
 	aVisitor resultStream nextPutAll: 'finally:'; nextPut: Character cr.
-	aVisitor addIndent: 1; visitStatements: aSend args first; addIndent: -1.
+	aVisitor visitIndentedBlock: aSend args first.
 ]

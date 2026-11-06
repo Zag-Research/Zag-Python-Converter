@@ -26,7 +26,5 @@ ZagWhileTrueConverter >> visit: aSend asVisitor: aVisitor [
 	aVisitor resultStream nextPutAll: 'while '.
 	aVisitor visit: aSend target body first.
 	aVisitor resultStream nextPut: $:; nextPut: Character cr.
-	aVisitor addIndent: 1.
-	aVisitor visitStatements: aSend args first.
-	aVisitor addIndent: -1.
+	aVisitor visitIndentedBlock: aSend args first.
 ]

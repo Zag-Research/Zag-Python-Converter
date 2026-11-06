@@ -25,7 +25,5 @@ ZagForEachConverter >> visit: aSend asVisitor: aVisitor [
 	aVisitor resultStream nextPutAll: ' in '.
 	aVisitor visit: aSend target.
 	aVisitor resultStream nextPut: $:; nextPut: Character cr.
-	aVisitor addIndent: 1.
-	aVisitor visitStatements: aSend args first.
-	aVisitor addIndent: -1.
+	aVisitor visitIndentedBlock: aSend args first.
 ]

@@ -47,9 +47,7 @@ ZagIfElseConverter >> acceptPart: anAssociation type: aSymbol asVisitor: aVisito
 		aVisitor visit: anAssociation key.
 	].
 	aVisitor resultStream nextPut: $:; nextPut: Character cr.
-	aVisitor addIndent: 1.
-	aVisitor visitStatements: anAssociation value.
-	aVisitor addIndent: -1.
+	aVisitor visitIndentedBlock: anAssociation value.
 	
 ]
 
