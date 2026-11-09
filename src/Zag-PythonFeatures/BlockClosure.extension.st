@@ -23,3 +23,16 @@ BlockClosure >> onErrorDo: errorHandlerBlock else: otherBlock [
 	"Like onErrorDo: but execute otherBlock if there was no errer."
 	^ self on: Error do: [:ex | errorHandlerBlock cull: ex] else: otherBlock
 ]
+
+{ #category : '*Zag-PythonFeatures' }
+BlockClosure >> whileTrueWithBreak: aBlock [
+	"Continually run aBlock as long as my value is true."
+	"aBlock accepts one argument: an instance of BreakableBlockClosure."
+	"This instance has break and continue methods that break from and continue the loop respectively."
+	| bc |
+	bc := BreakableBlockClosure new
+		iterateBlock: aBlock;
+		breakBlock: [ ^nil ];
+		yourself.
+	self whileTrue: [ bc value ].
+]

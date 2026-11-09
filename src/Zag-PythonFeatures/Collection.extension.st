@@ -7,6 +7,19 @@ Collection >> +, aCollection [
 ]
 
 { #category : '*Zag-PythonFeatures' }
+Collection >> doWithBreak: aBlock [
+	"Do aBlock once for each of my elements."
+	"aBlock accepts two arguments: the element, and an instance of BreakableBlockClosure."
+	"This instance has break and continue methods that break from and continue the loop respectively."
+	| bc |
+	bc := BreakableBlockClosure new
+		iterateBlock: aBlock;
+		breakBlock: [ ^nil ];
+		yourself.
+	self do: [ :i | bc value: i ].
+]
+
+{ #category : '*Zag-PythonFeatures' }
 Collection >> switch [
 	"Returns the value of the first element with a true key.  Returns nil if no key is true."
 	"Functions like a switch/case statement in other languages."
