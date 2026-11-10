@@ -276,6 +276,12 @@ PythonConversionTest >> testBooleanNodes [
 	self assertExpression: 'False' convertsTo: (ASLiteral literal: false).
 ]
 
+{ #category : 'tests - control flow' }
+PythonConversionTest >> testBreak [
+	self assertExpression: 'break' convertsTo: (
+		ASSend target: (ASRef variable: ZagTSBreakContinueConverter breakableBlockClosureName) selector: #break)
+]
+
 { #category : 'tests - functions' }
 PythonConversionTest >> testBytearrayCall [
 	"Ensures bytearray() converts properly."
@@ -332,6 +338,12 @@ PythonConversionTest >> testConcatenatedStringLiterals [
 			ASSend target: (ASLiteral literal: 'a') selector: #, args: { ASLiteral literal: 'b' }
 		) selector: #, args: { ASLiteral literal: 'c' })
 		selector: #, args: { ASLiteral literal: 'd' })
+]
+
+{ #category : 'tests - control flow' }
+PythonConversionTest >> testContinue [
+	self assertExpression: 'continue' convertsTo: (
+		ASSend target: (ASRef variable: ZagTSBreakContinueConverter breakableBlockClosureName) selector: #continue)
 ]
 
 { #category : 'tests - assignment' }

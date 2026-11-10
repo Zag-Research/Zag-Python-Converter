@@ -96,7 +96,7 @@ This phase of development is mostly oriented around things that I missed in vers
 
 This version is mainly about functions, classes and exceptions, but like v0.3, also includes many smaller things.
 
-- [ ] §2 Lexical Analysis
+- [X] §2 Lexical Analysis
 - [ ] §2.5.7 f-strings
 - [ ] §2.5.8 t-strings
 - [ ] §2.5.9 Formal grammar for f-strings
@@ -119,8 +119,8 @@ This version is mainly about functions, classes and exceptions, but like v0.3, a
 - [ ] §6.3.3 Calls
 - [ ] §7.2.2 Annotated assignment statements
 - [X] §7.8 The raise statement
-- [ ] §7.9 The break statement
-- [ ] §7.10 The continue statement
+- [X] §7.9 The break statement
+- [X] §7.10 The continue statement
 - [X] §8.4 The try statement
 - [X] §8.4.1 except clause
 - [ ] §8.4.2 except* clause

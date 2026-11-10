@@ -174,6 +174,11 @@ ZagToPythonConversionTest >> testBooleanLiterals [
 	self assert: (ASLiteral literal: false) convertsTo: 'False'.
 ]
 
+{ #category : 'tests - control flow' }
+ZagToPythonConversionTest >> testBreak [
+	self assert: (ASSend target: (ASRef variable: #bc) selector: #break) convertsTo: 'break'.
+]
+
 { #category : 'tests - arrays' }
 ZagToPythonConversionTest >> testBytearray [
 	self assert: (ASSend
@@ -213,6 +218,11 @@ ZagToPythonConversionTest >> testConcatenation [
 	| ast |
 	ast := ASSend target: (ASLiteral literal: 'a') selector: #, args: { ASLiteral literal: 'b' }.
 	self assert: ast convertsToAnyOf: #('"a" + "b"' '"a" "b"').
+]
+
+{ #category : 'tests - control flow' }
+ZagToPythonConversionTest >> testContinue [
+	self assert: (ASSend target: (ASRef variable: #bc) selector: #continue) convertsTo: 'continue'.
 ]
 
 { #category : 'tests - arrays' }
