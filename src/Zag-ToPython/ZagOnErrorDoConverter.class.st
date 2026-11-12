@@ -92,6 +92,8 @@ ZagOnErrorDoConverter >> visit: aSend withArgs: args asVisitor: aVisitor [
 	"Like visit:asVisitor: but only uses the provided arguments for the send."
 	aVisitor resultStream nextPutAll: 'try:'; nextPut: Character cr.
 	aVisitor visitIndentedBlock: aSend target.
+	(self class canConvertToMultipleExcept: args last)
+		ifTrue: [ ^self visitMultiExcept: args last asVisitor: aVisitor ].
 	self hasAs ifTrue: [
 		self
 			visitExceptType: args first
@@ -99,9 +101,7 @@ ZagOnErrorDoConverter >> visit: aSend withArgs: args asVisitor: aVisitor [
 			body: args second
 			asVisitor: aVisitor
 	] ifFalse: [
-		(self class canConvertToMultipleExcept: args first )
-			ifTrue: [ self visitMultiExcept: args first asVisitor: aVisitor ]
-			ifFalse: [ self visitExceptType: nil name: nil body: args first asVisitor: aVisitor ]
+		self visitExceptType: nil name: nil body: args last asVisitor: aVisitor
 	]
 ]
 

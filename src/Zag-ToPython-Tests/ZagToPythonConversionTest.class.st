@@ -850,7 +850,7 @@ ZagToPythonConversionTest >> testTryMultipleExcept [
 		args: { ASBlockNode arguments: { ASRef variable: #e } locals: #() body: { assign value: val }} ].
 	ast := ASSend target: (
 		ASBlockNode locals: #() body: { assign value: 1 }
-	) selector: #onErrorDo: args: { ASBlockNode arguments: { exceptionRef } locals: #() body: { 
+	) selector: #on:do: args: { ASLiteral literal: Exception. ASBlockNode arguments: { exceptionRef } locals: #() body: { 
 		ASSend target: (ASArray statements: {
 			switchPart value: Error value: 2.
 			switchPart value: ArithmeticError value: 3.

@@ -80,8 +80,8 @@ ZagTSTryConverter >> exceptToZagCase: aZagTSNode switchVariable: anASRef [
 ZagTSTryConverter >> tryExceptToZagSwitch: aZagTSNode [
 	^ASSend
 		target: (aZagTSNode >> 1) asZagASTNode
-		selector: #onErrorDo:
-		args: { ASBlockNode arguments: { ASRef variable: self class exceptSwitchVariableName }
+		selector: #on:do:
+		args: { ASLiteral literal: Exception. ASBlockNode arguments: { ASRef variable: self class exceptSwitchVariableName }
 			locals: #()
 			body: { ASSend target: (
 				aZagTSNode children allButFirst collect: [ :c |
