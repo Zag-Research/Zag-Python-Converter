@@ -384,6 +384,24 @@ ZagToPythonConversionTest >> testForEach [
 	self assert: ast convertsTo: expected.
 ]
 
+{ #category : 'tests - control flow' }
+ZagToPythonConversionTest >> testForEachWithBreak [
+	"Tests converting a basic for-each loop."
+	| ast expected |
+	ast := ASSend target: (ASRef variable: #c) selector: #doWithBreak: args: {
+		ASBlockNode arguments: { ASRef variable: #each } locals: #() body: {
+			ASCascade target: (ASRef variable: #Transcript) sends: {
+				ASSend selector: #show: args: { ASRef variable: #each }.
+				ASSend selector: #cr args: #().
+			}
+		}
+	}.
+	expected := 'for each in c:
+	print(each)
+'.
+	self assert: ast convertsTo: expected.
+]
+
 { #category : 'tests - full programs' }
 ZagToPythonConversionTest >> testGuessingGame [
 	"Tests converting a simple guessing game program."
@@ -903,6 +921,27 @@ ZagToPythonConversionTest >> testWhileTrue [
 			ASSend target: (ASRef variable: #x) selector: #> args: { ASLiteral literal: 0 }
 		}
 	) selector: #whileTrue: args: {
+		ASBlockNode locals: #() body: {
+			ASAssign variable: (ASRef variable: #x) expression: (
+				ASSend target: (ASRef variable: #x) selector: #- args: { ASLiteral literal: 1 }
+			)
+		}
+	}.
+	expected := 'while x > 0:
+	x = x - 1
+'. "TODO update this once I add augmented assigns"
+	self assert: ast convertsTo: expected.
+]
+
+{ #category : 'tests - control flow' }
+ZagToPythonConversionTest >> testWhileTrueWithBreak [
+	"Test converting a while loop."
+	| ast expected |
+	ast := ASSend target: (
+		ASBlockNode locals: #() body: {
+			ASSend target: (ASRef variable: #x) selector: #> args: { ASLiteral literal: 0 }
+		}
+	) selector: #whileTrueWithBreak: args: {
 		ASBlockNode locals: #() body: {
 			ASAssign variable: (ASRef variable: #x) expression: (
 				ASSend target: (ASRef variable: #x) selector: #- args: { ASLiteral literal: 1 }

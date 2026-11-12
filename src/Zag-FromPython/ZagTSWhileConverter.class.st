@@ -20,5 +20,5 @@ ZagTSWhileConverter class >> putRules: aClass [
 ZagTSWhileConverter >> convertToZagAST: aZagTSNode [
 	^ASSend target: (
 		ASBlockNode arguments: #() locals: #() body: { (aZagTSNode >> 1) asZagASTNode }
-	) selector: #whileTrue: args: { (aZagTSNode >> 2) asZagASTNode }.
+	) selector: #whileTrueWithBreak: args: { (aZagTSNode >> 2) asZagASTNode }.
 ]

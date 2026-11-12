@@ -13,7 +13,8 @@ Class {
 ZagForEachConverter class >> putRules: aClass [
 	"Add all of my conversion rules to aClass using its at:putRule: message."
 	"This message will be called once for each subclass of ZagSendConverter on initialization."
-	aClass at: #do: putRule: self new
+	aClass at: #do: putRule: self new.
+	aClass at: #doWithBreak: putRule: self new.
 ]
 
 { #category : 'visiting' }

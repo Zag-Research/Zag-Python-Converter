@@ -14,6 +14,7 @@ ZagWhileTrueConverter class >> putRules: aClass [
 	"Add all of my conversion rules to aClass using its at:putRule: message."
 	"This message will be called once for each subclass of ZagSendConverter on initialization."
 	aClass at: #whileTrue: putRule: self new.
+	aClass at: #whileTrueWithBreak: putRule: self new.
 	aClass at: #whileFalse: putRule: ZagWhileFalseConverter new.
 ]
 

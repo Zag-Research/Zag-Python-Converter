@@ -429,7 +429,7 @@ PythonConversionTest >> testFor [
 	| source expected |
 	source := 'for i in c:
 	sum += i'.
-	expected := ASSend target: (ASRef variable: #c) selector: #do: args: {
+	expected := ASSend target: (ASRef variable: #c) selector: #doWithBreak: args: {
 		ASBlockNode arguments: { ASRef variable: #i } locals: #() body: {
 			ASAssign variable: (ASRef variable: #sum) expression: (
 				ASSend target: (ASRef variable: #sum) selector: #+, args: { ASRef variable: #i })}}.
@@ -442,7 +442,7 @@ PythonConversionTest >> testForPass [
 	| source expected |
 	source := 'for i in c:
 	pass'.
-	expected := ASSend target: (ASRef variable: #c) selector: #do: args: {
+	expected := ASSend target: (ASRef variable: #c) selector: #doWithBreak: args: {
 		ASBlockNode arguments: { ASRef variable: #i } locals: #() body: {}}.
 	self assertExpression: source convertsTo: expected.
 ]
@@ -470,7 +470,7 @@ while guess != secret and guesses > 0:
 			) selector: #pythonAnd: args: { ASBlockNode arguments: #() locals: #() body: {
 				ASSend target: (ASRef variable: #guesses) selector: #> args: { ASLiteral literal: 0 }
 			}}
-		}) selector: #whileTrue: args: { ASBlockNode arguments: #() locals: #() body: {
+		}) selector: #whileTrueWithBreak: args: { ASBlockNode arguments: #() locals: #() body: {
 			ASAssign variable: (ASRef variable: #guess) expression: (
 				ASSend target: (
 					ASSend target: (ASSend target: (ASRef variable: #UIManager) selector: #default args: #())
@@ -1113,7 +1113,7 @@ PythonConversionTest >> testWhile [
 	x -= 3'.
 	expected := ASSend target: (ASBlockNode arguments: #() locals: #() body: {
 		ASSend target: (ASRef variable: #x) selector: #> args: { ASLiteral literal: 0 }
-	}) selector: #whileTrue: args: { ASBlockNode arguments: #() locals: #() body: {
+	}) selector: #whileTrueWithBreak: args: { ASBlockNode arguments: #() locals: #() body: {
 		ASAssign variable: (ASRef variable: #x) expression: (
 			ASSend target: (ASRef variable: #x) selector: #- args: { ASLiteral literal: 3 })}}.
 	self assertExpression: source convertsTo: expected.
@@ -1127,7 +1127,7 @@ PythonConversionTest >> testWhilePass [
 	pass'.
 	expected := ASSend target: (ASBlockNode arguments: #() locals: #() body: {
 		ASSend target: (ASRef variable: #x) selector: #> args: { ASLiteral literal: 0 }
-	}) selector: #whileTrue: args: { ASBlockNode arguments: #() locals: #() body: {}}.
+	}) selector: #whileTrueWithBreak: args: { ASBlockNode arguments: #() locals: #() body: {}}.
 	self assertExpression: source convertsTo: expected.
 ]
 

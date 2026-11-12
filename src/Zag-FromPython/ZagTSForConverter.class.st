@@ -18,6 +18,6 @@ ZagTSForConverter class >> putRules: aClass [
 
 { #category : 'converting' }
 ZagTSForConverter >> convertToZagAST: aZagTSNode [
-	^ASSend target: (aZagTSNode >> 2) asZagASTNode selector: #do: args: {
+	^ASSend target: (aZagTSNode >> 2) asZagASTNode selector: #doWithBreak: args: {
 		ZagTSBlockConverter blockToZagAST: (aZagTSNode >> 3) children args: { (aZagTSNode >> 1) asZagASTNode } }
 ]
