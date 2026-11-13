@@ -9,6 +9,19 @@ Class {
 	#tag : 'AST'
 }
 
+{ #category : 'transformations' }
+ZagTSIdentifierConverter class >> mangleName: aName forClass: aClassName [
+	"Mangles a private name, using the provided class name."
+	| isUnderscore nameString classNameString mangledNameString |
+	isUnderscore := [ :char | char = $_ ].
+	nameString := aName asString.
+	classNameString := aClassName asString.
+	(classNameString allSatisfy: isUnderscore) ifTrue: [ ^aName ].
+	mangledNameString := '_',(classNameString trimLeft: isUnderscore),nameString.
+	^mangledNameString asSymbol
+	
+]
+
 { #category : 'class initialization' }
 ZagTSIdentifierConverter class >> putRules: aClass [
 	"Add all of my conversion rules to aClass using its at:putRule: message."
@@ -26,6 +39,15 @@ ZagTSIdentifierConverter class >> pythonBuiltinIdentifiers [
 		#Exception -> Error.
 		#ArithmeticError -> ArithmeticError.
 	} asDictionary
+]
+
+{ #category : 'testing' }
+ZagTSIdentifierConverter class >> shouldBeMangled: aName [
+	"Determines if a private identifier should be mangled (assuming it is in a class.)"
+	| aNameString |
+	aNameString := aName asString.
+	^(aNameString beginsWith: '__') and: [ (aNameString endsWith: '__') not
+		and: [ (aNameString includes: $.) not ] ]
 ]
 
 { #category : 'converting' }

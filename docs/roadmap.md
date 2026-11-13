@@ -101,8 +101,8 @@ This version is mainly about functions, classes and exceptions, but like v0.3, a
 - [ ] §2.5.8 t-strings
 - [ ] §2.5.9 Formal grammar for f-strings
 - [X] §4.3 Exceptions
-- [ ] §6.2.2 Identifiers (Names)
-- [ ] §6.2.2.1 Private name mangling
+- [X] §6.2.2 Identifiers (Names)
+- [X] §6.2.2.1 Private name mangling
 - [X] §6.2.3 Literals
 - [X] §6.2.3.1 Literals and object identity
 - [X] §6.2.3.2 String literal concatenation

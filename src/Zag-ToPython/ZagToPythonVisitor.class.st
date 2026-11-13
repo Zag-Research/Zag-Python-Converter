@@ -20,6 +20,17 @@ ZagToPythonVisitor class >> astToPythonSource: anAST [
 	^String streamContents: [ :stream | self new resultStream: stream; visit: anAST ]
 ]
 
+{ #category : 'transformations' }
+ZagToPythonVisitor class >> demangle: aName forClass: aClassName [
+	| aNameString aClassNameString isUnderscore |
+	isUnderscore := [ :char | char = $_ ].
+	aNameString := aName asString.
+	aClassNameString := aClassName asString.
+	(aClassNameString allSatisfy: isUnderscore) ifTrue: [ ^aName ].
+	aClassNameString := aClassNameString trimLeft: isUnderscore.
+	^(aNameString allButFirst: aClassNameString size + 1) asSymbol.
+]
+
 { #category : 'testing' }
 ZagToPythonVisitor class >> isPrint: aCascade [
 	"Tests if an ASCascade should be translated to a print statement."
@@ -53,6 +64,16 @@ ZagToPythonVisitor class >> pythonReservedKeywords [
 		#import #in #is #lambda #nonlocal #not #or
 		#pass #raise #return #try #while #with #yield
 	) asSet
+]
+
+{ #category : 'testing' }
+ZagToPythonVisitor class >> shouldBeDemangled: aName forClass: aClassName [
+	| aNameString aClassNameString |
+	aNameString := aName asString.
+	aClassNameString := aClassName asString.
+	aClassNameString := aClassNameString trimLeft: [ :c | c = $_ ].
+	(aNameString includesSubstring: aClassNameString) ifFalse: [ ^false ].
+	^aNameString first = $_. 
 ]
 
 { #category : 'constants' }
