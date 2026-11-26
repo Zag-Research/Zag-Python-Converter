@@ -21,7 +21,11 @@ PythonConversionTest >> assertExpression: source convertsTo: tree withLocals: lo
 	"Asserts the provided Python code converts to the provided AST."
 	"Puts the provided AST in a main method."
 	| expected actual |
-	expected := ASMethodNode selector: ZagTSNode mainMethodSelector locals: (locals collect: [:each | ASRef variable: each]) body: {tree}.
+	expected := ASMethodNode selector: ZagTSNode mainMethodSelector locals: (locals collect: [ :each |
+		each isAssociation
+			ifTrue: [ ASRef variable: each key type: each value ]
+			ifFalse: [ ASRef variable: each ]
+	]) body: {tree}.
 	actual := ZagTSNode pythonToZagAST: source.
 	self assert: actual equals: expected.
 ]
@@ -203,6 +207,14 @@ PythonConversionTest >> testAssignRS [
 			selector: #bitShift:
 			args: { ASSend target: (ASRef variable: #b) selector: #negated args: #() }).
 	self assertExpression: source convertsTo: expected withLocals: #(#a).
+]
+
+{ #category : 'tests - assignment' }
+PythonConversionTest >> testAssignmentTypeHint [
+	| source expected |
+	source := 'a: int = c'.
+	expected := ASAssign variable: (ASRef variable: #a type: Integer) expression: (ASRef variable: #c).
+	self assertExpression: source convertsTo: expected withLocals: { #a -> Integer }.
 ]
 
 { #category : 'tests - control flow' }
@@ -1070,6 +1082,11 @@ PythonConversionTest >> testTupleLiteralNode [
 	"Tests converting tuple literals"
 	self assertExpression: '(a, b, c)' convertsTo: (ASSend target: (ASArray statements: {
 		ASRef variable: #a . ASRef variable: #b . ASRef variable: #c }) selector: #immutableView)
+]
+
+{ #category : 'tests' }
+PythonConversionTest >> testTypeHint [
+	self assertExpression: 'a: int' convertsTo: (ASRef variable: #a type: Integer)
 ]
 
 { #category : 'tests' }

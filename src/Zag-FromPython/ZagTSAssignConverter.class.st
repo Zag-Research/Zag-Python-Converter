@@ -19,12 +19,28 @@ ZagTSAssignConverter class >> putRules: aClass [
 
 { #category : 'converting' }
 ZagTSAssignConverter >> convertToZagAST: aZagTSNode [
-	^(aZagTSNode >> 1) tsNodeType = #subscript
-		ifTrue: [ ASSend
-			target: (aZagTSNode >> 1 >> 1) asZagASTNode 
-			selector: #zwAt:put:
-			args: { (aZagTSNode >> 1 >> 2) asZagASTNode . (aZagTSNode >> 2) asZagASTNode }.
+	^aZagTSNode childrenCount = 2 ifTrue: [
+		(aZagTSNode >> 2) tsNodeType = #type ifTrue: [ 
+			(aZagTSNode >> 1) asZagASTNode type: (aZagTSNode >> 2) asZagASTNode; yourself
 		] ifFalse: [
-			ASAssign variable: (aZagTSNode >> 1) asZagASTNode expression: (aZagTSNode >> 2) asZagASTNode
+			self convertVariable: aZagTSNode >> 1 expression: aZagTSNode >> 2
+		]
+	] ifFalse: [ | assign |
+		assign := self convertVariable: aZagTSNode >> 1 expression: aZagTSNode >> 3.
+		(assign isASAssign ifTrue: [ assign variable ] ifFalse: [ assign target ])
+			 type: (aZagTSNode >> 2) asZagASTNode.
+		assign
+	]
+]
+
+{ #category : 'converting' }
+ZagTSAssignConverter >> convertVariable: variable expression: expression [
+	^variable tsNodeType = #subscript
+		ifTrue: [ ASSend
+			target: (variable >> 1) asZagASTNode 
+			selector: #zwAt:put:
+			args: { (variable >> 2) asZagASTNode . expression asZagASTNode }.
+		] ifFalse: [
+			ASAssign variable: variable asZagASTNode expression: expression asZagASTNode
 		].
 ]

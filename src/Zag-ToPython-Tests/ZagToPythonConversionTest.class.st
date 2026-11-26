@@ -891,6 +891,11 @@ ZagToPythonConversionTest >> testTupleLiteral [
 		convertsTo: '("a", "b", "c")'
 ]
 
+{ #category : 'tests - basic expressions' }
+ZagToPythonConversionTest >> testTypeHint [
+	self assert: (ASRef variable: #a type: Integer) convertsTo: 'a: int'
+]
+
 { #category : 'tests - control flow' }
 ZagToPythonConversionTest >> testWhileFalse [
 	"Test converting a while loop."

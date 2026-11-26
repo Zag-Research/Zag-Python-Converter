@@ -117,7 +117,7 @@ This version is mainly about functions, classes and exceptions, but like v0.3, a
 - [X] §6.3.2.3 “Starred” subscriptions
 - [X] §6.3.2.4 Formal subscription grammar
 - [ ] §6.3.3 Calls
-- [ ] §7.2.2 Annotated assignment statements
+- [X] §7.2.2 Annotated assignment statements
 - [X] §7.8 The raise statement
 - [X] §7.9 The break statement
 - [X] §7.10 The continue statement

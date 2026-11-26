@@ -88,6 +88,14 @@ ZagToPythonVisitor class >> specialLiterals [
 	} asDictionary
 ]
 
+{ #category : 'constants' }
+ZagToPythonVisitor class >> typeConversions [
+	"Returns a dictionary from known Zag types (class objects) to Python types (strings)."
+	^{
+		Integer -> #int.  Float -> #float.  String -> #str.
+	} asDictionary
+]
+
 { #category : 'setting' }
 ZagToPythonVisitor >> addIndent: anInteger [
 	"Changes my indent level by the amount provided."
@@ -252,6 +260,12 @@ ZagToPythonVisitor >> visitRef: aRef [
 	self resultStream nextPutAll: aRef variable asString.
 	(self class pythonReservedKeywords includes: aRef variable)
 		ifTrue: [ self resultStream nextPut: $_ ].
+	aRef type ifNotNil: [ | pythonType |
+		pythonType := self class typeConversions
+			at: aRef type
+			ifAbsent: [ self error: 'No Python type found for provided Zag type.' ].
+		self resultStream nextPutAll: ': '; nextPutAll: pythonType asString.
+	]
 ]
 
 { #category : 'visiting' }
